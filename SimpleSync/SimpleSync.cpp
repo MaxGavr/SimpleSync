@@ -1,7 +1,3 @@
-
-// SimpleSync.cpp : ќпредел€ет поведение классов дл€ приложени€.
-//
-
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "MainDlg.h"
@@ -11,14 +7,11 @@
 #endif
 
 
-// CSyncApp
 
 BEGIN_MESSAGE_MAP(CSyncApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-
-// создание CSyncApp
 
 CSyncApp::CSyncApp()
 {
@@ -27,22 +20,13 @@ CSyncApp::CSyncApp()
 }
 
 
-// ≈динственный объект CSyncApp
-
 CSyncApp theApp;
 
 
-// инициализаци€ CSyncApp
-
 BOOL CSyncApp::InitInstance()
 {
-	// InitCommonControlsEx() требуетс€ дл€ Windows XP, если манифест
-	// приложени€ использует ComCtl32.dll версии 6 или более поздней версии дл€ включени€
-	// стилей отображени€.  ¬ противном случае будет возникать сбой при создании любого окна.
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
-	// ¬ыберите этот параметр дл€ включени€ всех общих классов управлени€, которые необходимо использовать
-	// в вашем приложении.
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
@@ -51,18 +35,10 @@ BOOL CSyncApp::InitInstance()
 
 	AfxEnableControlContainer();
 
-	// —оздать диспетчер оболочки, в случае, если диалоговое окно содержит
-	// представление дерева оболочки или какие-либо его элементы управлени€.
 	CShellManager *pShellManager = new CShellManager;
 
-	// јктиваци€ визуального диспетчера " лассический Windows" дл€ включени€ элементов управлени€ MFC
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
-	// —тандартна€ инициализаци€
-	// ≈сли эти возможности не используютс€ и необходимо уменьшить размер
-	// конечного исполн€емого файла, необходимо удалить из следующих
-	// конкретных процедур инициализации, которые не требуютс€
-	// »змените раздел реестра, в котором хран€тс€ параметры
 	// TODO: следует изменить эту строку на что-нибудь подход€щее,
 	// например на название организации
 	SetRegistryKey(_T("Ћокальные приложени€, созданные с помощью мастера приложений"));
@@ -86,7 +62,6 @@ BOOL CSyncApp::InitInstance()
 		TRACE(traceAppMsg, 0, "ѕредупреждение. ѕри использовании элементов управлени€ MFC дл€ диалогового окна невозможно #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
 	}
 
-	// ”далить диспетчер оболочки, созданный выше.
 	if (pShellManager != NULL)
 	{
 		delete pShellManager;
@@ -96,8 +71,6 @@ BOOL CSyncApp::InitInstance()
 	ControlBarCleanUp();
 #endif
 
-	// ѕоскольку диалоговое окно закрыто, возвратите значение FALSE, чтобы можно было выйти из
-	//  приложени€ вместо запуска генератора сообщений приложени€.
 	return FALSE;
 }
 

@@ -31,12 +31,32 @@ CString SyncManager::getDestinationFolder() const
     return m_destinationFolder;
 }
 
-SyncManager::FileSet SyncManager::scan()
+SyncManager::ActionQueue SyncManager::scan()
 {
     FileSet sourceFiles = getFilesFromFolder(getSourceFolder());
     FileSet destinationFiles = getFilesFromFolder(getDestinationFolder());
 
-    return FileSet();
+    ActionQueue syncActions;
+
+    for (const auto& file : sourceFiles)
+    {
+        auto it = destinationFiles.find(file);
+        if (it == destinationFiles.end())
+        {
+            syncActions.push(SyncAction(SyncAction::TYPE::COPY, file));
+        }
+    }
+
+    for (const auto& file : destinationFiles)
+    {
+        auto it = sourceFiles.find(file);
+        if (it == sourceFiles.end())
+        {
+            syncActions.push(SyncAction(SyncAction::TYPE::REMOVE, file));
+        }
+    }
+
+    return syncActions;
 }
 
 SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) const
@@ -49,16 +69,19 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
     while (working)
     {
         working = fileFinder.FindNextFile();
-        CString fileUrl = fileFinder.GetFileURL();
         
-        files.insert(FileProperties(fileUrl));
+        if (!fileFinder.IsDots() && !fileFinder.IsDirectory())
+        {
+            CString filePath = fileFinder.GetFilePath();
+            files.insert(FileProperties(filePath));
+        }
     }
 
     fileFinder.Close();
     return files;
 }
 
-SyncAction::SyncAction(TYPE type, FileProperties sourceFile, FileProperties destinationFile)
-    : m_type(type), m_sourceFile(sourceFile), m_destinationFile(destinationFile)
+SyncAction::SyncAction(TYPE type, FileProperties file)
+    : m_type(type), m_file(file)//, m_destinationFile(destinationFile)
 {
 }

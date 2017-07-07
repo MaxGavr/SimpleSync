@@ -17,6 +17,11 @@ BOOL FileProperties::operator<(const FileProperties& file) const
     return (this->m_fileName < file.m_fileName);
 }
 
+BOOL FileProperties::operator==(const FileProperties& file) const
+{
+    return (this->m_fileName == file.m_fileName);
+}
+
 CString FileProperties::getFileName() const
 {
     return m_fileName;

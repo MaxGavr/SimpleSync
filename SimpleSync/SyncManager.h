@@ -1,35 +1,39 @@
 #pragma once
 
 #include <set>
+#include <queue>
 #include "FileProperties.h"
 
 struct SyncAction
 {
     enum class TYPE {
         REMOVE,
-        CREATE,
         COPY,
         REPLACE
     };
 
-    enum class DIRECTION {
-        SOURCE_TO_DESTINATION,
-        DESTINATION_TO_SOURCE
-    };
+    //enum class DIRECTION {
+    //    SOURCE_TO_DESTINATION,
+    //    DESTINATION_TO_SOURCE
+    //};
 
-    SyncAction(TYPE type, FileProperties sourceFile, FileProperties destinationFile);
+    //SyncAction(FileProperties fileToDelete);
+    //SyncAction(FileProperties originalFile, DIRECTION copyDirection);
+    //SyncAction(FileProperties originalFile, FileProperties fileToReplace, DIRECTION replaceDirection);
+
+    SyncAction(TYPE type, FileProperties file);
 
     TYPE m_type;
-    DIRECTION m_copyDirection;
+    //DIRECTION m_copyDirection;
 
-    FileProperties m_sourceFile;
-    FileProperties m_destinationFile;
+    FileProperties m_file;
 };
 
 class SyncManager
 {
 public:
     using FileSet = std::set <FileProperties>;
+    using ActionQueue = std::queue <SyncAction>;
 
     SyncManager();
     ~SyncManager();
@@ -40,7 +44,7 @@ public:
     CString getSourceFolder() const;
     CString getDestinationFolder() const;
 
-    FileSet scan();
+    ActionQueue scan();
 
 private:
     FileSet getFilesFromFolder(const CString& folder) const;

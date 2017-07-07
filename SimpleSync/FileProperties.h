@@ -9,6 +9,7 @@ public:
     ~FileProperties();
 
     BOOL operator< (const FileProperties& file) const;
+    BOOL operator== (const FileProperties& file) const;
 
     CString getFileName() const;
 

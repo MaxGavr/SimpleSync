@@ -1,7 +1,7 @@
 #pragma once
 
 #include <set>
-#include <queue>
+#include <deque>
 #include "FileProperties.h"
 
 struct SyncAction
@@ -12,28 +12,29 @@ struct SyncAction
         REPLACE
     };
 
-    //enum class DIRECTION {
-    //    SOURCE_TO_DESTINATION,
-    //    DESTINATION_TO_SOURCE
-    //};
-
-    //SyncAction(FileProperties fileToDelete);
-    //SyncAction(FileProperties originalFile, DIRECTION copyDirection);
-    //SyncAction(FileProperties originalFile, FileProperties fileToReplace, DIRECTION replaceDirection);
+    /*enum class DIRECTION {
+        SOURCE_TO_DESTINATION,
+        DESTINATION_TO_SOURCE
+    };*/
 
     SyncAction(TYPE type, FileProperties file);
+    SyncAction(FileProperties originalFile, FileProperties fileToReplace);
+
+    //SyncAction(TYPE type, FileProperties file);
 
     TYPE m_type;
-    //DIRECTION m_copyDirection;
+    //DIRECTION m_direction;
 
     FileProperties m_file;
+    FileProperties m_fileToReplace;
+    //FileProperties m_secondFile;
 };
 
 class SyncManager
 {
 public:
     using FileSet = std::set <FileProperties>;
-    using ActionQueue = std::queue <SyncAction>;
+    using ActionQueue = std::deque <SyncAction>;
 
     SyncManager();
     ~SyncManager();

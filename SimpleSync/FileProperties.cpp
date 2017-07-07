@@ -24,5 +24,16 @@ BOOL FileProperties::operator==(const FileProperties& file) const
 
 CString FileProperties::getFileName() const
 {
+    int slashPosition = m_fileName.ReverseFind('\\');
+    return m_fileName.Right(m_fileName.GetLength() - slashPosition - 1);
+}
+
+CString FileProperties::getFullPath() const
+{
     return m_fileName;
+}
+
+CString FileProperties::getFileFolder() const
+{
+    return m_fileName.Left(m_fileName.ReverseFind('\\'));
 }

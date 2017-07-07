@@ -184,6 +184,7 @@
   <ItemGroup>
     <ClInclude Include="FileProperties.h" />
     <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="PreviewListCtrl.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SimpleSync.h" />
     <ClInclude Include="stdafx.h" />
@@ -193,6 +194,7 @@
   <ItemGroup>
     <ClCompile Include="FileProperties.cpp" />
     <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="PreviewListCtrl.cpp" />
     <ClCompile Include="SimpleSync.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

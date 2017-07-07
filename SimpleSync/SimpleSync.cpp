@@ -44,7 +44,9 @@ BOOL CSyncApp::InitInstance()
 	// например на название организации
 	SetRegistryKey(_T("Локальные приложения, созданные с помощью мастера приложений"));
 
-	CMainDlg dlg;
+    SyncManager syncManager;
+
+	CMainDlg dlg(&syncManager);
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

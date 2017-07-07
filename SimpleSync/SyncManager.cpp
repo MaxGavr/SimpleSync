@@ -43,7 +43,7 @@ SyncManager::ActionQueue SyncManager::scan()
         auto it = destinationFiles.find(file);
         if (it == destinationFiles.end())
         {
-            syncActions.push(SyncAction(SyncAction::TYPE::COPY, file));
+            syncActions.push_back(SyncAction(SyncAction::TYPE::COPY, file));
         }
     }
 
@@ -52,7 +52,7 @@ SyncManager::ActionQueue SyncManager::scan()
         auto it = sourceFiles.find(file);
         if (it == sourceFiles.end())
         {
-            syncActions.push(SyncAction(SyncAction::TYPE::REMOVE, file));
+            syncActions.push_back(SyncAction(SyncAction::TYPE::REMOVE, file));
         }
     }
 
@@ -83,5 +83,20 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
 
 SyncAction::SyncAction(TYPE type, FileProperties file)
     : m_type(type), m_file(file)//, m_destinationFile(destinationFile)
+{
+}
+
+//SyncAction::SyncAction(FileProperties fileToDelete)
+//    : m_type(TYPE::REMOVE), m_file(fileToDelete)
+//{
+//}
+//
+//SyncAction::SyncAction(FileProperties originalFile)
+//    : m_type(TYPE::COPY), m_file(originalFile)
+//{
+//}
+
+SyncAction::SyncAction(FileProperties originalFile, FileProperties fileToReplace)
+    : m_type(TYPE::REPLACE), m_file(originalFile), m_fileToReplace(fileToReplace)
 {
 }

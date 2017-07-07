@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "MainDlg.h"
+#include "SyncManager.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -9,20 +10,30 @@
 
 
 
-CMainDlg::CMainDlg(CWnd* pParent /*=NULL*/)
+CMainDlg::CMainDlg(SyncManager* syncManager, CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_SIMPLESYNC_DIALOG, pParent)
+    , m_syncManager(syncManager)
+    , m_sourcePath(_T(""))
+    , m_destinationPath(_T(""))
+    , m_previewList(syncManager)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 void CMainDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+    CDialogEx::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_PREVIEW_LIST, m_previewList);
+    DDX_Text(pDX, IDC_SOURCE_PATH_BROWSE, m_sourcePath);
+    DDX_Text(pDX, IDC_DESTINATION_FOLDER_BROWSE, m_destinationPath);
 }
 
 BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+    ON_EN_CHANGE(IDC_SOURCE_PATH_BROWSE, &CMainDlg::OnSourceFolderChange)
+    ON_EN_CHANGE(IDC_DESTINATION_FOLDER_BROWSE, &CMainDlg::OnDestinationFolderChange)
+    ON_BN_CLICKED(IDC_PREVIEW_BUTTON, &CMainDlg::OnPreviewButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -34,6 +45,7 @@ BOOL CMainDlg::OnInitDialog()
     SetIcon(m_hIcon, FALSE);
 
 	// TODO: добавьте дополнительную инициализацию
+    m_previewList.setupColumns();
 
 	return TRUE;
 }
@@ -66,3 +78,23 @@ HCURSOR CMainDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CMainDlg::OnSourceFolderChange()
+{
+    UpdateData(TRUE);
+    m_syncManager->setSourceFolder(m_sourcePath);
+}
+
+
+void CMainDlg::OnDestinationFolderChange()
+{
+    UpdateData(TRUE);
+    m_syncManager->setDestinationFolder(m_destinationPath);
+}
+
+
+void CMainDlg::OnPreviewButtonClicked()
+{
+    m_previewList.showPreview();
+}

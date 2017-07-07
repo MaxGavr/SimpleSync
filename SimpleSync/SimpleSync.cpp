@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "MainDlg.h"
+#include "SyncManager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -182,13 +182,16 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileProperties.h" />
     <ClInclude Include="MainDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SimpleSync.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SyncManager.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileProperties.cpp" />
     <ClCompile Include="MainDlg.cpp" />
     <ClCompile Include="SimpleSync.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -197,6 +200,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SyncManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SimpleSync.rc" />

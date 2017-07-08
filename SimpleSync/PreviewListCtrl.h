@@ -25,7 +25,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-    void printSyncAction(const SyncAction& action);
+    void printSyncAction(SyncOperation* action);
 
     SyncManager* m_syncManager;
 };

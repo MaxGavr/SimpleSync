@@ -26,48 +26,49 @@ void CPreviewListCtrl::setupColumns()
 
 void CPreviewListCtrl::showPreview()
 {
-    SyncManager::ActionQueue syncActions = m_syncManager->scan();
+    SyncManager::OperationQueue syncActions = m_syncManager->scan();
 
-    for (const auto& action : syncActions)
+    for (auto& action : syncActions)
     {
         printSyncAction(action);
     }
 }
 
-void CPreviewListCtrl::printSyncAction(const SyncAction& action)
+void CPreviewListCtrl::printSyncAction(SyncOperation* operation)
 {
     CString listItemText;
     listItemText.Format(_T("%d"), GetItemCount() + 1);
     
     int index = InsertItem(GetItemCount(), listItemText);
+    FileProperties file = operation->getFile();
 
-    switch (action.m_type)
+    switch (operation->getType())
     {
-    case SyncAction::TYPE::COPY :
+    case SyncOperation::TYPE::COPY :
     {
-        if (action.m_file.getFileFolder() == m_syncManager->getSourceFolder())
+        if (file.getFileFolder() == m_syncManager->getSourceFolder())
         {
-            SetItemText(index, COLUMNS::SOURCE_FILE, action.m_file.getFileName());
+            SetItemText(index, COLUMNS::SOURCE_FILE, file.getFileName());
             SetItemText(index, COLUMNS::ACTION, L">>>");
         }
         else
         {
-            SetItemText(index, COLUMNS::DESTINATION_FILE, action.m_file.getFileName());
+            SetItemText(index, COLUMNS::DESTINATION_FILE, file.getFileName());
             SetItemText(index, COLUMNS::ACTION, L"<<<");
         }
 
         break;
     }
-    case SyncAction::TYPE::REMOVE :
+    case SyncOperation::TYPE::REMOVE :
     {
-        if (action.m_file.getFileFolder() == m_syncManager->getSourceFolder())
+        if (file.getFileFolder() == m_syncManager->getSourceFolder())
         {
-            SetItemText(index, COLUMNS::SOURCE_FILE, action.m_file.getFileName());
+            SetItemText(index, COLUMNS::SOURCE_FILE, file.getFileName());
             SetItemText(index, COLUMNS::ACTION, L"X");
         }
         else
         {
-            SetItemText(index, COLUMNS::DESTINATION_FILE, action.m_file.getFileName());
+            SetItemText(index, COLUMNS::DESTINATION_FILE, file.getFileName());
             SetItemText(index, COLUMNS::ACTION, L"X");
         }
     }

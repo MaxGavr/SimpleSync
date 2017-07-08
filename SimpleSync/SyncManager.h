@@ -3,38 +3,16 @@
 #include <set>
 #include <deque>
 #include "FileProperties.h"
+#include "CopyOperation.h"
+#include "RemoveOperation.h"
 
-struct SyncAction
-{
-    enum class TYPE {
-        REMOVE,
-        COPY,
-        REPLACE
-    };
 
-    /*enum class DIRECTION {
-        SOURCE_TO_DESTINATION,
-        DESTINATION_TO_SOURCE
-    };*/
-
-    SyncAction(TYPE type, FileProperties file);
-    SyncAction(FileProperties originalFile, FileProperties fileToReplace);
-
-    //SyncAction(TYPE type, FileProperties file);
-
-    TYPE m_type;
-    //DIRECTION m_direction;
-
-    FileProperties m_file;
-    FileProperties m_fileToReplace;
-    //FileProperties m_secondFile;
-};
 
 class SyncManager
 {
 public:
     using FileSet = std::set <FileProperties>;
-    using ActionQueue = std::deque <SyncAction>;
+    using OperationQueue = std::deque <SyncOperation *>;
 
     SyncManager();
     ~SyncManager();
@@ -45,7 +23,7 @@ public:
     CString getSourceFolder() const;
     CString getDestinationFolder() const;
 
-    ActionQueue scan();
+    OperationQueue scan();
 
 private:
     FileSet getFilesFromFolder(const CString& folder) const;
@@ -53,5 +31,7 @@ private:
 private:
     CString m_sourceFolder;
     CString m_destinationFolder;
+
+    OperationQueue m_syncActions;
 };
 

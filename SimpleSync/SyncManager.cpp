@@ -2,6 +2,7 @@
 #include "SyncManager.h"
 
 
+
 SyncManager::SyncManager()
 {
 }
@@ -10,6 +11,8 @@ SyncManager::SyncManager()
 SyncManager::~SyncManager()
 {
 }
+
+
 
 void SyncManager::setSourceFolder(const CString& source)
 {
@@ -31,19 +34,23 @@ CString SyncManager::getDestinationFolder() const
     return m_destinationFolder;
 }
 
-SyncManager::ActionQueue SyncManager::scan()
+
+
+
+SyncManager::OperationQueue SyncManager::scan()
 {
     FileSet sourceFiles = getFilesFromFolder(getSourceFolder());
     FileSet destinationFiles = getFilesFromFolder(getDestinationFolder());
 
-    ActionQueue syncActions;
+    m_syncActions.clear();
 
     for (const auto& file : sourceFiles)
     {
         auto it = destinationFiles.find(file);
         if (it == destinationFiles.end())
         {
-            syncActions.push_back(SyncAction(SyncAction::TYPE::COPY, file));
+            SyncOperation* operation = new CopyOperation(file, getDestinationFolder());
+            m_syncActions.push_back(operation);
         }
     }
 
@@ -52,11 +59,12 @@ SyncManager::ActionQueue SyncManager::scan()
         auto it = sourceFiles.find(file);
         if (it == sourceFiles.end())
         {
-            syncActions.push_back(SyncAction(SyncAction::TYPE::REMOVE, file));
+            SyncOperation* operation = new RemoveOperation(file);
+            m_syncActions.push_back(operation);
         }
     }
 
-    return syncActions;
+    return m_syncActions;
 }
 
 SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) const
@@ -79,24 +87,4 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
 
     fileFinder.Close();
     return files;
-}
-
-SyncAction::SyncAction(TYPE type, FileProperties file)
-    : m_type(type), m_file(file)//, m_destinationFile(destinationFile)
-{
-}
-
-//SyncAction::SyncAction(FileProperties fileToDelete)
-//    : m_type(TYPE::REMOVE), m_file(fileToDelete)
-//{
-//}
-//
-//SyncAction::SyncAction(FileProperties originalFile)
-//    : m_type(TYPE::COPY), m_file(originalFile)
-//{
-//}
-
-SyncAction::SyncAction(FileProperties originalFile, FileProperties fileToReplace)
-    : m_type(TYPE::REPLACE), m_file(originalFile), m_fileToReplace(fileToReplace)
-{
 }

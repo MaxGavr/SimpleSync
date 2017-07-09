@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
     ON_EN_CHANGE(IDC_SOURCE_PATH_BROWSE, &CMainDlg::OnSourceFolderChange)
     ON_EN_CHANGE(IDC_DESTINATION_FOLDER_BROWSE, &CMainDlg::OnDestinationFolderChange)
     ON_BN_CLICKED(IDC_PREVIEW_BUTTON, &CMainDlg::OnPreviewButtonClicked)
+    ON_BN_CLICKED(IDC_SYNC_BUTTON, &CMainDlg::OnSyncButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -97,4 +98,10 @@ void CMainDlg::OnDestinationFolderChange()
 void CMainDlg::OnPreviewButtonClicked()
 {
     m_previewList.showPreview();
+}
+
+
+void CMainDlg::OnSyncButtonClicked()
+{
+    m_syncManager->sync();
 }

@@ -87,6 +87,14 @@ SyncManager::OperationQueue SyncManager::scan()
     return m_syncActions;
 }
 
+void SyncManager::sync()
+{
+    for (auto& action: m_syncActions)
+    {
+        action->execute();
+    }
+}
+
 SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) const
 {
     FileSet files;

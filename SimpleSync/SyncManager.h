@@ -32,6 +32,7 @@ public:
     BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
 
     OperationQueue scan();
+    void sync();
 
 private:
     FileSet getFilesFromFolder(const CString& folder) const;

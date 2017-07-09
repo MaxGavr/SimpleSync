@@ -38,4 +38,5 @@ private:
 public:
     afx_msg void OnDestinationFolderChange();
     afx_msg void OnPreviewButtonClicked();
+    afx_msg void OnSyncButtonClicked();
 };

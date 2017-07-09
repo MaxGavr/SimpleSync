@@ -18,10 +18,10 @@ CPreviewListCtrl::~CPreviewListCtrl()
 
 void CPreviewListCtrl::setupColumns()
 {
-    InsertColumn(COLUMNS::INDEX, L"№", LVCFMT_LEFT, 30);
-    InsertColumn(COLUMNS::SOURCE_FILE, L"Исходная директория", LVCFMT_LEFT, 100);
-    InsertColumn(COLUMNS::ACTION, L"Действие", LVCFMT_LEFT, 70);
-    InsertColumn(COLUMNS::DESTINATION_FILE, L"Конечная директория", LVCFMT_LEFT, 100);
+    InsertColumn(COLUMNS::INDEX, L"пїЅ", LVCFMT_LEFT, 30);
+    InsertColumn(COLUMNS::SOURCE_FILE, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", LVCFMT_LEFT, 100);
+    InsertColumn(COLUMNS::ACTION, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", LVCFMT_LEFT, 70);
+    InsertColumn(COLUMNS::DESTINATION_FILE, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", LVCFMT_LEFT, 100);
 }
 
 void CPreviewListCtrl::showPreview()
@@ -46,7 +46,7 @@ void CPreviewListCtrl::printSyncAction(SyncOperation* operation)
     {
     case SyncOperation::TYPE::COPY :
     {
-        if (file.getFileFolder() == m_syncManager->getSourceFolder())
+        if (m_syncManager->isFileInSourceFolder(file))
         {
             SetItemText(index, COLUMNS::SOURCE_FILE, file.getFileName());
             SetItemText(index, COLUMNS::ACTION, L">>>");

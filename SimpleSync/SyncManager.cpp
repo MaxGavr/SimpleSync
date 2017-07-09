@@ -34,8 +34,22 @@ CString SyncManager::getDestinationFolder() const
     return m_destinationFolder;
 }
 
+BOOL SyncManager::isFileInSourceFolder(const FileProperties& file) const
+{
+    return file.getFileFolder() == getSourceFolder();
+}
 
+BOOL SyncManager::isFileInDestinationFolder(const FileProperties& file) const
+{
+    return file.getFileFolder() == getDestinationFolder();
+}
 
+BOOL SyncManager::isFileInFiles(const FileProperties& file, const FileSet &files) const
+{
+    return std::any_of(files.begin(), files.end(), [&](const FileProperties& f) {
+        return file.getFileName() == f.getFileName();
+    });
+}
 
 SyncManager::OperationQueue SyncManager::scan()
 {
@@ -46,18 +60,20 @@ SyncManager::OperationQueue SyncManager::scan()
 
     for (const auto& file : sourceFiles)
     {
-        auto it = destinationFiles.find(file);
-        if (it == destinationFiles.end())
+        SyncOperation* operation;
+        if (!isFileInFiles(file, destinationFiles))
         {
-            SyncOperation* operation = new CopyOperation(file, getDestinationFolder());
-            m_syncActions.push_back(operation);
+            operation = new CopyOperation(file, getDestinationFolder());
         }
+        else
+        {
+        }
+        m_syncActions.push_back(operation);
     }
 
     for (const auto& file : destinationFiles)
     {
-        auto it = sourceFiles.find(file);
-        if (it == sourceFiles.end())
+        if (isFileInFiles(file, sourceFiles))
         {
             SyncOperation* operation = new RemoveOperation(file);
             m_syncActions.push_back(operation);

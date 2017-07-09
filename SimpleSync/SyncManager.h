@@ -2,6 +2,8 @@
 
 #include <set>
 #include <deque>
+#include <algorithm>
+
 #include "FileProperties.h"
 #include "CopyOperation.h"
 #include "RemoveOperation.h"
@@ -22,6 +24,11 @@ public:
 
     CString getSourceFolder() const;
     CString getDestinationFolder() const;
+
+    BOOL isFileInSourceFolder(const FileProperties& file) const;
+    BOOL isFileInDestinationFolder(const FileProperties& file) const;
+
+    BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
 
     OperationQueue scan();
 

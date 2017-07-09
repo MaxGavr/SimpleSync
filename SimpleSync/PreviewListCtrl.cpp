@@ -18,15 +18,11 @@ CPreviewListCtrl::~CPreviewListCtrl()
 
 void CPreviewListCtrl::setupColumns()
 {
-    InsertColumn(LIST_COLUMNS::INDEX, L"№", LVCFMT_LEFT, 30);
-    InsertColumn(LIST_COLUMNS::SOURCE_FILE, L"Исходная директория", LVCFMT_LEFT, 100);
-    InsertColumn(LIST_COLUMNS::ACTION, L"Действие", LVCFMT_CENTER, 70);
-    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, L"Конечная директория", LVCFMT_LEFT, 100);
-}
+    InsertColumn(LIST_COLUMNS::INDEX, L"пїЅ", LVCFMT_LEFT, 30)    InsertColumn(LIST_COLUMNS::SOURCE_FILE, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ    InsertColumn(LIST_COLUMNS::ACTION, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", LVCF    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ}
 
 void CPreviewListCtrl::showPreview()
 {
-    SyncManager::OperationQueue syncActions = m_syncManager->scan();
+    SyncManager::OperationQueue syncActions = m_syncManager->getOperations();
 
     for (auto& action : syncActions)
     {

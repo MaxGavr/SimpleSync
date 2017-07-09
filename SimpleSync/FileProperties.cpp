@@ -2,8 +2,8 @@
 #include "FileProperties.h"
 
 
-FileProperties::FileProperties(const CString& fileName)
-    : m_fileName(fileName)
+FileProperties::FileProperties(const CString& fileName, BOOL isDir)
+    : m_fileName(fileName), m_isDirectory(isDir)
 {
 }
 
@@ -36,4 +36,9 @@ CString FileProperties::getFullPath() const
 CString FileProperties::getFileFolder() const
 {
     return m_fileName.Left(m_fileName.ReverseFind('\\'));
+}
+
+BOOL FileProperties::isDirectory() const
+{
+    return m_isDirectory;
 }

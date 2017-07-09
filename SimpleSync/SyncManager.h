@@ -17,6 +17,12 @@ public:
     using FileSet = std::set <FileProperties>;
     using OperationQueue = std::deque <SyncOperation *>;
 
+    enum class SYNC_DIRECTION {
+        LEFT_TO_RIGHT,
+        RIGHT_TO_LEFT,
+        BOTH
+    };
+
     SyncManager();
     ~SyncManager();
 
@@ -26,20 +32,27 @@ public:
     CString getSourceFolder() const;
     CString getDestinationFolder() const;
 
+    void setSyncDirection(SYNC_DIRECTION direction);
+    SYNC_DIRECTION getSyncDirection() const;
+
     BOOL isFileInSourceFolder(const FileProperties& file) const;
     BOOL isFileInDestinationFolder(const FileProperties& file) const;
 
     BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
 
-    OperationQueue scan();
+    void scan();
     void sync();
+    OperationQueue& getOperations();
 
 private:
     FileSet getFilesFromFolder(const CString& folder) const;
+    void scanFolders(CString source, CString destination);
 
 private:
     CString m_sourceFolder;
     CString m_destinationFolder;
+
+    SYNC_DIRECTION m_syncDirection;
 
     OperationQueue m_syncActions;
 };

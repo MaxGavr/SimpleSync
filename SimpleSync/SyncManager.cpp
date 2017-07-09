@@ -34,14 +34,26 @@ CString SyncManager::getDestinationFolder() const
     return m_destinationFolder;
 }
 
+void SyncManager::setSyncDirection(SYNC_DIRECTION direction)
+{
+    m_syncDirection = direction;
+}
+
+SyncManager::SYNC_DIRECTION SyncManager::getSyncDirection() const
+{
+    return m_syncDirection;
+}
+
 BOOL SyncManager::isFileInSourceFolder(const FileProperties& file) const
 {
-    return file.getFileFolder() == getSourceFolder();
+    return (file.getFileFolder().Find(getSourceFolder()) == 0);
+    //return file.getFileFolder() == getSourceFolder();
 }
 
 BOOL SyncManager::isFileInDestinationFolder(const FileProperties& file) const
 {
-    return file.getFileFolder() == getDestinationFolder();
+    return (file.getFileFolder().Find(getDestinationFolder()) == 0);
+    //return file.getFileFolder() == getDestinationFolder();
 }
 
 BOOL SyncManager::isFileInFiles(const FileProperties& file, const FileSet &files) const
@@ -51,47 +63,18 @@ BOOL SyncManager::isFileInFiles(const FileProperties& file, const FileSet &files
     });
 }
 
-SyncManager::OperationQueue SyncManager::scan()
+void SyncManager::scan()
 {
-    FileSet sourceFiles = getFilesFromFolder(getSourceFolder());
-    FileSet destinationFiles = getFilesFromFolder(getDestinationFolder());
-
     m_syncActions.clear();
 
-    for (auto fileIterator = sourceFiles.cbegin(); fileIterator != sourceFiles.cend(); )
+    if (getSyncDirection() == SYNC_DIRECTION::RIGHT_TO_LEFT)
     {
-        const FileProperties& file = *fileIterator;
-        SyncOperation* operation;
-
-        if (!isFileInFiles(file, destinationFiles))
-        {
-            operation = new CopyOperation(file, getDestinationFolder());
-        }
-        else
-        {
-            auto equalFileIterator = destinationFiles.find(file);
-            operation = new EmptyOperation(file, *equalFileIterator);
-
-            destinationFiles.erase(equalFileIterator);
-        }
-
-        fileIterator = sourceFiles.erase(fileIterator);
-        m_syncActions.push_back(operation);
+        scanFolders(getDestinationFolder(), getSourceFolder());
     }
-
-    for (auto fileIterator = destinationFiles.cbegin(); fileIterator != destinationFiles.cend();)
+    else
     {
-        const FileProperties& file = *fileIterator;
-        if (!isFileInFiles(file, sourceFiles))
-        {
-            SyncOperation* operation = new RemoveOperation(file);
-
-            m_syncActions.push_back(operation);
-        }
-        fileIterator = destinationFiles.erase(fileIterator);
+        scanFolders(getSourceFolder(), getDestinationFolder());
     }
-
-    return m_syncActions;
 }
 
 void SyncManager::sync()
@@ -100,6 +83,11 @@ void SyncManager::sync()
     {
         action->execute();
     }
+}
+
+SyncManager::OperationQueue& SyncManager::getOperations()
+{
+    return m_syncActions;
 }
 
 SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) const
@@ -113,13 +101,67 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
     {
         working = fileFinder.FindNextFile();
         
-        if (!fileFinder.IsDots() && !fileFinder.IsDirectory())
+        if (!fileFinder.IsDots())
         {
             CString filePath = fileFinder.GetFilePath();
-            files.insert(FileProperties(filePath));
+            BOOL isDirectory = fileFinder.IsDirectory();
+
+            files.insert(FileProperties(filePath, isDirectory));
         }
     }
 
     fileFinder.Close();
     return files;
+}
+
+void SyncManager::scanFolders(CString source, CString destination)
+{
+    FileSet sourceFiles = getFilesFromFolder(source);
+    FileSet destinationFiles = getFilesFromFolder(destination);
+
+    for (auto fileIterator = sourceFiles.cbegin(); fileIterator != sourceFiles.cend(); )
+    {
+        const FileProperties& file = *fileIterator;
+
+        if (!isFileInFiles(file, destinationFiles))
+        {
+            m_syncActions.push_back(new CopyOperation(file, getDestinationFolder()));
+        }
+        else
+        {
+            auto equalFileIterator = destinationFiles.find(file);
+            
+            if (file.isDirectory())
+            {
+                scanFolders(file.getFullPath(), equalFileIterator->getFullPath());
+            }
+            else
+            {
+                m_syncActions.push_back(new EmptyOperation(file, *equalFileIterator));
+            }
+
+            destinationFiles.erase(equalFileIterator);
+        }
+
+        fileIterator = sourceFiles.erase(fileIterator);
+    }
+
+    for (auto fileIterator = destinationFiles.cbegin(); fileIterator != destinationFiles.cend();)
+    {
+        const FileProperties& file = *fileIterator;
+
+        if (!isFileInFiles(file, sourceFiles))
+        {
+            if (getSyncDirection() == SYNC_DIRECTION::BOTH)
+            {
+                m_syncActions.push_back(new CopyOperation(file, source));
+            }
+            else
+            {
+                m_syncActions.push_back(new RemoveOperation(file));
+            }
+        }
+
+        fileIterator = destinationFiles.erase(fileIterator);
+    }
 }

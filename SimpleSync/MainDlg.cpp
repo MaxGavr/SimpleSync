@@ -45,7 +45,7 @@ BOOL CMainDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
     SetIcon(m_hIcon, FALSE);
 
-	// TODO: добавьте дополнительную инициализацию
+	// TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     m_previewList.setupColumns();
 
 	return TRUE;
@@ -97,6 +97,7 @@ void CMainDlg::OnDestinationFolderChange()
 
 void CMainDlg::OnPreviewButtonClicked()
 {
+    m_syncManager->scan();
     m_previewList.showPreview();
 }
 

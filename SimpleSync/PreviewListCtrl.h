@@ -7,7 +7,7 @@ class CPreviewListCtrl : public CListCtrl
 	DECLARE_DYNAMIC(CPreviewListCtrl)
 
 public:
-    enum COLUMNS {
+    enum LIST_COLUMNS {
         INDEX,
         SOURCE_FILE,
         ACTION,

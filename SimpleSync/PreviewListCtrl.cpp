@@ -18,10 +18,10 @@ CPreviewListCtrl::~CPreviewListCtrl()
 
 void CPreviewListCtrl::setupColumns()
 {
-    InsertColumn(COLUMNS::INDEX, L"пїЅ", LVCFMT_LEFT, 30);
-    InsertColumn(COLUMNS::SOURCE_FILE, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", LVCFMT_LEFT, 100);
-    InsertColumn(COLUMNS::ACTION, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", LVCFMT_LEFT, 70);
-    InsertColumn(COLUMNS::DESTINATION_FILE, L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", LVCFMT_LEFT, 100);
+    InsertColumn(LIST_COLUMNS::INDEX, L"№", LVCFMT_LEFT, 30);
+    InsertColumn(LIST_COLUMNS::SOURCE_FILE, L"Исходная директория", LVCFMT_LEFT, 100);
+    InsertColumn(LIST_COLUMNS::ACTION, L"Действие", LVCFMT_CENTER, 70);
+    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, L"Конечная директория", LVCFMT_LEFT, 100);
 }
 
 void CPreviewListCtrl::showPreview()
@@ -36,43 +36,65 @@ void CPreviewListCtrl::showPreview()
 
 void CPreviewListCtrl::printSyncAction(SyncOperation* operation)
 {
-    CString listItemText;
-    listItemText.Format(_T("%d"), GetItemCount() + 1);
+    CString itemIndexStr;
+    itemIndexStr.Format(_T("%d"), GetItemCount() + 1);
     
-    int index = InsertItem(GetItemCount(), listItemText);
+    int itemIndex = InsertItem(GetItemCount(), itemIndexStr);
+    CString action;
+    
     FileProperties file = operation->getFile();
 
     switch (operation->getType())
     {
-    case SyncOperation::TYPE::COPY :
+    case SyncOperation::TYPE::COPY:
     {
         if (m_syncManager->isFileInSourceFolder(file))
         {
-            SetItemText(index, COLUMNS::SOURCE_FILE, file.getFileName());
-            SetItemText(index, COLUMNS::ACTION, L">>>");
+            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
+            action = L"->";
         }
         else
         {
-            SetItemText(index, COLUMNS::DESTINATION_FILE, file.getFileName());
-            SetItemText(index, COLUMNS::ACTION, L"<<<");
+            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+            action = L"<-";
         }
 
         break;
     }
-    case SyncOperation::TYPE::REMOVE :
+    case SyncOperation::TYPE::REMOVE:
     {
-        if (file.getFileFolder() == m_syncManager->getSourceFolder())
+        action = L"X";
+        if (m_syncManager->isFileInSourceFolder(file))
         {
-            SetItemText(index, COLUMNS::SOURCE_FILE, file.getFileName());
-            SetItemText(index, COLUMNS::ACTION, L"X");
+            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
         }
         else
         {
-            SetItemText(index, COLUMNS::DESTINATION_FILE, file.getFileName());
-            SetItemText(index, COLUMNS::ACTION, L"X");
+            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
         }
+        break;
+    }
+    case SyncOperation::TYPE::EMPTY:
+    {
+        auto emptyOperation = dynamic_cast<EmptyOperation *>(operation);
+        FileProperties equalFile = emptyOperation->getEqualFile();
+
+        action = L"=";
+        if (m_syncManager->isFileInSourceFolder(file))
+        {
+            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
+            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, equalFile.getFileName());
+        }
+        else
+        {
+            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, equalFile.getFileName());
+            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+        }
+
+        break;
     }
     }
+    SetItemText(itemIndex, LIST_COLUMNS::ACTION, action);
 }
 
 

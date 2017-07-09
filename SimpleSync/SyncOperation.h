@@ -8,7 +8,8 @@ class SyncOperation
 public:
     enum class TYPE {
         COPY,
-        REMOVE
+        REMOVE,
+        EMPTY
     };
     
     SyncOperation(TYPE type, const FileProperties& file);

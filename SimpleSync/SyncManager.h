@@ -7,6 +7,7 @@
 #include "FileProperties.h"
 #include "CopyOperation.h"
 #include "RemoveOperation.h"
+#include "EmptyOperation.h"
 
 
 

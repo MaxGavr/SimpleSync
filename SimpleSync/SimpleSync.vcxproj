@@ -183,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CopyOperation.h" />
+    <ClInclude Include="EmptyOperation.h" />
     <ClInclude Include="FileProperties.h" />
     <ClInclude Include="MainDlg.h" />
     <ClInclude Include="PreviewListCtrl.h" />
@@ -196,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CopyOperation.cpp" />
+    <ClCompile Include="EmptyOperation.cpp" />
     <ClCompile Include="FileProperties.cpp" />
     <ClCompile Include="MainDlg.cpp" />
     <ClCompile Include="PreviewListCtrl.cpp" />

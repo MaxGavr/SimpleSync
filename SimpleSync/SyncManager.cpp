@@ -67,6 +67,10 @@ SyncManager::OperationQueue SyncManager::scan()
         }
         else
         {
+            auto it = std::find_if(destinationFiles.begin(), destinationFiles.end(), [&](const FileProperties& f) {
+                return f.getFileName() == file.getFileName();
+            });
+            operation = new EmptyOperation(file, *it);
         }
         m_syncActions.push_back(operation);
     }

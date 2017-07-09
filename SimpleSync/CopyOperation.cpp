@@ -15,7 +15,7 @@ CopyOperation::~CopyOperation()
 
 BOOL CopyOperation::execute()
 {
-    CString destinationFile = m_destinationFolder + getFile().getFileName();
+    CString destinationFile = m_destinationFolder + CString("\\") + getFile().getFileName();
     return CopyFile(getFile().getFullPath(), destinationFile, TRUE);
 }
 

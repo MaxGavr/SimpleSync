@@ -58,30 +58,37 @@ SyncManager::OperationQueue SyncManager::scan()
 
     m_syncActions.clear();
 
-    for (const auto& file : sourceFiles)
+    for (auto fileIterator = sourceFiles.cbegin(); fileIterator != sourceFiles.cend(); )
     {
+        const FileProperties& file = *fileIterator;
         SyncOperation* operation;
+
         if (!isFileInFiles(file, destinationFiles))
         {
             operation = new CopyOperation(file, getDestinationFolder());
         }
         else
         {
-            auto it = std::find_if(destinationFiles.begin(), destinationFiles.end(), [&](const FileProperties& f) {
-                return f.getFileName() == file.getFileName();
-            });
-            operation = new EmptyOperation(file, *it);
+            auto equalFileIterator = destinationFiles.find(file);
+            operation = new EmptyOperation(file, *equalFileIterator);
+
+            destinationFiles.erase(equalFileIterator);
         }
+
+        fileIterator = sourceFiles.erase(fileIterator);
         m_syncActions.push_back(operation);
     }
 
-    for (const auto& file : destinationFiles)
+    for (auto fileIterator = destinationFiles.cbegin(); fileIterator != destinationFiles.cend();)
     {
-        if (isFileInFiles(file, sourceFiles))
+        const FileProperties& file = *fileIterator;
+        if (!isFileInFiles(file, sourceFiles))
         {
             SyncOperation* operation = new RemoveOperation(file);
+
             m_syncActions.push_back(operation);
         }
+        fileIterator = destinationFiles.erase(fileIterator);
     }
 
     return m_syncActions;

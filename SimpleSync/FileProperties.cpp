@@ -14,12 +14,12 @@ FileProperties::~FileProperties()
 
 BOOL FileProperties::operator<(const FileProperties& file) const
 {
-    return (this->m_fileName < file.m_fileName);
+    return (this->getFileName() < file.getFileName());
 }
 
 BOOL FileProperties::operator==(const FileProperties& file) const
 {
-    return (this->m_fileName == file.m_fileName);
+    return (this->getFileName() == file.getFileName());
 }
 
 CString FileProperties::getFileName() const

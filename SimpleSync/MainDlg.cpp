@@ -2,6 +2,7 @@
 #include "SimpleSync.h"
 #include "MainDlg.h"
 #include "SyncManager.h"
+#include "OptionsDialog.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -34,9 +35,10 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
     ON_EN_CHANGE(IDC_SOURCE_PATH_BROWSE, &CMainDlg::OnSourceFolderChange)
     ON_EN_CHANGE(IDC_DESTINATION_FOLDER_BROWSE, &CMainDlg::OnDestinationFolderChange)
+    ON_CONTROL_RANGE(BN_CLICKED, IDC_DIRECTION_TO_RIGHT_BUTTON, IDC_DIRECTION_TO_LEFT_BUTTON, &CMainDlg::OnDirectionButtonClicked)
     ON_BN_CLICKED(IDC_PREVIEW_BUTTON, &CMainDlg::OnPreviewButtonClicked)
     ON_BN_CLICKED(IDC_SYNC_BUTTON, &CMainDlg::OnSyncButtonClicked)
-    ON_CONTROL_RANGE(BN_CLICKED, IDC_DIRECTION_TO_RIGHT_BUTTON, IDC_DIRECTION_TO_LEFT_BUTTON, &CMainDlg::OnDirectionButtonClicked)
+    ON_BN_CLICKED(IDC_OPTIONS_BUTTON, &CMainDlg::OnOptionsButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -115,4 +117,14 @@ void CMainDlg::OnDirectionButtonClicked(UINT nID)
 {
     UpdateData(TRUE);
     m_syncManager->setSyncDirection((SyncManager::SYNC_DIRECTION)m_directionRadioBox);
+}
+
+void CMainDlg::OnOptionsButtonClicked()
+{
+    CSyncOptionsDialog optionsDialog(m_syncManager);
+
+    if (optionsDialog.DoModal() == IDOK)
+    {
+        m_syncManager->setOptions(optionsDialog.getOptions());
+    }
 }

@@ -186,6 +186,7 @@
     <ClInclude Include="EmptyOperation.h" />
     <ClInclude Include="FileProperties.h" />
     <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="OptionsDialog.h" />
     <ClInclude Include="PreviewListCtrl.h" />
     <ClInclude Include="RemoveOperation.h" />
     <ClInclude Include="Resource.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="EmptyOperation.cpp" />
     <ClCompile Include="FileProperties.cpp" />
     <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="OptionsDialog.cpp" />
     <ClCompile Include="PreviewListCtrl.cpp" />
     <ClCompile Include="RemoveOperation.cpp" />
     <ClCompile Include="SimpleSync.cpp" />

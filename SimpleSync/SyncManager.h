@@ -11,6 +11,16 @@
 
 
 
+struct SyncManagerOptions
+{
+    BOOL recursive = TRUE; // used
+    BOOL deleteFiles = FALSE; // used
+    BOOL createEmptyFolders = FALSE;
+    BOOL syncHiddenFiles = FALSE;
+    BOOL copyMissingFiles = TRUE; //used
+};
+
+
 class SyncManager
 {
 public:
@@ -35,6 +45,9 @@ public:
     void setSyncDirection(SYNC_DIRECTION direction);
     SYNC_DIRECTION getSyncDirection() const;
 
+    void setOptions(const SyncManagerOptions& options);
+    SyncManagerOptions getOptions() const;
+
     BOOL isFileInSourceFolder(const FileProperties& file) const;
     BOOL isFileInDestinationFolder(const FileProperties& file) const;
 
@@ -53,6 +66,7 @@ private:
     CString m_destinationFolder;
 
     SYNC_DIRECTION m_syncDirection;
+    SyncManagerOptions m_options;
 
     OperationQueue m_syncActions;
 };

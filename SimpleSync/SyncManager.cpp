@@ -44,16 +44,24 @@ SyncManager::SYNC_DIRECTION SyncManager::getSyncDirection() const
     return m_syncDirection;
 }
 
+void SyncManager::setOptions(const SyncManagerOptions& options)
+{
+    m_options = options;
+}
+
+SyncManagerOptions SyncManager::getOptions() const
+{
+    return m_options;
+}
+
 BOOL SyncManager::isFileInSourceFolder(const FileProperties& file) const
 {
     return (file.getFileFolder().Find(getSourceFolder()) == 0);
-    //return file.getFileFolder() == getSourceFolder();
 }
 
 BOOL SyncManager::isFileInDestinationFolder(const FileProperties& file) const
 {
     return (file.getFileFolder().Find(getDestinationFolder()) == 0);
-    //return file.getFileFolder() == getDestinationFolder();
 }
 
 BOOL SyncManager::isFileInFiles(const FileProperties& file, const FileSet &files) const
@@ -125,13 +133,14 @@ void SyncManager::scanFolders(CString source, CString destination)
 
         if (!isFileInFiles(file, destinationFiles))
         {
-            m_syncActions.push_back(new CopyOperation(file, getDestinationFolder()));
+            if (getOptions().copyMissingFiles)
+                m_syncActions.push_back(new CopyOperation(file, getDestinationFolder()));
         }
         else
         {
             auto equalFileIterator = destinationFiles.find(file);
             
-            if (file.isDirectory())
+            if (file.isDirectory() && getOptions().recursive)
             {
                 scanFolders(file.getFullPath(), equalFileIterator->getFullPath());
             }
@@ -154,11 +163,13 @@ void SyncManager::scanFolders(CString source, CString destination)
         {
             if (getSyncDirection() == SYNC_DIRECTION::BOTH)
             {
-                m_syncActions.push_back(new CopyOperation(file, source));
+                if (getOptions().copyMissingFiles)
+                    m_syncActions.push_back(new CopyOperation(file, source));
             }
             else
             {
-                m_syncActions.push_back(new RemoveOperation(file));
+                if (getOptions().deleteFiles)
+                    m_syncActions.push_back(new RemoveOperation(file));
             }
         }
 

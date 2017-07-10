@@ -5,11 +5,9 @@ class SyncManager;
 
 class CMainDlg : public CDialogEx
 {
-// Создание
 public:
 	CMainDlg(SyncManager* syncManager, CWnd* pParent = NULL);
 
-// Данные диалогового окна
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_SIMPLESYNC_DIALOG };
 #endif
@@ -17,7 +15,6 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);
 
-// Реализация
 protected:
 	HICON m_hIcon;
 
@@ -26,17 +23,19 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 
 	DECLARE_MESSAGE_MAP()
+
 private:
     SyncManager* m_syncManager;
-
-    CPreviewListCtrl m_previewList;
-public:
-    afx_msg void OnSourceFolderChange();
-private:
     CString m_sourcePath;
     CString m_destinationPath;
+
+    int m_directionRadioBox;
+    CPreviewListCtrl m_previewList;
+
 public:
+    afx_msg void OnSourceFolderChange();
     afx_msg void OnDestinationFolderChange();
     afx_msg void OnPreviewButtonClicked();
     afx_msg void OnSyncButtonClicked();
+    afx_msg void OnDirectionButtonClicked(UINT nID);
 };

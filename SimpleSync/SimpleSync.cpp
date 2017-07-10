@@ -16,8 +16,6 @@ END_MESSAGE_MAP()
 
 CSyncApp::CSyncApp()
 {
-	// TODO: �������� ��� ��������,
-	// ��������� ���� ������ ��� ������������� � InitInstance
 }
 
 
@@ -40,31 +38,22 @@ BOOL CSyncApp::InitInstance()
 
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
-	// TODO: ������� �������� ��� ������ �� ���-������ ����������,
-	// �������� �� �������� �����������
-	SetRegistryKey(_T("��������� ����������, ��������� � ������� ������� ����������"));
-
+    // TODO: Change registry key
+    SetRegistryKey(_T("��������� ����������, ���
     SyncManager syncManager;
-    syncManager.setSyncDirection(SyncManager::SYNC_DIRECTION::LEFT_TO_RIGHT);
 
 	CMainDlg dlg(&syncManager);
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{
-		// TODO: ������� ��� ��� ��������� �������� ����������� ����
-		//  � ������� ������ "��"
 	}
 	else if (nResponse == IDCANCEL)
 	{
-		// TODO: ������� ��� ��� ��������� �������� ����������� ����
-		//  � ������� ������ "������"
 	}
 	else if (nResponse == -1)
 	{
-		TRACE(traceAppMsg, 0, "��������������. �� ������� ������� ���������� ����, ������� ������ ���������� ���������� ���������.\n");
-		TRACE(traceAppMsg, 0, "��������������. ��� ������������� ��������� ���������� MFC ��� ����������� ���� ���������� #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
-	}
+		TRACE(traceAppMsg, 0, "��������������. �� ������� ������� ����		TRACE(traceAppMsg, 0, "��������������. ��� ������������� ��������� �����	}
 
 	if (pShellManager != NULL)
 	{

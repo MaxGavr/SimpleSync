@@ -26,6 +26,7 @@ void CMainDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_PREVIEW_LIST, m_previewList);
     DDX_Text(pDX, IDC_SOURCE_PATH_BROWSE, m_sourcePath);
     DDX_Text(pDX, IDC_DESTINATION_FOLDER_BROWSE, m_destinationPath);
+    DDX_Radio(pDX, IDC_DIRECTION_TO_RIGHT_BUTTON, m_directionRadioBox);
 }
 
 BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
@@ -35,6 +36,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
     ON_EN_CHANGE(IDC_DESTINATION_FOLDER_BROWSE, &CMainDlg::OnDestinationFolderChange)
     ON_BN_CLICKED(IDC_PREVIEW_BUTTON, &CMainDlg::OnPreviewButtonClicked)
     ON_BN_CLICKED(IDC_SYNC_BUTTON, &CMainDlg::OnSyncButtonClicked)
+    ON_CONTROL_RANGE(BN_CLICKED, IDC_DIRECTION_TO_RIGHT_BUTTON, IDC_DIRECTION_TO_LEFT_BUTTON, &CMainDlg::OnDirectionButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -45,7 +47,9 @@ BOOL CMainDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
     SetIcon(m_hIcon, FALSE);
 
-	// TODO: �������� �������������� �������������
+    m_directionRadioBox = 0;
+    UpdateData(FALSE);
+
     m_previewList.setupColumns();
 
 	return TRUE;
@@ -105,4 +109,10 @@ void CMainDlg::OnPreviewButtonClicked()
 void CMainDlg::OnSyncButtonClicked()
 {
     m_syncManager->sync();
+}
+
+void CMainDlg::OnDirectionButtonClicked(UINT nID)
+{
+    UpdateData(TRUE);
+    m_syncManager->setSyncDirection((SyncManager::SYNC_DIRECTION)m_directionRadioBox);
 }

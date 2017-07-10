@@ -19,8 +19,8 @@ public:
 
     enum class SYNC_DIRECTION {
         LEFT_TO_RIGHT,
-        RIGHT_TO_LEFT,
-        BOTH
+        BOTH,
+        RIGHT_TO_LEFT
     };
 
     SyncManager();

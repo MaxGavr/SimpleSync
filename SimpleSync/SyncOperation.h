@@ -8,6 +8,7 @@ class SyncOperation
 public:
     enum class TYPE {
         COPY,
+        REPLACE,
         REMOVE,
         EMPTY
     };

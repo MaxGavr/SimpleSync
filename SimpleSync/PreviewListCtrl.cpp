@@ -39,59 +39,126 @@ void CPreviewListCtrl::printSyncAction(SyncOperation* operation)
     itemIndexStr.Format(_T("%d"), GetItemCount() + 1);
     
     int itemIndex = InsertItem(GetItemCount(), itemIndexStr);
-    CString action;
-    
-    FileProperties file = operation->getFile();
 
     switch (operation->getType())
     {
     case SyncOperation::TYPE::COPY:
-    {
-        if (m_syncManager->isFileInSourceFolder(file))
-        {
-            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
-            action = L"->";
-        }
-        else
-        {
-            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
-            action = L"<-";
-        }
-
+        printCopyOperation(dynamic_cast<CopyOperation *>(operation), itemIndex);
         break;
-    }
+    case SyncOperation::TYPE::REPLACE:
+        printReplaceOperation(dynamic_cast<ReplaceOperation *>(operation), itemIndex);
+        break;
     case SyncOperation::TYPE::REMOVE:
-    {
-        action = L"X";
-        if (m_syncManager->isFileInSourceFolder(file))
-        {
-            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
-        }
-        else
-        {
-            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
-        }
+        printRemoveOperation(dynamic_cast<RemoveOperation *>(operation), itemIndex);
         break;
-    }
+    case SyncOperation::TYPE::CREATE:
+        printCreateOperation(dynamic_cast<CreateFolderOperation *>(operation), itemIndex);
+        break;
     case SyncOperation::TYPE::EMPTY:
-    {
-        auto emptyOperation = dynamic_cast<EmptyOperation *>(operation);
-        FileProperties equalFile = emptyOperation->getEqualFile();
-
-        action = L"=";
-        if (m_syncManager->isFileInSourceFolder(file))
-        {
-            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
-            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, equalFile.getFileName());
-        }
-        else
-        {
-            SetItemText(itemIndex, LIST_COLUMNS::SOURCE_FILE, equalFile.getFileName());
-            SetItemText(itemIndex, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
-        }
-
+        printEmptyOperation(dynamic_cast<EmptyOperation *>(operation), itemIndex);
         break;
     }
+}
+
+void CPreviewListCtrl::printCopyOperation(CopyOperation* operation, int index)
+{
+    FileProperties file = operation->getFile();
+    CString action;
+
+    if (m_syncManager->isFileInSourceFolder(file))
+    {
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
+        action = L"->";
+    }
+    else
+    {
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+        action = L"<-";
+    }
+
+    SetItemText(index, LIST_COLUMNS::ACTION, action);
+}
+
+void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation, int index)
+{
+    FileProperties file = operation->getFile();
+
+    if (m_syncManager->isFileInSourceFolder(file))
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
+    else
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+
+    SetItemText(index, LIST_COLUMNS::ACTION, L"X");
+}
+
+void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation, int index)
+{
+    CString action;
+
+    FileProperties originalFile = operation->getFile();
+    FileProperties fileToReplace = operation->getFileToReplace();
+
+    if (m_syncManager->isFileInSourceFolder(originalFile))
+    {
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, originalFile.getFileName());
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, fileToReplace.getFileName());
+        action = L"-->";
+    }
+    else
+    {
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, fileToReplace.getFileName());
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, originalFile.getFileName());
+        action = L"<--";
+    }
+
+    if (operation->isAmbiguous())
+        action = L"?";
+
+    SetItemText(index, LIST_COLUMNS::ACTION, action);
+}
+
+void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation, int index)
+{
+    FileProperties file = operation->getFile();
+    FileProperties equalFile = operation->getEqualFile();
+
+    if (m_syncManager->isFileInSourceFolder(file))
+    {
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, equalFile.getFileName());
+    }
+    else
+    {
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, equalFile.getFileName());
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+    }
+
+    SetItemText(index, LIST_COLUMNS::ACTION, L"=");
+}
+
+void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, int index)
+{
+    CString action;
+
+    FileProperties originalFolder = operation->getFile();
+    FileProperties folderToCreate = operation->getFolder();
+
+    if (m_syncManager->isFileInSourceFolder(originalFolder))
+    {
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, originalFolder.getFileName());
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, folderToCreate.getFileName());
+        action = L"-->";
+    }
+    else
+    {
+        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, folderToCreate.getFileName());
+        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, originalFolder.getFileName());
+        action = L"<--";
+    }
+
+    SetItemText(index, LIST_COLUMNS::ACTION, action);
+}
+
 void CPreviewListCtrl::optimizeColumnsWidth()
 {
     for (int i = 0; i < GetHeaderCtrl()->GetItemCount(); ++i)

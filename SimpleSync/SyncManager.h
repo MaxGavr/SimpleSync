@@ -8,6 +8,8 @@
 #include "CopyOperation.h"
 #include "RemoveOperation.h"
 #include "EmptyOperation.h"
+#include "ReplaceOperation.h"
+#include "CreateOperation.h"
 
 
 
@@ -48,6 +50,9 @@ public:
     void setOptions(const SyncManagerOptions& options);
     SyncManagerOptions getOptions() const;
 
+    void setComparisonParameters(const FileComparisonParameters& params);
+    FileComparisonParameters getComparisonParameters() const;
+
     BOOL isFileInSourceFolder(const FileProperties& file) const;
     BOOL isFileInDestinationFolder(const FileProperties& file) const;
 
@@ -60,6 +65,10 @@ public:
 private:
     FileSet getFilesFromFolder(const CString& folder) const;
     void scanFolders(CString source, CString destination);
+    
+    void manageCopyOperation(const FileProperties& fileToCopy, CString destinationFolder);
+    void manageReplaceOperation(const FileProperties& originalFile, const FileProperties& fileToReplace);
+    void manageRemoveOperation(const FileProperties& fileToRemove);
 
 private:
     CString m_sourceFolder;
@@ -67,6 +76,7 @@ private:
 
     SYNC_DIRECTION m_syncDirection;
     SyncManagerOptions m_options;
+    FileComparisonParameters m_compareParameters;
 
     OperationQueue m_syncActions;
 };

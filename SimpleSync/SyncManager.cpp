@@ -54,6 +54,16 @@ SyncManagerOptions SyncManager::getOptions() const
     return m_options;
 }
 
+void SyncManager::setComparisonParameters(const FileComparisonParameters& params)
+{
+    m_compareParameters = params;
+}
+
+FileComparisonParameters SyncManager::getComparisonParameters() const
+{
+    return m_compareParameters;
+}
+
 BOOL SyncManager::isFileInSourceFolder(const FileProperties& file) const
 {
     return (file.getFileFolder().Find(getSourceFolder()) == 0);
@@ -112,9 +122,18 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
         if (!fileFinder.IsDots())
         {
             CString filePath = fileFinder.GetFilePath();
+            ULONGLONG size = fileFinder.GetLength();
+            
+            CTime creationTime, lastAccessTime, lastWriteTime;
+            fileFinder.GetCreationTime(creationTime);
+            fileFinder.GetLastAccessTime(lastAccessTime);
+            fileFinder.GetLastWriteTime(lastWriteTime);
+
             BOOL isDirectory = fileFinder.IsDirectory();
 
-            files.insert(FileProperties(filePath, isDirectory));
+            FileProperties file(filePath, size, creationTime, lastAccessTime, lastWriteTime, isDirectory);
+
+            files.insert(file);
         }
     }
 
@@ -132,22 +151,19 @@ void SyncManager::scanFolders(CString source, CString destination)
         const FileProperties& file = *fileIterator;
 
         if (!isFileInFiles(file, destinationFiles))
-        {
-            if (getOptions().copyMissingFiles)
-                m_syncActions.push_back(new CopyOperation(file, getDestinationFolder()));
-        }
+            manageCopyOperation(file, destination);
         else
         {
+            // equal file ?? same name file
             auto equalFileIterator = destinationFiles.find(file);
             
-            if (file.isDirectory() && getOptions().recursive)
+            if (file.isDirectory())
             {
-                scanFolders(file.getFullPath(), equalFileIterator->getFullPath());
+                if (getOptions().recursive)
+                    scanFolders(file.getFullPath(), equalFileIterator->getFullPath());
             }
             else
-            {
-                m_syncActions.push_back(new EmptyOperation(file, *equalFileIterator));
-            }
+                manageReplaceOperation(file, *equalFileIterator);
 
             destinationFiles.erase(equalFileIterator);
         }
@@ -162,17 +178,63 @@ void SyncManager::scanFolders(CString source, CString destination)
         if (!isFileInFiles(file, sourceFiles))
         {
             if (getSyncDirection() == SYNC_DIRECTION::BOTH)
-            {
-                if (getOptions().copyMissingFiles)
-                    m_syncActions.push_back(new CopyOperation(file, source));
-            }
+                manageCopyOperation(file, source);
             else
-            {
-                if (getOptions().deleteFiles)
-                    m_syncActions.push_back(new RemoveOperation(file));
-            }
+                manageRemoveOperation(file);
         }
 
         fileIterator = destinationFiles.erase(fileIterator);
     }
+}
+
+void SyncManager::manageCopyOperation(const FileProperties& fileToCopy, CString destinationFolder)
+{
+    if (fileToCopy.isDirectory())
+    {
+        CString folderToCreate = destinationFolder + fileToCopy.getFileName();
+        m_syncActions.push_back(new CreateFolderOperation(fileToCopy, folderToCreate));
+        
+        FileSet files = getFilesFromFolder(fileToCopy.getFullPath());
+
+        for (const auto& file : files)
+        {
+            manageCopyOperation(file, folderToCreate);
+        }
+    }
+    else
+    {
+        if (getOptions().copyMissingFiles)
+            m_syncActions.push_back(new CopyOperation(fileToCopy, destinationFolder));
+    }
+}
+
+void SyncManager::manageReplaceOperation(const FileProperties& originalFile, const FileProperties& fileToReplace)
+{
+    using RESULT = FileProperties::COMPARISON_RESULT;
+
+    RESULT compareResult = originalFile.compareTo(fileToReplace, getComparisonParameters());
+    switch (compareResult)
+    {
+    case RESULT::PREFERABLE:
+        m_syncActions.push_back(new ReplaceOperation(originalFile, fileToReplace, FALSE));
+        break;
+    case RESULT::NON_PREFERABLE:
+        if (getSyncDirection() == SYNC_DIRECTION::BOTH)
+            m_syncActions.push_back(new ReplaceOperation(fileToReplace, originalFile, FALSE));
+        else
+            m_syncActions.push_back(new ReplaceOperation(originalFile, fileToReplace, TRUE));
+        break;
+    case RESULT::UNDEFINED:
+        m_syncActions.push_back(new ReplaceOperation(originalFile, fileToReplace, TRUE));
+        break;
+    case RESULT::EQUAL:
+        m_syncActions.push_back(new EmptyOperation(originalFile, fileToReplace));
+        break;
+    }
+}
+
+void SyncManager::manageRemoveOperation(const FileProperties& fileToRemove)
+{
+    if (getOptions().deleteFiles)
+        m_syncActions.push_back(new RemoveOperation(fileToRemove));
 }

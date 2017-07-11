@@ -3,6 +3,7 @@
 #include "MainDlg.h"
 #include "SyncManager.h"
 #include "OptionsDialog.h"
+#include "ParamsDialog.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -39,6 +40,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
     ON_BN_CLICKED(IDC_PREVIEW_BUTTON, &CMainDlg::OnPreviewButtonClicked)
     ON_BN_CLICKED(IDC_SYNC_BUTTON, &CMainDlg::OnSyncButtonClicked)
     ON_BN_CLICKED(IDC_OPTIONS_BUTTON, &CMainDlg::OnOptionsButtonClicked)
+    ON_BN_CLICKED(IDC_PARAMETERS_BUTTON, &CMainDlg::OnParametersButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -126,5 +128,16 @@ void CMainDlg::OnOptionsButtonClicked()
     if (optionsDialog.DoModal() == IDOK)
     {
         m_syncManager->setOptions(optionsDialog.getOptions());
+    }
+}
+
+
+void CMainDlg::OnParametersButtonClicked()
+{
+    CCompareParamsDialog parametersDialog(m_syncManager);
+
+    if (parametersDialog.DoModal() == IDOK)
+    {
+        m_syncManager->setComparisonParameters(parametersDialog.getParameters());
     }
 }

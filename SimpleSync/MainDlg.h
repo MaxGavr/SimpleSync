@@ -39,4 +39,5 @@ public:
     afx_msg void OnSyncButtonClicked();
     afx_msg void OnDirectionButtonClicked(UINT nID);
     afx_msg void OnOptionsButtonClicked();
+    afx_msg void OnParametersButtonClicked();
 };

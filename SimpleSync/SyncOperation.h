@@ -10,6 +10,7 @@ public:
         COPY,
         REPLACE,
         REMOVE,
+        CREATE,
         EMPTY
     };
     

@@ -19,15 +19,18 @@ CPreviewListCtrl::~CPreviewListCtrl()
 void CPreviewListCtrl::setupColumns()
 {
     InsertColumn(LIST_COLUMNS::INDEX, L"�", LVCFMT_LEFT, 30)    InsertColumn(LIST_COLUMNS::SOURCE_FILE, L"�������� ������    InsertColumn(LIST_COLUMNS::ACTION, L"��������", LVCF    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, L"�������� ������}
+    SetExtendedStyle(LVS_EX_AUTOSIZECOLUMNS);
+
+    optimizeColumnsWidth();
+}
 
 void CPreviewListCtrl::showPreview()
 {
-    SyncManager::OperationQueue syncActions = m_syncManager->getOperations();
+    DeleteAllItems();
 
+    SyncManager::OperationQueue syncActions = m_syncManager->getOperations();
     for (auto& action : syncActions)
-    {
         printSyncAction(action);
-    }
 }
 
 void CPreviewListCtrl::printSyncAction(SyncOperation* operation)
@@ -89,8 +92,12 @@ void CPreviewListCtrl::printSyncAction(SyncOperation* operation)
 
         break;
     }
+void CPreviewListCtrl::optimizeColumnsWidth()
+{
+    for (int i = 0; i < GetHeaderCtrl()->GetItemCount(); ++i)
+    {
+        SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
     }
-    SetItemText(itemIndex, LIST_COLUMNS::ACTION, action);
 }
 
 

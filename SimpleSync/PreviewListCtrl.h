@@ -27,6 +27,8 @@ protected:
 private:
     void printSyncAction(SyncOperation* action);
 
+    void optimizeColumnsWidth();
+
     SyncManager* m_syncManager;
 };
 

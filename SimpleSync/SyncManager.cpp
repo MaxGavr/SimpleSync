@@ -167,7 +167,10 @@ void SyncManager::scanFolders(CString source, CString destination)
             if (file.isDirectory())
             {
                 if (getOptions().recursive)
+                {
+                    m_syncActions.push_back(new EmptyOperation(file, *equalFileIterator));
                     scanFolders(file.getFullPath(), equalFileIterator->getFullPath());
+                }
             }
             else
                 manageReplaceOperation(file, *equalFileIterator);
@@ -198,7 +201,7 @@ void SyncManager::manageCopyOperation(const FileProperties& fileToCopy, CString 
 {
     if (fileToCopy.isDirectory())
     {
-        CString folderToCreate = destinationFolder + fileToCopy.getFileName();
+        CString folderToCreate = destinationFolder + "\\" + fileToCopy.getFileName();
         m_syncActions.push_back(new CreateFolderOperation(fileToCopy, folderToCreate));
         
         FileSet files = getFilesFromFolder(fileToCopy.getFullPath());

@@ -26,15 +26,18 @@ protected:
 
 private:
     void printSyncAction(SyncOperation* action);
+
     void printCopyOperation(CopyOperation* operation, int index);
     void printRemoveOperation(RemoveOperation* operation, int index);
     void printReplaceOperation(ReplaceOperation* operation, int index);
     void printEmptyOperation(EmptyOperation* operation, int index);
     void printCreateOperation(CreateFolderOperation* operation, int index);
 
+    void sortOperationsByFolders(SyncManager::OperationQueue& operations);
     void optimizeColumnsWidth();
 
     SyncManager* m_syncManager;
+    SyncManager::OperationQueue m_sortedOperations;
 };
 
 

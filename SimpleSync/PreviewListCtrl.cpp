@@ -26,10 +26,10 @@ void CPreviewListCtrl::setupColumns()
 
 void CPreviewListCtrl::showPreview()
 {
+    sortOperationsByFolders(m_syncManager->getOperations());
+    
     DeleteAllItems();
-
-    SyncManager::OperationQueue syncActions = m_syncManager->getOperations();
-    for (auto& action : syncActions)
+    for (auto& action : m_sortedOperations)
         printSyncAction(action);
 }
 
@@ -157,6 +157,34 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, in
     }
 
     SetItemText(index, LIST_COLUMNS::ACTION, action);
+}
+
+void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& operations)
+{
+    auto notInvolveFolder = [](const SyncOperation* op) -> bool {
+        return (bool)!op->getFile().isDirectory();
+    };
+
+    auto it = std::stable_partition(operations.begin(), operations.end(), notInvolveFolder);
+    m_sortedOperations.assign(it, operations.end());
+    operations.erase(it, operations.end());
+
+    // TODO: optimize
+    for (const auto operation : operations)
+    {
+        FileProperties file = operation->getFile();
+
+        auto l = [&file, this](const SyncOperation* op) -> bool {
+            return m_syncManager->getFileRelativePath(file, FALSE) ==
+                m_syncManager->getFileRelativePath(op->getFile(), TRUE);
+        };
+
+        auto iter = std::find_if(m_sortedOperations.begin(), m_sortedOperations.end(), l);
+        if (iter != m_sortedOperations.end())
+            m_sortedOperations.insert(++iter, operation);
+        else
+            m_sortedOperations.push_front(operation);
+    }
 }
 
 void CPreviewListCtrl::optimizeColumnsWidth()

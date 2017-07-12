@@ -56,6 +56,8 @@ public:
     BOOL isFileInSourceFolder(const FileProperties& file) const;
     BOOL isFileInDestinationFolder(const FileProperties& file) const;
 
+    CString getFileRelativePath(const FileProperties& file, BOOL withName) const;
+
     BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
 
     void scan();

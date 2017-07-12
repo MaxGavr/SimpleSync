@@ -69,7 +69,13 @@ FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties
 
 BOOL FileProperties::operator<(const FileProperties& file) const
 {
-    return (this->getFileName() < file.getFileName());
+    bool isFolder1 = this->isDirectory();
+    bool isFolder2 = file.isDirectory();
+
+    if (isFolder1 != isFolder2)
+        return isFolder1 ? FALSE : TRUE;
+    else
+        return (this->getFileName() < file.getFileName());
 }
 
 BOOL FileProperties::operator==(const FileProperties& file) const
@@ -91,6 +97,25 @@ CString FileProperties::getFullPath() const
 CString FileProperties::getFileFolder() const
 {
     return m_fileName.Left(m_fileName.ReverseFind('\\'));
+}
+
+// won't work with foo/bar and foo
+CString FileProperties::getRelativePath(const CString& rootFolder, BOOL withName) const
+{
+    int pos = m_fileName.Find(rootFolder);
+    if (pos != 0)
+        return CString();
+
+    CString relativePathWithName = m_fileName.Right(m_fileName.GetLength() - rootFolder.GetLength() - 1);
+
+    if (withName)
+        return relativePathWithName;
+
+    int slashPosition = relativePathWithName.ReverseFind('\\');
+    if (slashPosition != -1)
+        return relativePathWithName.Left(slashPosition);
+    else
+        return relativePathWithName;
 }
 
 ULONGLONG FileProperties::getSize() const
@@ -116,6 +141,11 @@ CTime FileProperties::getLastWriteTime() const
 BOOL FileProperties::isDirectory() const
 {
     return m_isDirectory;
+}
+
+BOOL FileProperties::isParentFolder(const FileProperties& folder) const
+{
+    return folder.isDirectory() && (folder.getFullPath() == getFileFolder());
 }
 
 FileProperties::COMPARISON_RESULT FileProperties::makeChoice(ComparisonResults& results) const

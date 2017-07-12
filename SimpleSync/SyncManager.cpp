@@ -74,6 +74,13 @@ BOOL SyncManager::isFileInDestinationFolder(const FileProperties& file) const
     return (file.getFileFolder().Find(getDestinationFolder()) == 0);
 }
 
+CString SyncManager::getFileRelativePath(const FileProperties& file, BOOL withName) const
+{
+    CString source = file.getRelativePath(getSourceFolder(), withName);
+    CString dest = file.getRelativePath(getDestinationFolder(), withName);
+    return source.IsEmpty() ? dest : source;
+}
+
 BOOL SyncManager::isFileInFiles(const FileProperties& file, const FileSet &files) const
 {
     return std::any_of(files.begin(), files.end(), [&](const FileProperties& f) {

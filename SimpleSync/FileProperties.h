@@ -36,6 +36,7 @@ public:
     CString getFileName() const;
     CString getFullPath() const;
     CString getFileFolder() const;
+    CString getRelativePath(const CString& rootFolder, BOOL withName) const;
 
     ULONGLONG getSize() const;
 
@@ -44,6 +45,7 @@ public:
     CTime getLastWriteTime() const;
 
     BOOL isDirectory() const;
+    BOOL isParentFolder(const FileProperties& folder) const;
 
 private:
     COMPARISON_RESULT makeChoice(ComparisonResults& results) const;

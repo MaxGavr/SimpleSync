@@ -20,7 +20,7 @@ BOOL EmptyOperation::execute()
 BOOL EmptyOperation::isOperationDependent(const SyncOperation* dependentOp) const
 {
     const auto& file = dependentOp->getFile();
-    if (getFile().isDirectory())
+    if (getFile().isFolder())
         return file.isParentFolder(getFile()) || file.isParentFolder(getEqualFile());
     else
         return FALSE;

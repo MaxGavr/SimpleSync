@@ -15,7 +15,7 @@ RemoveOperation::~RemoveOperation()
 
 BOOL RemoveOperation::execute()
 {
-    if (getFile().isDirectory())
+    if (getFile().isFolder())
         return RemoveDirectory(getFile().getFullPath());
     else
         return DeleteFile(getFile().getFullPath());
@@ -23,7 +23,7 @@ BOOL RemoveOperation::execute()
 
 BOOL RemoveOperation::isOperationDependent(const SyncOperation* dependentOp) const
 {
-    if (!getFile().isDirectory())
+    if (!getFile().isFolder())
         return FALSE;
     else
         return dependentOp->getFile().isParentFolder(getFile());

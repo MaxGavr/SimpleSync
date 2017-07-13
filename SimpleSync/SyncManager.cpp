@@ -66,12 +66,12 @@ FileComparisonParameters SyncManager::getComparisonParameters() const
 
 BOOL SyncManager::isFileInSourceFolder(const FileProperties& file) const
 {
-    return (file.getFileFolder().Find(getSourceFolder()) == 0);
+    return (file.getParentFolder().Find(getSourceFolder()) == 0);
 }
 
 BOOL SyncManager::isFileInDestinationFolder(const FileProperties& file) const
 {
-    return (file.getFileFolder().Find(getDestinationFolder()) == 0);
+    return (file.getParentFolder().Find(getDestinationFolder()) == 0);
 }
 
 CString SyncManager::getFileRelativePath(const FileProperties& file, BOOL withName) const
@@ -128,17 +128,10 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
         
         if (!fileFinder.IsDots())
         {
-            CString filePath = fileFinder.GetFilePath();
-            ULONGLONG size = fileFinder.GetLength();
-            
-            CTime creationTime, lastAccessTime, lastWriteTime;
-            fileFinder.GetCreationTime(creationTime);
-            fileFinder.GetLastAccessTime(lastAccessTime);
-            fileFinder.GetLastWriteTime(lastWriteTime);
+            CFileStatus fileProperties;
+            CFile::GetStatus(fileFinder.GetFilePath(), fileProperties);
 
-            BOOL isDirectory = fileFinder.IsDirectory();
-
-            FileProperties file(filePath, size, creationTime, lastAccessTime, lastWriteTime, isDirectory);
+            FileProperties file(fileProperties);
 
             files.insert(file);
         }
@@ -164,7 +157,7 @@ void SyncManager::scanFolders(CString source, CString destination)
             // equal file ?? same name file
             auto equalFileIterator = destinationFiles.find(file);
             
-            if (file.isDirectory())
+            if (file.isFolder())
             {
                 if (getOptions().recursive)
                 {
@@ -199,7 +192,7 @@ void SyncManager::scanFolders(CString source, CString destination)
 
 void SyncManager::manageCopyOperation(const FileProperties& fileToCopy, CString destinationFolder)
 {
-    if (fileToCopy.isDirectory())
+    if (fileToCopy.isFolder())
     {
         CString folderToCreate = destinationFolder + "\\" + fileToCopy.getFileName();
         m_syncActions.push_back(new CreateFolderOperation(fileToCopy, folderToCreate));
@@ -245,7 +238,7 @@ void SyncManager::manageReplaceOperation(const FileProperties& originalFile, con
 
 void SyncManager::manageRemoveOperation(const FileProperties& fileToRemove)
 {
-    if (fileToRemove.isDirectory())
+    if (fileToRemove.isFolder())
     {
         FileSet files = getFilesFromFolder(fileToRemove.getFullPath());
 

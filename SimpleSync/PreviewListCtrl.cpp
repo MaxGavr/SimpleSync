@@ -162,7 +162,7 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, in
 void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& operations)
 {
     auto notInvolveFolder = [](const SyncOperation* op) -> bool {
-        return (bool)!op->getFile().isDirectory();
+        return (bool)!op->getFile().isFolder();
     };
 
     auto it = std::stable_partition(operations.begin(), operations.end(), notInvolveFolder);

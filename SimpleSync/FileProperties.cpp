@@ -5,35 +5,28 @@
 
 
 
-FileProperties::FileProperties(const CString& fileName, ULONGLONG sizeInBytes,
-                               const CTime& creationTime, const CTime& accessTime, const CTime& writeTime,
-                               BOOL isDir)
-    : m_fileName(fileName),
-      m_creationTime(creationTime),
-      m_lastAccessTime(accessTime),
-      m_lastWriteTime(writeTime),
-      m_isDirectory(isDir),
-      m_sizeInBytes(sizeInBytes)
+FileProperties::FileProperties(const CFileStatus& properties)
+    : m_properties(properties)
 {
 }
 
-FileProperties::FileProperties(const CString& fileName, BOOL isDir)
-    : m_fileName(fileName), m_isDirectory(isDir)
+FileProperties::FileProperties(const CString& fileName, BOOL isFolder)
 {
+    _tcscpy(m_properties.m_szFullName, fileName);
+    if (isFolder)
+        m_properties.m_attribute |= CFile::Attribute::directory;
 }
-
 
 FileProperties::~FileProperties()
 {
 }
 
+
 FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties& file,
-                                                            const FileComparisonParameters& params) const
+    const FileComparisonParameters& params) const
 {
     if (this->getFileName() != file.getFileName())
-    {
         return COMPARISON_RESULT::UNDEFINED;
-    }
 
     ComparisonResults results;
 
@@ -67,10 +60,31 @@ FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties
 
 }
 
+FileProperties::COMPARISON_RESULT FileProperties::makeChoice(ComparisonResults& results) const
+{
+    results.remove(COMPARISON_RESULT::EQUAL);
+
+    if (results.empty())
+        return COMPARISON_RESULT::EQUAL;
+
+    BOOL hasPreferable = std::find(results.begin(), results.end(), COMPARISON_RESULT::PREFERABLE)!= results.end();
+    BOOL hasNonPreferable = std::find(results.begin(), results.end(), COMPARISON_RESULT::NON_PREFERABLE) != results.end();
+
+    if (hasPreferable)
+    {
+        if (hasNonPreferable)
+            return COMPARISON_RESULT::UNDEFINED;
+        else
+            return COMPARISON_RESULT::PREFERABLE;
+    }
+    else
+        return COMPARISON_RESULT::NON_PREFERABLE;
+}
+
 BOOL FileProperties::operator<(const FileProperties& file) const
 {
-    bool isFolder1 = this->isDirectory();
-    bool isFolder2 = file.isDirectory();
+    bool isFolder1 = this->isFolder();
+    bool isFolder2 = file.isFolder();
 
     if (isFolder1 != isFolder2)
         return isFolder1 ? FALSE : TRUE;
@@ -83,30 +97,31 @@ BOOL FileProperties::operator==(const FileProperties& file) const
     return (this->getFileName() == file.getFileName());
 }
 
+
 CString FileProperties::getFileName() const
 {
-    int slashPosition = m_fileName.ReverseFind('\\');
-    return m_fileName.Right(m_fileName.GetLength() - slashPosition - 1);
+    int slashPosition = getFullPath().ReverseFind('\\');
+    return getFullPath().Right(getFullPath().GetLength() - slashPosition - 1);
 }
 
 CString FileProperties::getFullPath() const
 {
-    return m_fileName;
+    return m_properties.m_szFullName;
 }
 
-CString FileProperties::getFileFolder() const
+CString FileProperties::getParentFolder() const
 {
-    return m_fileName.Left(m_fileName.ReverseFind('\\'));
+    return getFullPath().Left(getFullPath().ReverseFind('\\'));
 }
 
 // won't work with foo/bar and foo
 CString FileProperties::getRelativePath(const CString& rootFolder, BOOL withName) const
 {
-    int pos = m_fileName.Find(rootFolder);
-    if (pos != 0)
+    int rootPosition = getFullPath().Find(rootFolder);
+    if (rootPosition != 0)
         return CString();
 
-    CString relativePathWithName = m_fileName.Right(m_fileName.GetLength() - rootFolder.GetLength() - 1);
+    CString relativePathWithName = getFullPath().Right(getFullPath().GetLength() - rootFolder.GetLength() - 1);
 
     if (withName)
         return relativePathWithName;
@@ -115,64 +130,36 @@ CString FileProperties::getRelativePath(const CString& rootFolder, BOOL withName
     if (slashPosition != -1)
         return relativePathWithName.Left(slashPosition);
     else
-        return relativePathWithName;
+        return CString();
 }
 
 ULONGLONG FileProperties::getSize() const
 {
-    return m_sizeInBytes;
+    return m_properties.m_size;
 }
 
 CTime FileProperties::getCreationTime() const
 {
-    return m_creationTime;
+    return m_properties.m_ctime;
 }
 
 CTime FileProperties::getLastAccessTime() const
 {
-    return m_lastAccessTime;
+    return m_properties.m_atime;
 }
 
 CTime FileProperties::getLastWriteTime() const
 {
-    return m_lastWriteTime;
+    return m_properties.m_mtime;
 }
 
-BOOL FileProperties::isDirectory() const
+BOOL FileProperties::isFolder() const
 {
-    return m_isDirectory;
+    return (m_properties.m_attribute & CFile::Attribute::directory) ==
+        CFile::Attribute::directory;
 }
 
 BOOL FileProperties::isParentFolder(const FileProperties& folder) const
 {
-    return folder.isDirectory() && (folder.getFullPath() == getFileFolder());
-}
-
-FileProperties::COMPARISON_RESULT FileProperties::makeChoice(ComparisonResults& results) const
-{
-    results.remove(COMPARISON_RESULT::EQUAL);
-
-    if (results.empty())
-    {
-        return COMPARISON_RESULT::EQUAL;
-    }
-
-    BOOL hasPreferable = std::find(results.begin(), results.end(), COMPARISON_RESULT::PREFERABLE) != results.end();
-    BOOL hasNonPreferable = std::find(results.begin(), results.end(), COMPARISON_RESULT::NON_PREFERABLE) != results.end();
-    
-    if (hasPreferable)
-    {
-        if (hasNonPreferable)
-        {
-            return COMPARISON_RESULT::UNDEFINED;
-        }
-        else
-        {
-            return COMPARISON_RESULT::PREFERABLE;
-        }
-    }
-    else
-    {
-        return COMPARISON_RESULT::NON_PREFERABLE;
-    }
+    return folder.isFolder() && (folder.getFullPath() == getParentFolder());
 }

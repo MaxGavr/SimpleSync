@@ -172,14 +172,11 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
     // TODO: optimize
     for (const auto operation : operations)
     {
-        FileProperties file = operation->getFile();
-
-        auto l = [&file, this](const SyncOperation* op) -> bool {
-            return m_syncManager->getFileRelativePath(file, FALSE) ==
-                m_syncManager->getFileRelativePath(op->getFile(), TRUE);
+        auto isOperationDependent = [&operation](const SyncOperation* op) -> bool {
+            return op->isOperationDependent(operation);
         };
 
-        auto iter = std::find_if(m_sortedOperations.begin(), m_sortedOperations.end(), l);
+        auto iter = std::find_if(m_sortedOperations.begin(), m_sortedOperations.end(), isOperationDependent);
         if (iter != m_sortedOperations.end())
             m_sortedOperations.insert(++iter, operation);
         else

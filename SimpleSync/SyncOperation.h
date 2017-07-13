@@ -18,6 +18,7 @@ public:
     virtual ~SyncOperation();
 
     virtual BOOL execute() = 0;
+    virtual BOOL isOperationDependent(const SyncOperation* dependentOp) const = 0;
     
     TYPE getType() const;
 

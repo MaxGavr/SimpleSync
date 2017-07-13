@@ -11,6 +11,7 @@ public:
     ~EmptyOperation();
 
     BOOL execute() override;
+    BOOL isOperationDependent(const SyncOperation* dependentOp) const override;
 
     FileProperties getEqualFile() const;
 

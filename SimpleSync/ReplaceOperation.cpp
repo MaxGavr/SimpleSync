@@ -22,6 +22,11 @@ BOOL ReplaceOperation::execute()
         return ReplaceFile(getFileToReplace().getFullPath(), getFile().getFullPath(), NULL, 0, NULL, NULL);
 }
 
+BOOL ReplaceOperation::isOperationDependent(const SyncOperation* dependentOp) const
+{
+    return FALSE;
+}
+
 FileProperties ReplaceOperation::getFileToReplace() const
 {
     return m_fileToReplace;

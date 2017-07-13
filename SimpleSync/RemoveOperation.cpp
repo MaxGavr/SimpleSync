@@ -17,3 +17,11 @@ BOOL RemoveOperation::execute()
 {
     return DeleteFile(getFile().getFullPath());
 }
+
+BOOL RemoveOperation::isOperationDependent(const SyncOperation* dependentOp) const
+{
+    if (!getFile().isDirectory())
+        return FALSE;
+    else
+        return dependentOp->getFile().isParentFolder(getFile());
+}

@@ -11,5 +11,6 @@ public:
     ~RemoveOperation();
 
     BOOL execute() override;
+    BOOL isOperationDependent(const SyncOperation* dependentOp) const override;
 };
 

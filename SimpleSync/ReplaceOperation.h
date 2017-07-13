@@ -11,6 +11,7 @@ public:
     ~ReplaceOperation();
 
     BOOL execute() override;
+    BOOL isOperationDependent(const SyncOperation* dependentOp) const override;
 
     FileProperties getFileToReplace() const;
     BOOL isAmbiguous() const;

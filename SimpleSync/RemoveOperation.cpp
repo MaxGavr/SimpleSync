@@ -15,7 +15,10 @@ RemoveOperation::~RemoveOperation()
 
 BOOL RemoveOperation::execute()
 {
-    return DeleteFile(getFile().getFullPath());
+    if (getFile().isDirectory())
+        return RemoveDirectory(getFile().getFullPath());
+    else
+        return DeleteFile(getFile().getFullPath());
 }
 
 BOOL RemoveOperation::isOperationDependent(const SyncOperation* dependentOp) const

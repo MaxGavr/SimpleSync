@@ -245,6 +245,14 @@ void SyncManager::manageReplaceOperation(const FileProperties& originalFile, con
 
 void SyncManager::manageRemoveOperation(const FileProperties& fileToRemove)
 {
+    if (fileToRemove.isDirectory())
+    {
+        FileSet files = getFilesFromFolder(fileToRemove.getFullPath());
+
+        for (const auto& file : files)
+            manageRemoveOperation(file);
+    }
+
     if (getOptions().deleteFiles)
         m_syncActions.push_back(new RemoveOperation(fileToRemove));
 }

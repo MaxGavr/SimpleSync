@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "PreviewListCtrl.h"
-
+#include "FilePropertiesDialog.h"
+#include "CompareDialog.h"
 
 
 IMPLEMENT_DYNAMIC(CPreviewListCtrl, CListCtrl)
@@ -19,7 +20,8 @@ CPreviewListCtrl::~CPreviewListCtrl()
 void CPreviewListCtrl::setupColumns()
 {
     InsertColumn(LIST_COLUMNS::INDEX, L"�", LVCFMT_LEFT, 30)    InsertColumn(LIST_COLUMNS::SOURCE_FILE, L"�������� ������    InsertColumn(LIST_COLUMNS::ACTION, L"��������", LVCF    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, L"�������� ������}
-    SetExtendedStyle(LVS_EX_AUTOSIZECOLUMNS);
+    SetExtendedStyle(GetExtendedStyle() | LVS_EX_AUTOSIZECOLUMNS |
+        LVS_EX_FULLROWSELECT);
 
     optimizeColumnsWidth();
 }
@@ -194,4 +196,72 @@ void CPreviewListCtrl::optimizeColumnsWidth()
 
 
 BEGIN_MESSAGE_MAP(CPreviewListCtrl, CListCtrl)
+    ON_NOTIFY_REFLECT(NM_DBLCLK, &CPreviewListCtrl::OnDoubleClick)
 END_MESSAGE_MAP()
+
+
+void CPreviewListCtrl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
+{
+    LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+    
+    LVHITTESTINFO hitTestInfo;
+    hitTestInfo.pt = pNMItemActivate->ptAction;
+
+    if (SubItemHitTest(&hitTestInfo) != -1)
+    {
+        const SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem];
+        
+        if (!showFilePropertiesDialog(clickedOperation))
+            showFilesComparisonDialog(clickedOperation);
+    }
+    *pResult = 0;
+}
+
+BOOL CPreviewListCtrl::showFilePropertiesDialog(const SyncOperation* singleFileOperation)
+{
+    FileProperties file = singleFileOperation->getFile();
+    SyncOperation::TYPE type = singleFileOperation->getType();
+    
+    if (file.isFolder())
+        return FALSE;
+
+    if (type == SyncOperation::TYPE::COPY || type == SyncOperation::TYPE::REMOVE)
+    {
+        CFilePropertiesDialog dialog(file, m_syncManager);
+        dialog.DoModal();
+        
+        return TRUE;
+    }
+    else
+        return FALSE;
+}
+
+BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* doubleFileOperation)
+{
+    FileProperties file = doubleFileOperation->getFile();
+    SyncOperation::TYPE type = doubleFileOperation->getType();
+
+    if (file.isFolder())
+        return FALSE;
+
+    FileProperties secondFile;
+    
+    if (type == SyncOperation::TYPE::REPLACE || type == SyncOperation::TYPE::EMPTY)
+    {
+        if (type == SyncOperation::TYPE::REPLACE)
+        {
+            auto op = dynamic_cast<const ReplaceOperation*>(doubleFileOperation);
+            secondFile = op->getFileToReplace();
+        }
+
+        if (type == SyncOperation::TYPE::EMPTY)
+        {
+            auto op = dynamic_cast<const EmptyOperation*>(doubleFileOperation);
+            secondFile = op->getEqualFile();
+        }
+
+        CCompareFilesDialog dialog(file, secondFile, m_syncManager);
+        dialog.DoModal();
+    }
+    return TRUE;
+}

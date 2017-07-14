@@ -38,6 +38,13 @@ private:
 
     SyncManager* m_syncManager;
     SyncManager::OperationQueue m_sortedOperations;
+
+public:
+    afx_msg void OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult);
+
+private:
+    BOOL showFilePropertiesDialog(const SyncOperation* singleFileOperation);
+    BOOL showFilesComparisonDialog(const SyncOperation* doubleFileOperation);
 };
 
 

@@ -182,10 +182,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CompareDialog.h" />
     <ClInclude Include="CopyOperation.h" />
     <ClInclude Include="CreateOperation.h" />
     <ClInclude Include="EmptyOperation.h" />
     <ClInclude Include="FileProperties.h" />
+    <ClInclude Include="FilePropertiesDialog.h" />
     <ClInclude Include="MainDlg.h" />
     <ClInclude Include="OptionsDialog.h" />
     <ClInclude Include="ParamsDialog.h" />
@@ -200,10 +202,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CompareDialog.cpp" />
     <ClCompile Include="CopyOperation.cpp" />
     <ClCompile Include="CreateOperation.cpp" />
     <ClCompile Include="EmptyOperation.cpp" />
     <ClCompile Include="FileProperties.cpp" />
+    <ClCompile Include="FilePropertiesDialog.cpp" />
     <ClCompile Include="MainDlg.cpp" />
     <ClCompile Include="OptionsDialog.cpp" />
     <ClCompile Include="ParamsDialog.cpp" />

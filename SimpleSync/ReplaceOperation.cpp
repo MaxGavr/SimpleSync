@@ -14,12 +14,15 @@ ReplaceOperation::~ReplaceOperation()
 {
 }
 
+// Tip: Win32 functions GetFileAttributes() and SetFileAttributes() may be required
+//      to create identical copy of original file, as CopyFile() does not
+//      preserve "creation" and "last access" time stamps
 BOOL ReplaceOperation::execute()
 {
     if (isAmbiguous())
         return FALSE;
     else
-        return ReplaceFile(getFileToReplace().getFullPath(), getFile().getFullPath(), NULL, 0, NULL, NULL);
+        return CopyFile(getFile().getFullPath(), getFileToReplace().getFullPath(), FALSE);
 }
 
 BOOL ReplaceOperation::isOperationDependent(const SyncOperation* dependentOp) const

@@ -4,6 +4,7 @@
 
 
 SyncManager::SyncManager()
+    : m_syncDirection(SYNC_DIRECTION::LEFT_TO_RIGHT)
 {
 }
 

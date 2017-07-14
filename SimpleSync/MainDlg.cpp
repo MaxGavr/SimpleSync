@@ -13,11 +13,12 @@
 
 
 CMainDlg::CMainDlg(SyncManager* syncManager, CWnd* pParent /*=NULL*/)
-	: CDialogEx(IDD_SIMPLESYNC_DIALOG, pParent)
-    , m_syncManager(syncManager)
-    , m_sourcePath(_T(""))
-    , m_destinationPath(_T(""))
-    , m_previewList(syncManager)
+	: CDialogEx(IDD_SIMPLESYNC_DIALOG, pParent),
+      m_syncManager(syncManager),
+      m_sourcePath(_T("")),
+      m_destinationPath(_T("")),
+      m_previewList(syncManager),
+      m_directionRadioBox((int)syncManager->getSyncDirection())
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -50,9 +51,6 @@ BOOL CMainDlg::OnInitDialog()
 
 	SetIcon(m_hIcon, TRUE);
     SetIcon(m_hIcon, FALSE);
-
-    m_directionRadioBox = 0;
-    UpdateData(FALSE);
 
     m_previewList.setupColumns();
 

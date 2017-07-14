@@ -59,6 +59,9 @@ BOOL CCompareFilesDialog::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
 
+    if (!m_syncManager->isFileInSourceFolder(m_leftFile))
+        std::swap(m_leftFile, m_rightFile);
+
     if (m_leftControls.initialize(m_leftFile, m_syncManager) &&
         m_rightControls.initialize(m_rightFile, m_syncManager))
         UpdateData(FALSE);

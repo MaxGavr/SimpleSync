@@ -4,9 +4,7 @@
 #include "FileProperties.h"
 #include "FilePropertiesDialog.h"
 
-
 class SyncManager;
-
 
 
 

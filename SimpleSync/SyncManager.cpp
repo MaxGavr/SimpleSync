@@ -89,18 +89,21 @@ BOOL SyncManager::isFileInFiles(const FileProperties& file, const FileSet &files
     });
 }
 
-void SyncManager::scan()
+BOOL SyncManager::scan()
 {
+    for (auto it = m_syncActions.begin(); it != m_syncActions.end(); ++it)
+        delete (*it);
     m_syncActions.clear();
 
+    if (!folderExists(getSourceFolder()) || !folderExists(getDestinationFolder()))
+        return FALSE;
+
     if (getSyncDirection() == SYNC_DIRECTION::RIGHT_TO_LEFT)
-    {
         scanFolders(getDestinationFolder(), getSourceFolder());
-    }
     else
-    {
         scanFolders(getSourceFolder(), getDestinationFolder());
-    }
+
+    return TRUE;
 }
 
 void SyncManager::sync()
@@ -115,6 +118,14 @@ void SyncManager::sync()
 SyncManager::OperationQueue SyncManager::getOperations()
 {
     return m_syncActions;
+}
+
+BOOL SyncManager::folderExists(const CString& folder) const
+{
+    DWORD attributes = GetFileAttributes(folder);
+    if (attributes == INVALID_FILE_ATTRIBUTES)
+        return FALSE;
+    return (attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) const

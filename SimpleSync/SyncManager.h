@@ -60,11 +60,12 @@ public:
 
     BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
 
-    void scan();
+    BOOL scan();
     void sync();
     OperationQueue getOperations();
 
 private:
+    BOOL folderExists(const CString& folder) const;
     FileSet getFilesFromFolder(const CString& folder) const;
     void scanFolders(CString source, CString destination);
     

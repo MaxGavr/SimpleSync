@@ -86,13 +86,11 @@ HCURSOR CMainDlg::OnQueryDragIcon()
 }
 
 
-
 void CMainDlg::OnSourceFolderChange()
 {
     UpdateData(TRUE);
     m_syncManager->setSourceFolder(m_sourcePath);
 }
-
 
 void CMainDlg::OnDestinationFolderChange()
 {
@@ -100,13 +98,12 @@ void CMainDlg::OnDestinationFolderChange()
     m_syncManager->setDestinationFolder(m_destinationPath);
 }
 
-
 void CMainDlg::OnPreviewButtonClicked()
 {
-    m_syncManager->scan();
-    m_previewList.showPreview();
+    if (!m_syncManager->scan())
+        MessageBox(_T("���������� �������� �������            _T("������"), MB_ICONERRO    else
+        m_previewList.showPreview();
 }
-
 
 void CMainDlg::OnSyncButtonClicked()
 {
@@ -135,7 +132,5 @@ void CMainDlg::OnParametersButtonClicked()
     CCompareParamsDialog parametersDialog(m_syncManager);
 
     if (parametersDialog.DoModal() == IDOK)
-    {
         m_syncManager->setComparisonParameters(parametersDialog.getParameters());
-    }
 }

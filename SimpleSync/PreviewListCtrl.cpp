@@ -5,12 +5,11 @@
 #include "CompareDialog.h"
 
 
-IMPLEMENT_DYNAMIC(CPreviewListCtrl, CListCtrl)
+IMPLEMENT_DYNAMIC(CPreviewListCtrl, CMFCListCtrl)
 
 CPreviewListCtrl::CPreviewListCtrl(SyncManager* syncManager)
     : m_syncManager(syncManager)
 {
-
 }
 
 CPreviewListCtrl::~CPreviewListCtrl()
@@ -33,31 +32,40 @@ void CPreviewListCtrl::showPreview()
     DeleteAllItems();
     for (auto& action : m_sortedOperations)
         printSyncAction(action);
+
+    optimizeColumnsWidth();
 }
 
-void CPreviewListCtrl::printSyncAction(SyncOperation* operation)
+void CPreviewListCtrl::printSyncAction(SyncOperation* operation, int index)
 {
     CString itemIndexStr;
-    itemIndexStr.Format(_T("%d"), GetItemCount() + 1);
-    
-    int itemIndex = InsertItem(GetItemCount(), itemIndexStr);
+    if (index < 0 || index >= GetItemCount())
+    {
+        itemIndexStr.Format(_T("%d"), GetItemCount() + 1);
+        index = InsertItem(GetItemCount(), itemIndexStr);
+    }
+    else
+    {
+        itemIndexStr.Format(_T("%d"), index + 1);
+        SetItemText(index, 0, itemIndexStr);
+    }
 
     switch (operation->getType())
     {
     case SyncOperation::TYPE::COPY:
-        printCopyOperation(dynamic_cast<CopyOperation *>(operation), itemIndex);
+        printCopyOperation(dynamic_cast<CopyOperation *>(operation), index);
         break;
     case SyncOperation::TYPE::REPLACE:
-        printReplaceOperation(dynamic_cast<ReplaceOperation *>(operation), itemIndex);
+        printReplaceOperation(dynamic_cast<ReplaceOperation *>(operation), index);
         break;
     case SyncOperation::TYPE::REMOVE:
-        printRemoveOperation(dynamic_cast<RemoveOperation *>(operation), itemIndex);
+        printRemoveOperation(dynamic_cast<RemoveOperation *>(operation), index);
         break;
     case SyncOperation::TYPE::CREATE:
-        printCreateOperation(dynamic_cast<CreateFolderOperation *>(operation), itemIndex);
+        printCreateOperation(dynamic_cast<CreateFolderOperation *>(operation), index);
         break;
     case SyncOperation::TYPE::EMPTY:
-        printEmptyOperation(dynamic_cast<EmptyOperation *>(operation), itemIndex);
+        printEmptyOperation(dynamic_cast<EmptyOperation *>(operation), index);
         break;
     }
 }
@@ -188,33 +196,38 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
 
 void CPreviewListCtrl::optimizeColumnsWidth()
 {
-    for (int i = 0; i < GetHeaderCtrl()->GetItemCount(); ++i)
+    for (int i = 0; i < GetHeaderCtrl().GetItemCount(); ++i)
     {
+        SetColumnWidth(i, LVSCW_AUTOSIZE);
+        int contentWidth = GetColumnWidth(i);
         SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
+        int headerWidth = GetColumnWidth(i);
+
+        SetColumnWidth(i, max(contentWidth, headerWidth));
     }
 }
 
-
-BEGIN_MESSAGE_MAP(CPreviewListCtrl, CListCtrl)
+BEGIN_MESSAGE_MAP(CPreviewListCtrl, CMFCListCtrl)
     ON_NOTIFY_REFLECT(NM_DBLCLK, &CPreviewListCtrl::OnDoubleClick)
+    ON_NOTIFY_REFLECT(NM_RCLICK, &CPreviewListCtrl::OnRightClick)
 END_MESSAGE_MAP()
 
 
 void CPreviewListCtrl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
     LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+    *pResult = 0;
     
     LVHITTESTINFO hitTestInfo;
     hitTestInfo.pt = pNMItemActivate->ptAction;
 
-    if (SubItemHitTest(&hitTestInfo) != -1)
-    {
-        const SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem];
+    if (SubItemHitTest(&hitTestInfo) == -1)
+        return;
+    
+    const SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem];
         
-        if (!showFilePropertiesDialog(clickedOperation))
-            showFilesComparisonDialog(clickedOperation);
-    }
-    *pResult = 0;
+    if (!showFilePropertiesDialog(clickedOperation))
+        showFilesComparisonDialog(clickedOperation);
 }
 
 BOOL CPreviewListCtrl::showFilePropertiesDialog(const SyncOperation* singleFileOperation)
@@ -236,12 +249,12 @@ BOOL CPreviewListCtrl::showFilePropertiesDialog(const SyncOperation* singleFileO
         return FALSE;
 }
 
-BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* doubleFileOperation)
+BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* twoFilesOperation)
 {
-    FileProperties file = doubleFileOperation->getFile();
-    SyncOperation::TYPE type = doubleFileOperation->getType();
+    FileProperties firstFile = twoFilesOperation->getFile();
+    SyncOperation::TYPE type = twoFilesOperation->getType();
 
-    if (file.isFolder())
+    if (firstFile.isFolder())
         return FALSE;
 
     FileProperties secondFile;
@@ -250,18 +263,92 @@ BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* doubleFile
     {
         if (type == SyncOperation::TYPE::REPLACE)
         {
-            auto op = dynamic_cast<const ReplaceOperation*>(doubleFileOperation);
+            auto op = dynamic_cast<const ReplaceOperation*>(twoFilesOperation);
             secondFile = op->getFileToReplace();
         }
 
         if (type == SyncOperation::TYPE::EMPTY)
         {
-            auto op = dynamic_cast<const EmptyOperation*>(doubleFileOperation);
+            auto op = dynamic_cast<const EmptyOperation*>(twoFilesOperation);
             secondFile = op->getEqualFile();
         }
 
-        CCompareFilesDialog dialog(file, secondFile, m_syncManager);
+        CCompareFilesDialog dialog(firstFile, secondFile, m_syncManager);
         dialog.DoModal();
     }
     return TRUE;
+}
+
+
+void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
+{
+    LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+    *pResult = 0;
+
+    LVHITTESTINFO hitTestInfo;
+    hitTestInfo.pt = pNMItemActivate->ptAction;
+
+    if (SubItemHitTest(&hitTestInfo) == -1)
+        return;
+
+    SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem];
+        
+    if (clickedOperation->getType() == SyncOperation::TYPE::REPLACE)
+    {
+        auto op = dynamic_cast<ReplaceOperation*>(clickedOperation);
+    
+        if (op->isAmbiguous())
+            op->removeAmbiguity();
+        else
+            op->forbid(!op->isForbidden());
+    }
+    else
+        clickedOperation->forbid(!clickedOperation->isForbidden());
+
+    printSyncAction(clickedOperation, hitTestInfo.iItem);
+}
+
+COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
+{
+    LIST_COLUMNS col = (LIST_COLUMNS)nColumn;
+    
+    BOOL properColumn = (col == LIST_COLUMNS::SOURCE_FILE ||
+                         col == LIST_COLUMNS::DESTINATION_FILE);
+    BOOL operationExists = nRow < m_sortedOperations.size();
+    
+    if (properColumn && operationExists)
+        return chooseOperationTextColor(m_sortedOperations[nRow]);
+
+    return CMFCListCtrl::OnGetCellTextColor(nRow, nColumn);
+}
+
+COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operation) const
+{
+    SyncOperation::TYPE type = operation->getType();
+
+    if (type == SyncOperation::TYPE::REMOVE)
+        return DELETION_COLOR;
+
+    if (type == SyncOperation::TYPE::COPY ||
+        type == SyncOperation::TYPE::CREATE ||
+        type == SyncOperation::TYPE::REPLACE)
+    {
+        COLORREF color;
+        FileProperties file = operation->getFile();
+
+        if (m_syncManager->isFileInSourceFolder(file))
+            color = SOURCE_TO_DESTINATION_COLOR;
+        else
+            color = DESTINATION_TO_SOURCE_COLOR;
+
+        if (type == SyncOperation::TYPE::REPLACE)
+        {
+            auto op = dynamic_cast<const ReplaceOperation*>(operation);
+            color = op->isAmbiguous() ? AMBIGUOUS_COLOR : color;
+        }
+
+        return color;
+    }
+    
+    return DEFAULT_COLOR;
 }

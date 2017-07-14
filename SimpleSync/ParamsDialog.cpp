@@ -7,10 +7,10 @@
 
 IMPLEMENT_DYNAMIC(CCompareParamsDialog, CDialogEx)
 
-CCompareParamsDialog::CCompareParamsDialog(const SyncManager* syncManager, CWnd* pParent /*=NULL*/)
+CCompareParamsDialog::CCompareParamsDialog(const SyncManager* syncManager, CWnd* pParent)
 	: CDialogEx(IDD_COMPARE_PARAMETERS_DIALOG, pParent)
 {
-    FileComparisonParameters defaultParameters = syncManager->getComparisonParameters();
+    auto defaultParameters = syncManager->getComparisonParameters();
     m_parameters = defaultParameters;
 
     m_compareSize = defaultParameters.compareSize;
@@ -73,6 +73,21 @@ void CCompareParamsDialog::OnTimeButtonClicked()
     UpdateData(TRUE);
     m_parameters.compareTime = m_compareTime;
 
+    enableTimeRadioBoxes(m_compareTime);
+}
+
+void CCompareParamsDialog::enableTimeRadioBoxes(BOOL enable)
+{
     for (int i = IDC_CREATION_TIME_RADIO; i <= IDC_ACCESS_TIME_RADIO; ++i)
-        GetDlgItem(i)->EnableWindow(m_compareTime);
+        GetDlgItem(i)->EnableWindow(enable);
+}
+
+
+BOOL CCompareParamsDialog::OnInitDialog()
+{
+    CDialogEx::OnInitDialog();
+
+    enableTimeRadioBoxes(m_compareTime);
+
+    return TRUE;
 }

@@ -6,6 +6,7 @@
 #define IDR_MAINFRAME                   128
 #define IDD_OPTIONS_DIALOG              135
 #define IDD_COMPARE_PARAMETERS_DIALOG   137
+#define IDD_PARAMETERS_DIALOG           137
 #define IDD_FILE_PROPERTIES_DIALOG      139
 #define IDD_COMPARE_FILES_DIALOG        141
 #define IDC_PREVIEW_LIST                1000
@@ -68,7 +69,6 @@
 #define IDC_RIGHT_HIDDEN_CHECK          1069
 #define IDC_RIGHT_READONLY_CHECK        1070
 #define IDC_RIGHT_ARCHIVED_CHECK        1071
-#define IDC_SYSTEM_CHECK2               1072
 #define IDC_RIGHT_SYSTEM_CHECK          1072
 #define IDC_LEFT_SIZE_EDIT              1073
 #define IDC_SIZE_BITMAP                 1074

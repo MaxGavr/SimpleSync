@@ -24,16 +24,18 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
+    virtual BOOL OnInitDialog();
+
     afx_msg void OnParameterClicked(UINT id);
+    afx_msg void OnSizeButtonClicked();
+    afx_msg void OnTimeButtonClicked();
 
 private:
+    void enableTimeRadioBoxes(BOOL enable);
+
     FileComparisonParameters m_parameters;
     
     BOOL m_compareSize;
     BOOL m_compareTime;
     int m_timeParameterRadio;
-
-public:
-    afx_msg void OnSizeButtonClicked();
-    afx_msg void OnTimeButtonClicked();
 };

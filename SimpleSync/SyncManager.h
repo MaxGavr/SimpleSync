@@ -62,7 +62,7 @@ public:
 
     void scan();
     void sync();
-    OperationQueue& getOperations();
+    OperationQueue getOperations();
 
 private:
     FileSet getFilesFromFolder(const CString& folder) const;

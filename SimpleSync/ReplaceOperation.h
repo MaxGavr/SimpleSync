@@ -15,6 +15,8 @@ public:
 
     FileProperties getFileToReplace() const;
     BOOL isAmbiguous() const;
+    
+    void removeAmbiguity();
 
 private:
     FileProperties m_fileToReplace;

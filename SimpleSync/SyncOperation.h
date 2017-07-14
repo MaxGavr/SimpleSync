@@ -19,6 +19,9 @@ public:
 
     virtual BOOL execute() = 0;
     virtual BOOL isOperationDependent(const SyncOperation* dependentOp) const = 0;
+
+    void forbid(BOOL isForbidden);
+    BOOL isForbidden() const;
     
     TYPE getType() const;
 
@@ -27,6 +30,7 @@ public:
 
 private:
     TYPE m_type;
+    BOOL m_isForbidden;
 
     FileProperties m_file;
 };

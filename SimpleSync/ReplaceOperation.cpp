@@ -39,3 +39,8 @@ BOOL ReplaceOperation::isAmbiguous() const
 {
     return m_isAmbiguous;
 }
+
+void ReplaceOperation::removeAmbiguity()
+{
+    m_isAmbiguous = FALSE;
+}

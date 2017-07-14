@@ -107,11 +107,12 @@ void SyncManager::sync()
 {
     for (auto& action: m_syncActions)
     {
-        action->execute();
+        if (!action->isForbidden())
+            action->execute();
     }
 }
 
-SyncManager::OperationQueue& SyncManager::getOperations()
+SyncManager::OperationQueue SyncManager::getOperations()
 {
     return m_syncActions;
 }

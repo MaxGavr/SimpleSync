@@ -23,11 +23,12 @@ public:
     using ComparisonResults = std::list <COMPARISON_RESULT>;
 
     FileProperties(const CFileStatus& properties);
-    FileProperties(const CString& fileName, BOOL isFolder = FALSE);
+    FileProperties(const CString& fileName = CString(""), BOOL isFolder = FALSE);
     ~FileProperties();
 
     COMPARISON_RESULT compareTo(const FileProperties& file, const FileComparisonParameters& params) const;
 
+    FileProperties operator= (const FileProperties& file);
     BOOL operator< (const FileProperties& file) const;
     BOOL operator== (const FileProperties& file) const;
 
@@ -44,6 +45,11 @@ public:
 
     BOOL isFolder() const;
     BOOL isParentFolder(const FileProperties& folder) const;
+
+    BOOL isArchived() const;
+    BOOL isSystem() const;
+    BOOL isHidden() const;
+    BOOL isReadOnly() const;
 
 private:
     COMPARISON_RESULT makeChoice(ComparisonResults& results) const;

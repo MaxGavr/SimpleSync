@@ -81,6 +81,21 @@ FileProperties::COMPARISON_RESULT FileProperties::makeChoice(ComparisonResults& 
         return COMPARISON_RESULT::NON_PREFERABLE;
 }
 
+FileProperties FileProperties::operator=(const FileProperties& file)
+{
+    _tcscpy(m_properties.m_szFullName, file.m_properties.m_szFullName);
+    
+    m_properties.m_size = file.m_properties.m_size;
+
+    m_properties.m_ctime = file.m_properties.m_ctime;
+    m_properties.m_mtime = file.m_properties.m_mtime;
+    m_properties.m_atime = file.m_properties.m_atime;
+
+    m_properties.m_attribute = file.m_properties.m_attribute;
+
+    return *this;
+}
+
 BOOL FileProperties::operator<(const FileProperties& file) const
 {
     bool isFolder1 = this->isFolder();
@@ -162,4 +177,28 @@ BOOL FileProperties::isFolder() const
 BOOL FileProperties::isParentFolder(const FileProperties& folder) const
 {
     return folder.isFolder() && (folder.getFullPath() == getParentFolder());
+}
+
+BOOL FileProperties::isArchived() const
+{
+    return (m_properties.m_attribute & CFile::Attribute::archive) ==
+        CFile::Attribute::archive;
+}
+
+BOOL FileProperties::isSystem() const
+{
+    return (m_properties.m_attribute & CFile::Attribute::system) ==
+        CFile::Attribute::system;
+}
+
+BOOL FileProperties::isHidden() const
+{
+    return (m_properties.m_attribute & CFile::Attribute::hidden) ==
+        CFile::Attribute::hidden;
+}
+
+BOOL FileProperties::isReadOnly() const
+{
+    return (m_properties.m_attribute & CFile::Attribute::readOnly) ==
+        CFile::Attribute::readOnly;
 }

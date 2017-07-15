@@ -68,10 +68,14 @@ private:
     BOOL folderExists(const CString& folder) const;
     BOOL fileMeetsRequirements(const FileProperties& file) const;
     FileSet getFilesFromFolder(const CString& folder) const;
-    void scanFolders(CString source, CString destination);
+    void scanFolders(const CString& source, const CString& destination);
     
-    void manageCopyOperation(const FileProperties& fileToCopy, CString destinationFolder);
-    void manageReplaceOperation(const FileProperties& originalFile, const FileProperties& fileToReplace);
+
+    void enqueueOperation(SyncOperation* operation);
+    void manageCopyOperation(const FileProperties& fileToCopy,
+                             const CString& destinationFolder);
+    void manageReplaceOperation(const FileProperties& originalFile,
+                                const FileProperties& fileToReplace);
     void manageRemoveOperation(const FileProperties& fileToRemove);
 
 private:

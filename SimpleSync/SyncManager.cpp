@@ -128,6 +128,19 @@ BOOL SyncManager::folderExists(const CString& folder) const
     return (attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
+BOOL SyncManager::fileMeetsRequirements(const FileProperties& file) const
+{
+    const auto& options = getOptions();
+
+    if (!options.syncHiddenFiles && file.isHidden())
+        return FALSE;
+
+    if (!options.recursive && file.isFolder())
+        return FALSE;
+
+    return TRUE;
+}
+
 SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) const
 {
     FileSet files;
@@ -146,7 +159,8 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
 
             FileProperties file(fileProperties);
 
-            files.insert(file);
+            if (fileMeetsRequirements(file))
+                files.insert(file);
         }
     }
 
@@ -172,11 +186,8 @@ void SyncManager::scanFolders(CString source, CString destination)
             
             if (file.isFolder())
             {
-                if (getOptions().recursive)
-                {
-                    m_syncActions.push_back(new EmptyOperation(file, *equalFileIterator));
-                    scanFolders(file.getFullPath(), equalFileIterator->getFullPath());
-                }
+                m_syncActions.push_back(new EmptyOperation(file, *equalFileIterator));
+                scanFolders(file.getFullPath(), equalFileIterator->getFullPath());
             }
             else
                 manageReplaceOperation(file, *equalFileIterator);
@@ -207,6 +218,10 @@ void SyncManager::manageCopyOperation(const FileProperties& fileToCopy, CString 
 {
     if (fileToCopy.isFolder())
     {
+        BOOL isEmpty = PathIsDirectoryEmpty(fileToCopy.getFullPath());
+        if (isEmpty && !getOptions().createEmptyFolders)
+            return;
+
         CString folderToCreate = destinationFolder + "\\" + fileToCopy.getFileName();
         m_syncActions.push_back(new CreateFolderOperation(fileToCopy, folderToCreate));
         

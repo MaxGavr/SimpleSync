@@ -15,11 +15,11 @@
 
 struct SyncManagerOptions
 {
-    BOOL recursive = TRUE; // used
-    BOOL deleteFiles = FALSE; // used
+    BOOL recursive = TRUE;
+    BOOL deleteFiles = FALSE;
     BOOL createEmptyFolders = FALSE;
     BOOL syncHiddenFiles = FALSE;
-    BOOL copyMissingFiles = TRUE; //used
+    BOOL copyMissingFiles = TRUE;
 };
 
 
@@ -66,6 +66,7 @@ public:
 
 private:
     BOOL folderExists(const CString& folder) const;
+    BOOL fileMeetsRequirements(const FileProperties& file) const;
     FileSet getFilesFromFolder(const CString& folder) const;
     void scanFolders(CString source, CString destination);
     

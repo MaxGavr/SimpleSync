@@ -107,9 +107,18 @@ BOOL FileProperties::operator<(const FileProperties& file) const
         return (this->getFileName() < file.getFileName());
 }
 
+// TODO: test
 BOOL FileProperties::operator==(const FileProperties& file) const
 {
-    return (this->getFileName() == file.getFileName());
+    BOOL name = _tcscmp(m_properties.m_szFullName,
+                        file.m_properties.m_szFullName);
+    BOOL size = m_properties.m_size == file.m_properties.m_size;
+    BOOL times = (m_properties.m_ctime == file.m_properties.m_ctime) &&
+                 (m_properties.m_mtime == file.m_properties.m_mtime) &&
+                 (m_properties.m_atime == file.m_properties.m_atime);
+    BOOL attribs = m_properties.m_attribute == file.m_properties.m_attribute;
+
+    return name && size && times && attribs;
 }
 
 

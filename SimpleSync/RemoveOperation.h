@@ -11,6 +11,8 @@ public:
     ~RemoveOperation();
 
     BOOL execute() override;
-    BOOL isOperationDependent(const SyncOperation* dependentOp) const override;
+
+    BOOL affectsFile(const FileProperties& file) const override;
+    BOOL dependsOn(const SyncOperation* operation) const override;
 };
 

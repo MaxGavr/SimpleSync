@@ -21,10 +21,20 @@ BOOL RemoveOperation::execute()
         return DeleteFile(getFile().getFullPath());
 }
 
-BOOL RemoveOperation::isOperationDependent(const SyncOperation* dependentOp) const
+BOOL RemoveOperation::affectsFile(const FileProperties& file) const
 {
-    if (!getFile().isFolder())
-        return FALSE;
+    auto thisFile = getFile();
+
+    if (thisFile == file)
+        return TRUE;
+
+    if (thisFile.isFolder())
+        return file.isParentFolder(thisFile);
     else
-        return dependentOp->getFile().isParentFolder(getFile());
+        return FALSE;
+}
+
+BOOL RemoveOperation::dependsOn(const SyncOperation* operation) const
+{
+    return operation->affectsFile(getFile());
 }

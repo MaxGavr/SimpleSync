@@ -182,11 +182,13 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
     // TODO: optimize
     for (const auto operation : operations)
     {
-        auto isOperationDependent = [&operation](const SyncOperation* op) -> bool {
-            return op->isOperationDependent(operation);
+        auto dependsOn = [&operation](const SyncOperation* op) -> bool {
+            return operation->dependsOn(op);
         };
 
-        auto iter = std::find_if(m_sortedOperations.begin(), m_sortedOperations.end(), isOperationDependent);
+        auto iter = std::find_if(m_sortedOperations.begin(),
+                                 m_sortedOperations.end(),
+                                 dependsOn);
         if (iter != m_sortedOperations.end())
             m_sortedOperations.insert(++iter, operation);
         else

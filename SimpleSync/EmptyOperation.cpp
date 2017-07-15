@@ -17,13 +17,27 @@ BOOL EmptyOperation::execute()
     return TRUE;
 }
 
-BOOL EmptyOperation::isOperationDependent(const SyncOperation* dependentOp) const
+BOOL EmptyOperation::affectsFile(const FileProperties& file) const
 {
-    const auto& file = dependentOp->getFile();
-    if (getFile().isFolder())
-        return file.isParentFolder(getFile()) || file.isParentFolder(getEqualFile());
-    else
-        return FALSE;
+    auto thisFile = getFile();
+    auto equalFile = getEqualFile();
+
+    if (thisFile == file || equalFile == file)
+        return TRUE;
+
+    if (thisFile.isFolder())
+    {
+        return file.isParentFolder(thisFile) ||
+               file.isParentFolder(equalFile);
+    }
+
+    return FALSE;
+}
+
+BOOL EmptyOperation::dependsOn(const SyncOperation* operation) const
+{
+    return operation->affectsFile(getFile()) ||
+           operation->affectsFile(getEqualFile());
 }
 
 FileProperties EmptyOperation::getEqualFile() const

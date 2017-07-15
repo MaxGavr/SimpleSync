@@ -18,7 +18,9 @@ public:
     virtual ~SyncOperation();
 
     virtual BOOL execute() = 0;
-    virtual BOOL isOperationDependent(const SyncOperation* dependentOp) const = 0;
+
+    virtual BOOL affectsFile(const FileProperties& file) const = 0;
+    virtual BOOL dependsOn(const SyncOperation* operation) const = 0;
 
     void forbid(BOOL isForbidden);
     BOOL isForbidden() const;

@@ -22,9 +22,14 @@ BOOL CopyOperation::execute()
     return CopyFile(getFile().getFullPath(), destinationFile, TRUE);
 }
 
-BOOL CopyOperation::isOperationDependent(const SyncOperation* dependentOp) const
+BOOL CopyOperation::affectsFile(const FileProperties& file) const
 {
-    return FALSE;
+    return file == getFile();
+}
+
+BOOL CopyOperation::dependsOn(const SyncOperation * operation) const
+{
+    return operation->affectsFile(getFile());
 }
 
 CString CopyOperation::getDestinationFolder() const

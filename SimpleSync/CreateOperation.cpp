@@ -18,9 +18,22 @@ BOOL CreateFolderOperation::execute()
     return CreateDirectory(getFolder().getFullPath(), NULL);
 }
 
-BOOL CreateFolderOperation::isOperationDependent(const SyncOperation* dependentOp) const
+BOOL CreateFolderOperation::affectsFile(const FileProperties& file) const
 {
-    return dependentOp->getFile().isParentFolder(getFile());
+    auto originalFolder = getFile();
+    auto folderToCreate = getFolder();
+    
+    if (originalFolder == file)
+        return TRUE;
+
+    return file.isParentFolder(originalFolder) ||
+           file.isParentFolder(folderToCreate);
+}
+
+BOOL CreateFolderOperation::dependsOn(const SyncOperation* operation) const
+{
+    return operation->affectsFile(getFile()) ||
+           operation->affectsFile(getFolder());
 }
 
 FileProperties CreateFolderOperation::getFolder() const

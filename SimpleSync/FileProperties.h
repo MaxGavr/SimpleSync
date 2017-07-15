@@ -26,6 +26,8 @@ public:
     FileProperties(const CString& fileName = CString(""), BOOL isFolder = FALSE);
     ~FileProperties();
 
+    template<class T>
+    static COMPARISON_RESULT compareProperty(const T& first, const T& second);
     COMPARISON_RESULT compareTo(const FileProperties& file, const FileComparisonParameters& params) const;
 
     FileProperties operator= (const FileProperties& file);
@@ -54,9 +56,6 @@ public:
 private:
     COMPARISON_RESULT makeChoice(ComparisonResults& results) const;
 
-    template<class T>
-    COMPARISON_RESULT compareProperty(const T& first, const T& second) const;
-
     CFileStatus m_properties;
 };
 
@@ -71,7 +70,7 @@ struct FileComparisonParameters
 
 
 template<>
-inline FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const BOOL& first, const BOOL& second) const
+inline FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const BOOL& first, const BOOL& second)
 {
     if (first || !second)
         return COMPARISON_RESULT::PREFERABLE;
@@ -80,7 +79,7 @@ inline FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const B
 }
 
 template<class T>
-FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const T& first, const T& second) const
+FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const T& first, const T& second)
 {
     if (first > second)
         return COMPARISON_RESULT::PREFERABLE;

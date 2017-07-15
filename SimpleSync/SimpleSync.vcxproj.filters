@@ -137,5 +137,14 @@
     <Image Include="res\SimpleSync.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\..\Users\user\Desktop\icon_equal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Users\user\Desktop\icon_less.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Users\user\Desktop\icon_greater.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

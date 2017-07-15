@@ -9,6 +9,10 @@
 #define IDD_PARAMETERS_DIALOG           137
 #define IDD_FILE_PROPERTIES_DIALOG      139
 #define IDD_COMPARE_FILES_DIALOG        141
+#define IDB_EQUAL                       161
+#define IDB_LESS                        162
+#define IDB_PNG2                        163
+#define IDB_GREATER                     163
 #define IDC_PREVIEW_LIST                1000
 #define IDC_DESTINATION_FOLDER_BROWSE   1001
 #define IDC_SOURCE_PATH_BROWSE          1002
@@ -84,14 +88,15 @@
 #define IDC_LEFT_READONLY_CHECK         1084
 #define IDC_LEFT_ARCHIVED_CHECK         1085
 #define IDC_LEFT_SYSTEM_CHECK           1086
+#define IDC_ACCESS_TIME_BITMAP          1087
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        143
+#define _APS_NEXT_RESOURCE_VALUE        164
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1088
+#define _APS_NEXT_CONTROL_VALUE         1090
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

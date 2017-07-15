@@ -231,6 +231,9 @@
     <None Include="res\SimpleSync.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\Users\user\Desktop\icon_equal.png" />
+    <Image Include="..\..\..\Users\user\Desktop\icon_greater.png" />
+    <Image Include="..\..\..\Users\user\Desktop\icon_less.png" />
     <Image Include="res\SimpleSync.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

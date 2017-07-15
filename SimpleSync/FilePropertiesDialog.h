@@ -12,10 +12,9 @@ class FilePropertiesControls
 public:
     BOOL initialize(const FileProperties& file, const SyncManager* syncManager);
 
-    const LPCTSTR m_timeFormat = _T("%d %b %Y ã., %X");
-
+    const LPCTSTR m_timeFormat = _T("%d %b %Y ï¿½., %X")
     CString m_filePath;
-    ULONGLONG m_fileSize;
+    CString m_fileSize;
 
     CString m_fileCreationTime;
     CString m_fileWriteTime;

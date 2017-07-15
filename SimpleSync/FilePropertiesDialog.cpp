@@ -58,8 +58,10 @@ BOOL FilePropertiesControls::initialize(const FileProperties& file, const SyncMa
         return FALSE;
 
     m_filePath = syncManager->getFileRelativePath(file, TRUE);
-    // TODO: human-readable file size
-    m_fileSize = file.getSize();
+    
+    WCHAR fileSizeStr[255];
+    StrFormatByteSize(file.getSize(), fileSizeStr, 255);
+    m_fileSize = fileSizeStr;
 
     m_fileCreationTime = file.getCreationTime().Format(m_timeFormat);
     m_fileWriteTime = file.getLastWriteTime().Format(m_timeFormat);

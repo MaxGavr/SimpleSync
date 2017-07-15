@@ -169,6 +169,25 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, in
     SetItemText(index, LIST_COLUMNS::ACTION, action);
 }
 
+void CPreviewListCtrl::forbidOperation(int index)
+{
+    SyncOperation* operation = m_sortedOperations[index];
+
+    if (operation->getType() == SyncOperation::TYPE::EMPTY)
+        return;
+
+    operation->forbid(TRUE);
+
+    for (size_t i = index + 1; i < m_sortedOperations.size(); ++i)
+    {
+        if (m_sortedOperations[i]->dependsOn(operation))
+            forbidOperation(i);
+        else
+            break;
+    }
+    printSyncAction(operation, index);
+}
+
 void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& operations)
 {
     auto notInvolveFolder = [](const SyncOperation* op) -> bool {
@@ -300,14 +319,20 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
         auto op = dynamic_cast<ReplaceOperation*>(clickedOperation);
     
         if (op->isAmbiguous())
+        {
             op->removeAmbiguity();
-        else
-            op->forbid(!op->isForbidden());
+            printSyncAction(clickedOperation, hitTestInfo.iItem);
+            return;
+        }
+    }
+    
+    if (clickedOperation->isForbidden())
+    {
+        clickedOperation->forbid(FALSE);
+        printSyncAction(clickedOperation, hitTestInfo.iItem);
     }
     else
-        clickedOperation->forbid(!clickedOperation->isForbidden());
-
-    printSyncAction(clickedOperation, hitTestInfo.iItem);
+        forbidOperation(hitTestInfo.iItem);
 }
 
 COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
@@ -324,12 +349,26 @@ COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
     return CMFCListCtrl::OnGetCellTextColor(nRow, nColumn);
 }
 
+COLORREF CPreviewListCtrl::OnGetCellBkColor(int nRow, int nColumn)
+{
+    LIST_COLUMNS col = (LIST_COLUMNS)nColumn;
+
+    BOOL properColumn = (col == LIST_COLUMNS::SOURCE_FILE ||
+                         col == LIST_COLUMNS::DESTINATION_FILE);
+    BOOL operationExists = nRow < m_sortedOperations.size();
+
+    if (properColumn && operationExists)
+        return chooseOperationBkColor(m_sortedOperations[nRow]);
+
+    return CMFCListCtrl::OnGetCellBkColor(nRow, nColumn);
+}
+
 COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operation) const
 {
     SyncOperation::TYPE type = operation->getType();
 
     if (type == SyncOperation::TYPE::REMOVE)
-        return DELETION_COLOR;
+        return m_colors.DELETION_COLOR;
 
     if (type == SyncOperation::TYPE::COPY ||
         type == SyncOperation::TYPE::CREATE ||
@@ -339,18 +378,36 @@ COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operati
         FileProperties file = operation->getFile();
 
         if (m_syncManager->isFileInSourceFolder(file))
-            color = SOURCE_TO_DESTINATION_COLOR;
+            color = m_colors.SOURCE_TO_DESTINATION_COLOR;
         else
-            color = DESTINATION_TO_SOURCE_COLOR;
+            color = m_colors.DESTINATION_TO_SOURCE_COLOR;
 
         if (type == SyncOperation::TYPE::REPLACE)
         {
             auto op = dynamic_cast<const ReplaceOperation*>(operation);
-            color = op->isAmbiguous() ? AMBIGUOUS_COLOR : color;
+            color = op->isAmbiguous() ? m_colors.AMBIGUOUS_COLOR : color;
         }
 
         return color;
     }
     
-    return DEFAULT_COLOR;
+    return m_colors.DEFAULT_COLOR;
+}
+
+COLORREF CPreviewListCtrl::chooseOperationBkColor(const SyncOperation* operation) const
+{
+    COLORREF color = m_colors.DEFAULT_BACK_COLOR;
+
+    if (operation->isForbidden())
+        color = m_colors.FORBIDDEN_BACK_COLOR;
+
+    if (operation->getFile().isFolder())
+    {
+        if (operation->isForbidden())
+            color = m_colors.FORBIDDEN_FOLDER_BACK_COLOR;
+        else
+            color = m_colors.FOLDER_BACK_COLOR;
+    }
+
+    return color;
 }

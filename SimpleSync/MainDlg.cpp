@@ -129,7 +129,7 @@ void CMainDlg::OnOptionsButtonClicked()
 
 void CMainDlg::OnParametersButtonClicked()
 {
-    CCompareParamsDialog parametersDialog(m_syncManager);
+    CCompParametersDialog parametersDialog(m_syncManager);
 
     if (parametersDialog.DoModal() == IDOK)
         m_syncManager->setComparisonParameters(parametersDialog.getParameters());

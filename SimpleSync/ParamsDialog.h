@@ -1,16 +1,19 @@
 #pragma once
 
-#include "SyncManager.h"
 #include "afxwin.h"
+#include "FileProperties.h"
+
+class SyncManager;
 
 
-class CCompareParamsDialog : public CDialogEx
+
+class CCompParametersDialog : public CDialogEx
 {
-	DECLARE_DYNAMIC(CCompareParamsDialog)
+	DECLARE_DYNAMIC(CCompParametersDialog)
 
 public:
-	CCompareParamsDialog(const SyncManager* syncManager, CWnd* pParent = NULL);
-	virtual ~CCompareParamsDialog();
+	CCompParametersDialog(const SyncManager* syncManager, CWnd* pParent = NULL);
+	virtual ~CCompParametersDialog();
 
     FileComparisonParameters getParameters() const;
 
@@ -26,9 +29,9 @@ protected:
 public:
     virtual BOOL OnInitDialog();
 
-    afx_msg void OnParameterClicked(UINT id);
-    afx_msg void OnSizeButtonClicked();
-    afx_msg void OnTimeButtonClicked();
+    afx_msg void OnTimeRadioBoxClicked(UINT id);
+    afx_msg void OnSizeCheckBoxClicked();
+    afx_msg void OnTimeCheckBoxClicked();
 
 private:
     void enableTimeRadioBoxes(BOOL enable);

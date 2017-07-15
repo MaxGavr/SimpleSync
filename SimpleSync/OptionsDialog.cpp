@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "OptionsDialog.h"
-#include "SyncManager.h"
 #include "afxdialogex.h"
 
 
 
 IMPLEMENT_DYNAMIC(CSyncOptionsDialog, CDialogEx)
 
-CSyncOptionsDialog::CSyncOptionsDialog(const SyncManager* syncManager, CWnd* pParent /*=NULL*/)
+CSyncOptionsDialog::CSyncOptionsDialog(const SyncManager* syncManager,
+                                       CWnd* pParent)
 	: CDialogEx(IDD_OPTIONS_DIALOG, pParent)
 {
     m_syncOptions = syncManager->getOptions();
@@ -41,7 +41,10 @@ void CSyncOptionsDialog::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CSyncOptionsDialog, CDialogEx)
-    ON_CONTROL_RANGE(BN_CLICKED, IDC_RECURSIVE_CHECK, IDC_EMPTY_FOLDERS_CHECK, &CSyncOptionsDialog::OnOptionClicked)
+    ON_CONTROL_RANGE(BN_CLICKED,
+                     IDC_RECURSIVE_CHECK,
+                     IDC_EMPTY_FOLDERS_CHECK,
+                     &CSyncOptionsDialog::OnOptionClicked)
 END_MESSAGE_MAP()
 
 

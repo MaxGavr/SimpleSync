@@ -4,7 +4,6 @@
 
 
 
-
 class CSyncOptionsDialog : public CDialogEx
 {
 	DECLARE_DYNAMIC(CSyncOptionsDialog)

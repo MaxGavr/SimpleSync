@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "ParamsDialog.h"
+#include "SyncManager.h"
 #include "afxdialogex.h"
 
 
 
-IMPLEMENT_DYNAMIC(CCompareParamsDialog, CDialogEx)
+IMPLEMENT_DYNAMIC(CCompParametersDialog, CDialogEx)
 
-CCompareParamsDialog::CCompareParamsDialog(const SyncManager* syncManager, CWnd* pParent)
+CCompParametersDialog::CCompParametersDialog(const SyncManager* syncManager,
+                                             CWnd* pParent)
 	: CDialogEx(IDD_COMPARE_PARAMETERS_DIALOG, pParent)
 {
     auto defaultParameters = syncManager->getComparisonParameters();
@@ -18,16 +20,16 @@ CCompareParamsDialog::CCompareParamsDialog(const SyncManager* syncManager, CWnd*
     m_timeParameterRadio = (int)defaultParameters.timeToCompare;
 }
 
-CCompareParamsDialog::~CCompareParamsDialog()
+CCompParametersDialog::~CCompParametersDialog()
 {
 }
 
-FileComparisonParameters CCompareParamsDialog::getParameters() const
+FileComparisonParameters CCompParametersDialog::getParameters() const
 {
     return m_parameters;
 }
 
-void CCompareParamsDialog::DoDataExchange(CDataExchange* pDX)
+void CCompParametersDialog::DoDataExchange(CDataExchange* pDX)
 {
     CDialogEx::DoDataExchange(pDX);
     DDX_Radio(pDX, IDC_CREATION_TIME_RADIO, m_timeParameterRadio);
@@ -35,7 +37,7 @@ void CCompareParamsDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_TIME_PARAMETER_CHECK, m_compareTime);
 }
 
-void CCompareParamsDialog::OnParameterClicked(UINT id)
+void CCompParametersDialog::OnTimeRadioBoxClicked(UINT id)
 {
     UpdateData(TRUE);
 
@@ -54,21 +56,26 @@ void CCompareParamsDialog::OnParameterClicked(UINT id)
 }
 
 
-BEGIN_MESSAGE_MAP(CCompareParamsDialog, CDialogEx)
-    ON_CONTROL_RANGE(BN_CLICKED, IDC_CREATION_TIME_RADIO, IDC_ACCESS_TIME_RADIO, &CCompareParamsDialog::OnParameterClicked)
-    ON_BN_CLICKED(IDC_SIZE_PARAMETER_CHECK, &CCompareParamsDialog::OnSizeButtonClicked)
-    ON_BN_CLICKED(IDC_TIME_PARAMETER_CHECK, &CCompareParamsDialog::OnTimeButtonClicked)
+BEGIN_MESSAGE_MAP(CCompParametersDialog, CDialogEx)
+    ON_CONTROL_RANGE(BN_CLICKED,
+                     IDC_CREATION_TIME_RADIO,
+                     IDC_ACCESS_TIME_RADIO,
+                     &CCompParametersDialog::OnTimeRadioBoxClicked)
+    ON_BN_CLICKED(IDC_SIZE_PARAMETER_CHECK,
+                  &CCompParametersDialog::OnSizeCheckBoxClicked)
+    ON_BN_CLICKED(IDC_TIME_PARAMETER_CHECK,
+                  &CCompParametersDialog::OnTimeCheckBoxClicked)
 END_MESSAGE_MAP()
 
 
-void CCompareParamsDialog::OnSizeButtonClicked()
+void CCompParametersDialog::OnSizeCheckBoxClicked()
 {
     UpdateData(TRUE);
     m_parameters.compareSize = m_compareSize;
 }
 
 
-void CCompareParamsDialog::OnTimeButtonClicked()
+void CCompParametersDialog::OnTimeCheckBoxClicked()
 {
     UpdateData(TRUE);
     m_parameters.compareTime = m_compareTime;
@@ -76,14 +83,14 @@ void CCompareParamsDialog::OnTimeButtonClicked()
     enableTimeRadioBoxes(m_compareTime);
 }
 
-void CCompareParamsDialog::enableTimeRadioBoxes(BOOL enable)
+void CCompParametersDialog::enableTimeRadioBoxes(BOOL enable)
 {
     for (int i = IDC_CREATION_TIME_RADIO; i <= IDC_ACCESS_TIME_RADIO; ++i)
         GetDlgItem(i)->EnableWindow(enable);
 }
 
 
-BOOL CCompareParamsDialog::OnInitDialog()
+BOOL CCompParametersDialog::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
 

@@ -152,5 +152,23 @@
     <Image Include="..\..\..\Users\user\Desktop\icon_greater.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\icons\icon_equal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\icons\icon_less.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\icons\icon_greater.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\icons\icon_left_arrow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\icons\icon_left_right_arrow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\icons\icon_right_arrow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

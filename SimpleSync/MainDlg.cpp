@@ -53,6 +53,19 @@ BOOL CMainDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
     SetIcon(m_hIcon, FALSE);
 
+    m_directionRightImage.Load(IDB_RIGHT_ARROW);
+    m_directionBothImage.Load(IDB_LEFT_RIGHT_ARROW);
+    m_directionLeftImage.Load(IDB_LEFT_ARROW);
+
+    auto directionRight = (CButton*)GetDlgItem(IDC_DIRECTION_TO_RIGHT_BUTTON);
+    directionRight->SetBitmap(m_directionRightImage);
+
+    auto directionBoth = (CButton*)GetDlgItem(IDC_DIRECTION_BOTH_BUTTON);
+    directionBoth->SetBitmap(m_directionBothImage);
+
+    auto directionLeft = (CButton*)GetDlgItem(IDC_DIRECTION_TO_LEFT_BUTTON);
+    directionLeft->SetBitmap(m_directionLeftImage);
+
     m_previewList.setupColumns();
 
 	return TRUE;

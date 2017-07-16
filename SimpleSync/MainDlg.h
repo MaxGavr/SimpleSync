@@ -32,6 +32,10 @@ private:
     int m_directionRadioBox;
     CPreviewListCtrl m_previewList;
 
+    CPngImage m_directionRightImage;
+    CPngImage m_directionBothImage;
+    CPngImage m_directionLeftImage;
+
 public:
     afx_msg void OnSourceFolderChange();
     afx_msg void OnDestinationFolderChange();

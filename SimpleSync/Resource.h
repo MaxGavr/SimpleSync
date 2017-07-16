@@ -14,6 +14,10 @@
 #define IDB_LESS                        162
 #define IDB_PNG2                        163
 #define IDB_GREATER                     163
+#define IDB_LEFT_ARROW                  167
+#define IDB_LEFT_RIGHT_ARROW            168
+#define IDB_PNG4                        169
+#define IDB_RIGHT_ARROW                 169
 #define IDC_PREVIEW_LIST                1000
 #define IDC_DESTINATION_FOLDER_BROWSE   1001
 #define IDC_SOURCE_PATH_BROWSE          1002
@@ -97,7 +101,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        164
+#define _APS_NEXT_RESOURCE_VALUE        170
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1090
 #define _APS_NEXT_SYMED_VALUE           101

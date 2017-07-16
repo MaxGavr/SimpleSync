@@ -4,6 +4,7 @@
 #include "SyncManager.h"
 #include "OptionsDialog.h"
 #include "ParamsDialog.h"
+#include "ProgressDialog.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -107,7 +108,8 @@ void CMainDlg::OnPreviewButtonClicked()
 
 void CMainDlg::OnSyncButtonClicked()
 {
-    m_syncManager->sync();
+    CSyncProgressDialog dialog(m_syncManager);
+    dialog.DoModal();
 }
 
 void CMainDlg::OnDirectionButtonClicked(UINT nID)

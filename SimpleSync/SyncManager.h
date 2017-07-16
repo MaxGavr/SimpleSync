@@ -3,6 +3,7 @@
 #include <set>
 #include <deque>
 #include <algorithm>
+#include <functional>
 
 #include "FileProperties.h"
 #include "CopyOperation.h"
@@ -28,6 +29,7 @@ class SyncManager
 public:
     using FileSet = std::set <FileProperties>;
     using OperationQueue = std::deque <SyncOperation *>;
+    using SyncCallback = std::function <void (const SyncOperation*)>;
 
     enum class SYNC_DIRECTION {
         LEFT_TO_RIGHT,
@@ -61,7 +63,7 @@ public:
     BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
 
     BOOL scan();
-    void sync();
+    void sync(SyncCallback* callback);
     OperationQueue getOperations();
 
 private:

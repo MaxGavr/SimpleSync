@@ -9,6 +9,7 @@
 #define IDD_PARAMETERS_DIALOG           137
 #define IDD_FILE_PROPERTIES_DIALOG      139
 #define IDD_COMPARE_FILES_DIALOG        141
+#define IDD_SYNC_DIALOG                 143
 #define IDB_EQUAL                       161
 #define IDB_LESS                        162
 #define IDB_PNG2                        163
@@ -89,6 +90,8 @@
 #define IDC_LEFT_ARCHIVED_CHECK         1085
 #define IDC_LEFT_SYSTEM_CHECK           1086
 #define IDC_ACCESS_TIME_BITMAP          1087
+#define IDC_SYNC_PROGRESS               1088
+#define IDC_SYNC_STATIC                 1089
 
 // Next default values for new objects
 // 

@@ -112,12 +112,15 @@ BOOL SyncManager::scan()
     return TRUE;
 }
 
-void SyncManager::sync()
+void SyncManager::sync(SyncCallback* callback)
 {
     for (auto& operation: m_syncActions)
     {
         if (!operation->isForbidden())
+        {
+            (*callback)(operation);
             operation->execute();
+        }
     }
 }
 

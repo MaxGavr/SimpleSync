@@ -72,6 +72,9 @@
     <ClInclude Include="CompareDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ProgressDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SimpleSync.cpp">
@@ -120,6 +123,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CompareDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

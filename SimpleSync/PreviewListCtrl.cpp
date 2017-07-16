@@ -10,6 +10,22 @@ IMPLEMENT_DYNAMIC(CPreviewListCtrl, CMFCListCtrl)
 CPreviewListCtrl::CPreviewListCtrl(SyncManager* syncManager)
     : m_syncManager(syncManager)
 {
+    m_rightArrowImageSmall.Load(IDB_RIGHT_ARROW_SMALL); // ICONS::RIGHT_ARROW
+    m_equalImageSmall.Load(IDB_EQUAL_SMALL); // ICONS::EQUAL
+    m_leftArrowImageSmall.Load(IDB_LEFT_ARROW_SMALL); // ICONS::LEFT_ARROW
+    m_folderImageSmall.Load(IDB_FOLDER_SMALL); // ICONS::FOLDER
+    m_removeImageSmall.Load(IDB_REMOVE_SMALL); // ICONS::REMOVE
+    m_questionImageSmall.Load(IDB_QUESTION_SMALL); // ICONS::QUESTION
+
+    m_imageList.Create(PREVIEW_LIST_IMAGE_SIZE, PREVIEW_LIST_IMAGE_SIZE,
+                       ILC_COLOR32, 0, PREVIEW_LIST_IMAGE_COUNT);
+    COLORREF defaultMask = RGB(0, 0, 0);
+    m_imageList.Add(&m_rightArrowImageSmall, defaultMask);
+    m_imageList.Add(&m_equalImageSmall, defaultMask);
+    m_imageList.Add(&m_leftArrowImageSmall, defaultMask);
+    m_imageList.Add(&m_folderImageSmall, defaultMask);
+    m_imageList.Add(&m_removeImageSmall, defaultMask);
+    m_imageList.Add(&m_questionImageSmall, defaultMask);
 }
 
 CPreviewListCtrl::~CPreviewListCtrl()
@@ -18,37 +34,37 @@ CPreviewListCtrl::~CPreviewListCtrl()
 
 void CPreviewListCtrl::setupColumns()
 {
-    InsertColumn(LIST_COLUMNS::INDEX, L"�", LVCFMT_LEFT, 30)    InsertColumn(LIST_COLUMNS::SOURCE_FILE, L"�������� ������    InsertColumn(LIST_COLUMNS::ACTION, L"��������", LVCF    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, L"�������� ������}
-    SetExtendedStyle(GetExtendedStyle() | LVS_EX_AUTOSIZECOLUMNS |
-        LVS_EX_FULLROWSELECT);
+    SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT |
+                     LVS_EX_SUBITEMIMAGES);
+    
+    SetImageList(&m_imageList, LVSIL_SMALL);
 
-    optimizeColumnsWidth();
+    InsertColumn(LIST_COLUMNS::INDEX, _T("�")                 LVCFMT_RIGHT,
+                 PREVIEW_LIST_IMAGE_SIZE);
+    InsertColumn(LIST_COLUMNS::SOURCE_FILE, _T("���������                 LVCFMT_LEFT);
+    InsertColumn(LIST_COLUMNS::ACTION, _T(""),
+                 LVCFMT_CENTER | LVCFMT_FIXED_WIDTH,
+                 PREVIEW_LIST_IMAGE_SIZE);
+    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, _T("���������                 LVCFMT_LEFT);
+
+    adjustColumnsWidth();
 }
 
 void CPreviewListCtrl::showPreview()
 {
-    sortOperationsByFolders(m_syncManager->getOperations());
+    SyncManager::OperationQueue operations = m_syncManager->getOperations();
+    sortOperationsByFolders(operations);
     
     DeleteAllItems();
-    for (auto& action : m_sortedOperations)
-        printSyncAction(action);
+    for (auto& operation : m_sortedOperations)
+        printSyncAction(operation);
 
-    optimizeColumnsWidth();
+    adjustColumnsWidth();
 }
 
 void CPreviewListCtrl::printSyncAction(SyncOperation* operation, int index)
 {
-    CString itemIndexStr;
-    if (index < 0 || index >= GetItemCount())
-    {
-        itemIndexStr.Format(_T("%d"), GetItemCount() + 1);
-        index = InsertItem(GetItemCount(), itemIndexStr);
-    }
-    else
-    {
-        itemIndexStr.Format(_T("%d"), index + 1);
-        SetItemText(index, 0, itemIndexStr);
-    }
+    printOperationIndex(operation, index);
 
     switch (operation->getType())
     {
@@ -73,20 +89,20 @@ void CPreviewListCtrl::printSyncAction(SyncOperation* operation, int index)
 void CPreviewListCtrl::printCopyOperation(CopyOperation* operation, int index)
 {
     FileProperties file = operation->getFile();
-    CString action;
+    ICONS icon;
 
     if (m_syncManager->isFileInSourceFolder(file))
     {
         SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
-        action = L"->";
+        icon = ICONS::RIGHT_ARROW;
     }
     else
     {
         SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
-        action = L"<-";
+        icon = ICONS::LEFT_ARROW;
     }
 
-    SetItemText(index, LIST_COLUMNS::ACTION, action);
+    printOperationIcon(icon, index);
 }
 
 void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation, int index)
@@ -98,12 +114,12 @@ void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation, int inde
     else
         SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
 
-    SetItemText(index, LIST_COLUMNS::ACTION, L"X");
+    printOperationIcon(ICONS::REMOVE, index);
 }
 
 void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation, int index)
 {
-    CString action;
+    ICONS icon;
 
     FileProperties originalFile = operation->getFile();
     FileProperties fileToReplace = operation->getFileToReplace();
@@ -112,26 +128,26 @@ void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation, int in
     {
         SetItemText(index, LIST_COLUMNS::SOURCE_FILE, originalFile.getFileName());
         SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, fileToReplace.getFileName());
-        action = L"-->";
+        icon = ICONS::RIGHT_ARROW;
     }
     else
     {
         SetItemText(index, LIST_COLUMNS::SOURCE_FILE, fileToReplace.getFileName());
         SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, originalFile.getFileName());
-        action = L"<--";
+        icon = ICONS::LEFT_ARROW;
     }
 
     if (operation->isAmbiguous())
-        action = L"?";
+        icon = ICONS::QUESTION;
 
-    SetItemText(index, LIST_COLUMNS::ACTION, action);
+    printOperationIcon(icon, index);
 }
 
 void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation, int index)
 {
     FileProperties file = operation->getFile();
     FileProperties equalFile = operation->getEqualFile();
-
+    
     if (m_syncManager->isFileInSourceFolder(file))
     {
         SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
@@ -142,13 +158,13 @@ void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation, int index)
         SetItemText(index, LIST_COLUMNS::SOURCE_FILE, equalFile.getFileName());
         SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
     }
-
-    SetItemText(index, LIST_COLUMNS::ACTION, L"=");
+    
+    printOperationIcon(ICONS::EQUAL, index);
 }
 
 void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, int index)
 {
-    CString action;
+    ICONS icon;
 
     FileProperties originalFolder = operation->getFile();
     FileProperties folderToCreate = operation->getFolder();
@@ -157,16 +173,16 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, in
     {
         SetItemText(index, LIST_COLUMNS::SOURCE_FILE, originalFolder.getFileName());
         SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, folderToCreate.getFileName());
-        action = L"-->";
+        icon = ICONS::RIGHT_ARROW;
     }
     else
     {
         SetItemText(index, LIST_COLUMNS::SOURCE_FILE, folderToCreate.getFileName());
         SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, originalFolder.getFileName());
-        action = L"<--";
+        icon = ICONS::LEFT_ARROW;
     }
 
-    SetItemText(index, LIST_COLUMNS::ACTION, action);
+    printOperationIcon(icon, index);
 }
 
 void CPreviewListCtrl::forbidOperation(int index)
@@ -215,22 +231,30 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
     }
 }
 
-void CPreviewListCtrl::optimizeColumnsWidth()
+void CPreviewListCtrl::adjustColumnsWidth()
 {
-    for (int i = 0; i < GetHeaderCtrl().GetItemCount(); ++i)
-    {
-        SetColumnWidth(i, LVSCW_AUTOSIZE);
-        int contentWidth = GetColumnWidth(i);
-        SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
-        int headerWidth = GetColumnWidth(i);
+    SetRedraw(FALSE);
 
-        SetColumnWidth(i, max(contentWidth, headerWidth));
-    }
+    LPRECT rect = new RECT();
+    GetClientRect(rect);
+    LONG listWidth = rect->right - rect->left;
+
+    LONG part = (listWidth - PREVIEW_LIST_IMAGE_SIZE) / 9;
+
+    SetColumnWidth(LIST_COLUMNS::INDEX, part * 1);
+    SetColumnWidth(LIST_COLUMNS::SOURCE_FILE, part * 4);
+    SetColumnWidth(LIST_COLUMNS::DESTINATION_FILE, part * 4);
+    
+    SetRedraw(TRUE);
 }
 
 BEGIN_MESSAGE_MAP(CPreviewListCtrl, CMFCListCtrl)
     ON_NOTIFY_REFLECT(NM_DBLCLK, &CPreviewListCtrl::OnDoubleClick)
     ON_NOTIFY_REFLECT(NM_RCLICK, &CPreviewListCtrl::OnRightClick)
+    ON_NOTIFY(HDN_ENDTRACKA, 0, &CPreviewListCtrl::OnColumnDragEnd)
+    ON_NOTIFY(HDN_ENDTRACKW, 0, &CPreviewListCtrl::OnColumnDragEnd)
+    ON_MESSAGE(WM_ADJUST_COLUMNS, OnAdjustColumns)
+    ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -300,7 +324,6 @@ BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* twoFilesOp
     return TRUE;
 }
 
-
 void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
     LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
@@ -335,6 +358,12 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
         forbidOperation(hitTestInfo.iItem);
 }
 
+LRESULT CPreviewListCtrl::OnAdjustColumns(WPARAM wParam, LPARAM lParam)
+{
+    adjustColumnsWidth();
+    return 1;
+}
+
 COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
 {
     LIST_COLUMNS col = (LIST_COLUMNS)nColumn;
@@ -361,6 +390,46 @@ COLORREF CPreviewListCtrl::OnGetCellBkColor(int nRow, int nColumn)
         return chooseOperationBkColor(m_sortedOperations[nRow]);
 
     return CMFCListCtrl::OnGetCellBkColor(nRow, nColumn);
+}
+
+void CPreviewListCtrl::printOperationIndex(const SyncOperation* operation, int& index)
+{
+    int listItemCount = GetItemCount();
+
+    BOOL itemExists = (index >= 0) && (index < listItemCount);
+
+    if (!itemExists)
+        index = listItemCount;
+
+    LVITEM listItem;
+    listItem.mask = LVIF_TEXT | LVIF_IMAGE;
+    listItem.iItem = index;
+    listItem.iSubItem = LIST_COLUMNS::INDEX;
+    
+    CString indexStr;
+    indexStr.Format(_T("%d"), index + 1);
+    listItem.pszText = indexStr.GetBuffer();
+    
+    if (operation->getFile().isFolder())
+        listItem.iImage = ICONS::FOLDER;
+    else
+        listItem.iImage = -1;
+    
+    if (itemExists)
+        SetItem(&listItem);
+    else
+        InsertItem(&listItem);
+}
+
+void CPreviewListCtrl::printOperationIcon(ICONS icon, int index)
+{
+    LVITEM listItem;
+    listItem.mask = LVIF_IMAGE;
+    listItem.iItem = index;
+    listItem.iSubItem = LIST_COLUMNS::ACTION;
+    listItem.iImage = icon;
+
+    SetItem(&listItem);
 }
 
 COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operation) const
@@ -410,4 +479,17 @@ COLORREF CPreviewListCtrl::chooseOperationBkColor(const SyncOperation* operation
     }
 
     return color;
+}
+
+void CPreviewListCtrl::OnColumnDragEnd(NMHDR *pNMHDR, LRESULT *pResult)
+{
+    adjustColumnsWidth();
+    *pResult = 1;
+}
+
+void CPreviewListCtrl::OnSize(UINT nType, int cx, int cy)
+{
+    CMFCListCtrl::OnSize(nType, cx, cy);
+
+    PostMessage(WM_ADJUST_COLUMNS);
 }

@@ -237,11 +237,17 @@
     <Image Include="..\..\..\Users\user\Desktop\icon_greater.png" />
     <Image Include="..\..\..\Users\user\Desktop\icon_less.png" />
     <Image Include="..\icons\icon_equal.png" />
+    <Image Include="..\icons\icon_equal_small.png" />
+    <Image Include="..\icons\icon_folder_small.png" />
     <Image Include="..\icons\icon_greater.png" />
     <Image Include="..\icons\icon_left_arrow.png" />
+    <Image Include="..\icons\icon_left_arrow_small.png" />
     <Image Include="..\icons\icon_left_right_arrow.png" />
     <Image Include="..\icons\icon_less.png" />
+    <Image Include="..\icons\icon_question_small.png" />
+    <Image Include="..\icons\icon_remove_small.png" />
     <Image Include="..\icons\icon_right_arrow.png" />
+    <Image Include="..\icons\icon_right_arrow_small.png" />
     <Image Include="res\SimpleSync.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

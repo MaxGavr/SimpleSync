@@ -2,6 +2,10 @@
 
 #include "SyncManager.h"
 
+#define WM_ADJUST_COLUMNS (WM_USER + 10)
+
+
+
 struct PreviewListColors
 {
     const COLORREF DEFAULT_COLOR = RGB(0, 0, 0);
@@ -23,10 +27,19 @@ class CPreviewListCtrl : public CMFCListCtrl
 
 public:
     enum LIST_COLUMNS {
-        INDEX,
-        SOURCE_FILE,
-        ACTION,
-        DESTINATION_FILE
+        INDEX = 0,
+        SOURCE_FILE = 1,
+        ACTION = 2,
+        DESTINATION_FILE = 3
+    };
+    
+    enum ICONS {
+        RIGHT_ARROW = 0,
+        EQUAL = 1,
+        LEFT_ARROW = 2,
+        FOLDER = 3,
+        REMOVE = 4,
+        QUESTION = 5
     };
 
 	CPreviewListCtrl(SyncManager* syncManager);
@@ -50,28 +63,42 @@ private:
     void forbidOperation(int index);
 
     void sortOperationsByFolders(SyncManager::OperationQueue& operations);
-    void optimizeColumnsWidth();
+    void adjustColumnsWidth();
 
     SyncManager* m_syncManager;
     SyncManager::OperationQueue m_sortedOperations;
 
-
 public:
+    afx_msg void OnColumnDragEnd(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnRightClick(NMHDR *pNMHDR, LRESULT *pResult);
-
-private:
-    BOOL showFilePropertiesDialog(const SyncOperation* singleFileOperation);
-    BOOL showFilesComparisonDialog(const SyncOperation* doubleFileOperation);
-
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg LRESULT OnAdjustColumns(WPARAM wParam, LPARAM lParam);
 
 public:
     virtual COLORREF OnGetCellTextColor(int nRow, int nColumn) override;
     virtual COLORREF OnGetCellBkColor(int nRow, int nColumn) override;
 
 private:
+    BOOL showFilePropertiesDialog(const SyncOperation* singleFileOperation);
+    BOOL showFilesComparisonDialog(const SyncOperation* doubleFileOperation);
+
+    void printOperationIndex(const SyncOperation* operation, int& index);
+    void printOperationIcon(ICONS icon, int index);
+
     COLORREF chooseOperationTextColor(const SyncOperation* operation) const;
     COLORREF chooseOperationBkColor(const SyncOperation* operation) const;
     
     PreviewListColors m_colors;
+    
+    CImageList m_imageList;
+    CPngImage m_leftArrowImageSmall;
+    CPngImage m_rightArrowImageSmall;
+    CPngImage m_equalImageSmall;
+    CPngImage m_folderImageSmall;
+    CPngImage m_removeImageSmall;
+    CPngImage m_questionImageSmall;
+
+    const int PREVIEW_LIST_IMAGE_SIZE = 20;
+    const int PREVIEW_LIST_IMAGE_COUNT = 6;
 };

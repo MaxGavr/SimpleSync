@@ -10,7 +10,7 @@ IMPLEMENT_DYNAMIC(CSyncProgressDialog, CDialogEx)
 
 CSyncProgressDialog::CSyncProgressDialog(SyncManager* syncManager,
                                          CWnd* pParent)
-	: CDialogEx(IDD_SYNC_DIALOG, pParent),
+	: CDialogEx(IDD_SYNC_PROGRESS_DIALOG, pParent),
       m_syncManager(syncManager)
 {
 }
@@ -43,41 +43,35 @@ void CSyncProgressDialog::DoDataExchange(CDataExchange* pDX)
 
 void CSyncProgressDialog::showOperationProgress(const SyncOperation* operation)
 {
-    SyncOperation::TYPE type = operation->getType();
     CString title;
     CString* fullTitle = new CString(_T(""));
 
-    FileProperties file = operation->getFile();
-    CString fileRelativePath = m_syncManager->getFileRelativePath(file, TRUE);
-
+    SyncOperation::TYPE type = operation->getType();
     switch (type)
     {
     case SyncOperation::TYPE::COPY:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s...");
+        title = _T("Копирование %s");
         break;
     case SyncOperation::TYPE::REPLACE:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅ %s...");
+        title = _T("Замена %s");
         break;
     case SyncOperation::TYPE::REMOVE:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s...");
+        title = _T("Удаление %s");
         break;
     case SyncOperation::TYPE::CREATE:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ %s...");
+        title = _T("Создание папки %s");
         break;
     default:
-        title = _T("");
+        title = _T("...");
     }
 
-    fullTitle->Format(title, fileRelativePath);
+    FileProperties file = operation->getFile();
+    CString filePath = m_syncManager->getFileRelativePath(file, TRUE);
+
+    fullTitle->Format(title, filePath);
 
     PostMessage(WM_SHOW_SYNC_PROGRESS, (WPARAM)fullTitle);
 }
-
-
-BEGIN_MESSAGE_MAP(CSyncProgressDialog, CDialogEx)
-    ON_MESSAGE(WM_SHOW_SYNC_PROGRESS, OnShowSyncProgress)
-    ON_MESSAGE(WM_SYNC_COMPLETED, OnSyncCompleted)
-END_MESSAGE_MAP()
 
 
 BOOL CSyncProgressDialog::OnInitDialog()
@@ -96,6 +90,7 @@ BOOL CSyncProgressDialog::OnInitDialog()
     m_syncProgressBar.SetPos(0);
     m_syncProgressBar.SetStep(1);
 
+    // thread creation
     AfxBeginThread(runSync, this);
 
     return TRUE;
@@ -103,7 +98,7 @@ BOOL CSyncProgressDialog::OnInitDialog()
 
 LRESULT CSyncProgressDialog::OnSyncCompleted(WPARAM wParam, LPARAM lParam)
 {
-    m_currentOperationTitle = CString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
+    m_currentOperationTitle = CString("Синхронизация завершена");
     UpdateData(FALSE);
 
     auto okButton = (CButton *)GetDlgItem(IDOK);
@@ -115,8 +110,16 @@ LRESULT CSyncProgressDialog::OnSyncCompleted(WPARAM wParam, LPARAM lParam)
 LRESULT CSyncProgressDialog::OnShowSyncProgress(WPARAM wParam, LPARAM lParam)
 {
     m_syncProgressBar.StepIt();
+
     m_currentOperationTitle = *((CString *)wParam);
     UpdateData(FALSE);
+    delete (CString *)wParam;
 
     return 1;
 }
+
+
+BEGIN_MESSAGE_MAP(CSyncProgressDialog, CDialogEx)
+    ON_MESSAGE(WM_SHOW_SYNC_PROGRESS, OnShowSyncProgress)
+    ON_MESSAGE(WM_SYNC_COMPLETED, OnSyncCompleted)
+END_MESSAGE_MAP()

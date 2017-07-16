@@ -9,7 +9,7 @@
 #define IDD_PARAMETERS_DIALOG           137
 #define IDD_FILE_PROPERTIES_DIALOG      139
 #define IDD_COMPARE_FILES_DIALOG        141
-#define IDD_SYNC_DIALOG                 143
+#define IDD_SYNC_PROGRESS_DIALOG        143
 #define IDB_EQUAL                       161
 #define IDB_LESS                        162
 #define IDB_PNG2                        163
@@ -25,6 +25,7 @@
 #define IDB_REMOVE_SMALL                175
 #define IDI_SIMPLE_SYNC_ICON            176
 #define IDB_HELP                        177
+#define IDD_SYNC_DIALOG                 178
 #define IDC_PREVIEW_LIST                1000
 #define IDC_DESTINATION_FOLDER_BROWSE   1001
 #define IDC_SOURCE_PATH_BROWSE          1002
@@ -110,7 +111,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        178
+#define _APS_NEXT_RESOURCE_VALUE        179
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1095
 #define _APS_NEXT_SYMED_VALUE           101

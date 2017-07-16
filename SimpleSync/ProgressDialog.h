@@ -8,6 +8,8 @@
 class SyncManager;
 class SyncOperation;
 
+
+
 class CSyncProgressDialog : public CDialogEx
 {
 	DECLARE_DYNAMIC(CSyncProgressDialog)
@@ -16,10 +18,11 @@ public:
 	CSyncProgressDialog(SyncManager* syncManager, CWnd* pParent = NULL);
 	virtual ~CSyncProgressDialog();
 
+    // Run in separate worker thread
     static UINT runSync(LPVOID pParam);
 
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_SYNC_DIALOG };
+	enum { IDD = IDD_SYNC_PROGRESS_DIALOG };
 #endif
 
 protected:
@@ -28,6 +31,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
+    // Called in callback, that is passed to SyncManager::sync() function
     void showOperationProgress(const SyncOperation* operation);
 
     SyncManager* m_syncManager;

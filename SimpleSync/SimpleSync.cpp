@@ -38,27 +38,17 @@ BOOL CSyncApp::InitInstance()
 
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
-    // TODO: Change registry key
-    SetRegistryKey(_T("��������� ����������, ���
+    SetRegistryKey(_T("SimpleSync"));
+
+
     SyncManager syncManager;
 
-	CMainDlg dlg(&syncManager);
-	m_pMainWnd = &dlg;
-	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
-	}
-	else if (nResponse == IDCANCEL)
-	{
-	}
-	else if (nResponse == -1)
-	{
-		TRACE(traceAppMsg, 0, "��������������. �� ������� ������� ����		TRACE(traceAppMsg, 0, "��������������. ��� ������������� ��������� �����	}
+	CMainDlg dialog(&syncManager);
+	m_pMainWnd = &dialog;
+	INT_PTR nResponse = dialog.DoModal();
 
 	if (pShellManager != NULL)
-	{
 		delete pShellManager;
-	}
 
 #if !defined(_AFXDLL) && !defined(_AFX_NO_MFC_CONTROLS_IN_DIALOGS)
 	ControlBarCleanUp();

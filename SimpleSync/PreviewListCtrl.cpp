@@ -52,14 +52,21 @@ void CPreviewListCtrl::setupColumns()
 
 void CPreviewListCtrl::showPreview()
 {
+    clearPreview();
+    
     SyncManager::OperationQueue operations = m_syncManager->getOperations();
     sortOperationsByFolders(operations);
     
-    DeleteAllItems();
     for (auto& operation : m_sortedOperations)
         printSyncAction(operation);
 
     adjustColumnsWidth();
+}
+
+void CPreviewListCtrl::clearPreview()
+{
+    DeleteAllItems();
+    m_sortedOperations.clear();
 }
 
 void CPreviewListCtrl::printSyncAction(SyncOperation* operation, int index)

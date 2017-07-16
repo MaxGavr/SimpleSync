@@ -47,6 +47,7 @@ public:
 
     void setupColumns();
     void showPreview();
+    void clearPreview();
 
 protected:
 	DECLARE_MESSAGE_MAP()

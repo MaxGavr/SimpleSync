@@ -70,8 +70,10 @@ private:
     BOOL folderExists(const CString& folder) const;
     BOOL fileMeetsRequirements(const FileProperties& file) const;
     FileSet getFilesFromFolder(const CString& folder) const;
+    
     void scanFolders(const CString& source, const CString& destination);
     
+    void clearOperationQueue();
 
     void enqueueOperation(SyncOperation* operation);
     void manageCopyOperation(const FileProperties& fileToCopy,

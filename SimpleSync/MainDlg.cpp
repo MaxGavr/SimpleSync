@@ -104,25 +104,36 @@ void CMainDlg::OnSourceFolderChange()
 {
     UpdateData(TRUE);
     m_syncManager->setSourceFolder(m_sourcePath);
+    m_previewList.clearPreview();
 }
 
 void CMainDlg::OnDestinationFolderChange()
 {
     UpdateData(TRUE);
     m_syncManager->setDestinationFolder(m_destinationPath);
+    m_previewList.clearPreview();
 }
 
 void CMainDlg::OnPreviewButtonClicked()
 {
     if (!m_syncManager->scan())
-        MessageBox(_T("���������� �������� �������            _T("������"), MB_ICONERRO    else
+    {
+        MessageBox(_T("���������� �������� �������                   _T("������"), MB_ICONERRO    }
+    else
         m_previewList.showPreview();
 }
 
 void CMainDlg::OnSyncButtonClicked()
 {
-    CSyncProgressDialog dialog(m_syncManager);
-    dialog.DoModal();
+    int operationsCount = m_syncManager->getOperations().size();
+    if (operationsCount != 0)
+    {
+        CSyncProgressDialog dialog(m_syncManager);
+        dialog.DoModal();
+    }
+    else
+    {
+        MessageBox(_T("������ ���                   _T("�������������"), MB_    }
 }
 
 void CMainDlg::OnDirectionButtonClicked(UINT nID)

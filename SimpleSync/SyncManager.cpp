@@ -19,11 +19,13 @@ SyncManager::~SyncManager()
 void SyncManager::setSourceFolder(const CString& source)
 {
     m_sourceFolder = source;
+    clearOperationQueue();
 }
 
 void SyncManager::setDestinationFolder(const CString& destination)
 {
     m_destinationFolder = destination;
+    clearOperationQueue();
 }
 
 CString SyncManager::getSourceFolder() const
@@ -96,9 +98,7 @@ BOOL SyncManager::isFileInFiles(const FileProperties& file,
 
 BOOL SyncManager::scan()
 {
-    for (auto it = m_syncActions.begin(); it != m_syncActions.end(); ++it)
-        delete (*it);
-    m_syncActions.clear();
+    clearOperationQueue();
 
     if (!folderExists(getSourceFolder()) ||
         !folderExists(getDestinationFolder()))
@@ -222,6 +222,13 @@ void SyncManager::scanFolders(const CString& source,
 
         fileIterator = destinationFiles.erase(fileIterator);
     }
+}
+
+void SyncManager::clearOperationQueue()
+{
+    for (auto it = m_syncActions.begin(); it != m_syncActions.end(); ++it)
+        delete (*it);
+    m_syncActions.clear();
 }
 
 void SyncManager::enqueueOperation(SyncOperation* operation)

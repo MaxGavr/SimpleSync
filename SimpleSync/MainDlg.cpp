@@ -121,22 +121,46 @@ void CMainDlg::OnPreviewButtonClicked()
 {
     if (!m_syncManager->scan())
     {
-        MessageBox(_T("���������� �������� �������                   _T("������"), MB_ICONERRO    }
-    else
-        m_previewList.showPreview();
+        MessageBox(_T("���������� ��                      "���������, ��� �                   _T("������"), MB_ICONERRO        return;
+    }
+    
+    int operationsCount = m_syncManager->getOperations().size();
+
+    if (operationsCount == 0)
+    {
+        MessageBox(_T("������������ �� �����                   _T("�������������"), MB_        return;
+    }
+
+    m_previewList.showPreview();
 }
 
 void CMainDlg::OnSyncButtonClicked()
 {
-    int operationsCount = m_syncManager->getOperations().size();
-    if (operationsCount != 0)
+    SyncManager::OperationQueue operations = m_syncManager->getOperations();
+    int operationsCount = operations.size();
+
+    if (operationsCount == 0)
     {
-        CSyncProgressDialog dialog(m_syncManager);
-        dialog.DoModal();
+        MessageBox(_T("������ ���                   _T("�������������"), MB_        return;
     }
-    else
+
+    auto isAmbiguous = [](const SyncOperation* op) -> BOOL {
+        auto rOp = dynamic_cast<const ReplaceOperation*>(op);
+        if (rOp)
+            return rOp->isAmbiguous();
+        return FALSE;
+    };
+    BOOL hasAmbiguous = std::any_of(operations.begin(), operations.end(), isAmbiguous);
+
+    if (hasAmbiguous)
     {
-        MessageBox(_T("������ ���                   _T("�������������"), MB_    }
+        LPCTSTR msg = _T("��������� ����                         "������� ������ ��                         "��� �� ���                         "������� �        LPCTSTR title = _T("����������        int response = MessageBox(msg, title, MB_ICONEXCLAMATION | MB_YESNO);
+        if (response == IDNO)
+            return;
+    }
+
+    CSyncProgressDialog dialog(m_syncManager);
+    dialog.DoModal();
 }
 
 void CMainDlg::OnDirectionButtonClicked(UINT nID)

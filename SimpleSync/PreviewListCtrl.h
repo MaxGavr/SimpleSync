@@ -54,6 +54,7 @@ protected:
 
 private:
     void printSyncAction(SyncOperation* action, int index = -1);
+    void printFile(const FileProperties& file, int index, LIST_COLUMNS column);
 
     void printCopyOperation(CopyOperation* operation, int index);
     void printRemoveOperation(RemoveOperation* operation, int index);

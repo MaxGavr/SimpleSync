@@ -93,6 +93,17 @@ void CPreviewListCtrl::printSyncAction(SyncOperation* operation, int index)
     }
 }
 
+void CPreviewListCtrl::printFile(const FileProperties& file, int index, LIST_COLUMNS column)
+{
+    CString str;
+    if (file.isFolder())
+        str = m_syncManager->getFileRelativePath(file, TRUE);
+    else
+        str = file.getFileName();
+
+    SetItemText(index, column, str);
+}
+
 void CPreviewListCtrl::printCopyOperation(CopyOperation* operation, int index)
 {
     FileProperties file = operation->getFile();
@@ -100,12 +111,12 @@ void CPreviewListCtrl::printCopyOperation(CopyOperation* operation, int index)
 
     if (m_syncManager->isFileInSourceFolder(file))
     {
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
+        printFile(file, index, LIST_COLUMNS::SOURCE_FILE);
         icon = ICONS::RIGHT_ARROW;
     }
     else
     {
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+        printFile(file, index, LIST_COLUMNS::DESTINATION_FILE);
         icon = ICONS::LEFT_ARROW;
     }
 
@@ -117,9 +128,9 @@ void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation, int inde
     FileProperties file = operation->getFile();
 
     if (m_syncManager->isFileInSourceFolder(file))
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
+        printFile(file, index, LIST_COLUMNS::SOURCE_FILE);
     else
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+        printFile(file, index, LIST_COLUMNS::DESTINATION_FILE);
 
     printOperationIcon(ICONS::REMOVE, index);
 }
@@ -133,14 +144,14 @@ void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation, int in
 
     if (m_syncManager->isFileInSourceFolder(originalFile))
     {
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, originalFile.getFileName());
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, fileToReplace.getFileName());
+        printFile(originalFile, index, LIST_COLUMNS::SOURCE_FILE);
+        printFile(fileToReplace, index, LIST_COLUMNS::DESTINATION_FILE);
         icon = ICONS::RIGHT_ARROW;
     }
     else
     {
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, fileToReplace.getFileName());
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, originalFile.getFileName());
+        printFile(fileToReplace, index, LIST_COLUMNS::SOURCE_FILE);
+        printFile(originalFile, index, LIST_COLUMNS::DESTINATION_FILE);
         icon = ICONS::LEFT_ARROW;
     }
 
@@ -157,13 +168,13 @@ void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation, int index)
     
     if (m_syncManager->isFileInSourceFolder(file))
     {
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, file.getFileName());
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, equalFile.getFileName());
+        printFile(file, index, LIST_COLUMNS::SOURCE_FILE);
+        printFile(equalFile, index, LIST_COLUMNS::DESTINATION_FILE);
     }
     else
     {
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, equalFile.getFileName());
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, file.getFileName());
+        printFile(equalFile, index, LIST_COLUMNS::SOURCE_FILE);
+        printFile(file, index, LIST_COLUMNS::DESTINATION_FILE);
     }
     
     printOperationIcon(ICONS::EQUAL, index);
@@ -178,14 +189,14 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, in
 
     if (m_syncManager->isFileInSourceFolder(originalFolder))
     {
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, originalFolder.getFileName());
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, folderToCreate.getFileName());
+        printFile(originalFolder, index, LIST_COLUMNS::SOURCE_FILE);
+        printFile(folderToCreate, index, LIST_COLUMNS::DESTINATION_FILE);
         icon = ICONS::RIGHT_ARROW;
     }
     else
     {
-        SetItemText(index, LIST_COLUMNS::SOURCE_FILE, folderToCreate.getFileName());
-        SetItemText(index, LIST_COLUMNS::DESTINATION_FILE, originalFolder.getFileName());
+        printFile(folderToCreate, index, LIST_COLUMNS::SOURCE_FILE);
+        printFile(originalFolder, index, LIST_COLUMNS::DESTINATION_FILE);
         icon = ICONS::LEFT_ARROW;
     }
 

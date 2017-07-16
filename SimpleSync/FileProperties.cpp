@@ -4,7 +4,6 @@
 
 
 
-
 FileProperties::FileProperties(const CFileStatus& properties)
     : m_properties(properties)
 {
@@ -12,7 +11,7 @@ FileProperties::FileProperties(const CFileStatus& properties)
 
 FileProperties::FileProperties(const CString& fileName, BOOL isFolder)
 {
-    _tcscpy(m_properties.m_szFullName, fileName);
+    wcscpy_s(m_properties.m_szFullName, fileName);
     if (isFolder)
         m_properties.m_attribute |= CFile::Attribute::directory;
 }
@@ -23,33 +22,38 @@ FileProperties::~FileProperties()
 
 
 FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties& file,
-    const FileComparisonParameters& params) const
+                                                            const FileComparisonParameters& params) const
 {
-    if (this->getFileName() != file.getFileName())
+    BOOL equalNames = this->getFileName() == file.getFileName();
+    if (!equalNames)
         return COMPARISON_RESULT::UNDEFINED;
 
     ComparisonResults results;
 
-    if (params.compareSize)
+    if (params.m_compareSize)
     {
-        COMPARISON_RESULT sizeCompare = compareProperty(this->getSize(), file.getSize());
+        COMPARISON_RESULT sizeCompare = compareProperty(this->getSize(),
+                                                        file.getSize());
         results.push_back(sizeCompare);
     }
 
-    if (params.compareTime)
+    if (params.m_compareTime)
     {
         COMPARISON_RESULT timeCompare;
 
-        switch (params.timeToCompare)
+        switch (params.m_timeToCompare)
         {
-        case TIMES::CREATION_TIME:
-            timeCompare = compareProperty(this->getCreationTime(), file.getCreationTime());
+        case TIME_STAMP::CREATION_TIME:
+            timeCompare = compareProperty(this->getCreationTime(),
+                                          file.getCreationTime());
             break;
-        case TIMES::LAST_ACCESS_TIME:
-            timeCompare = compareProperty(this->getLastAccessTime(), file.getLastAccessTime());
+        case TIME_STAMP::LAST_ACCESS_TIME:
+            timeCompare = compareProperty(this->getLastAccessTime(),
+                                          file.getLastAccessTime());
             break;
-        case TIMES::LAST_WRITE_TIME:
-            timeCompare = compareProperty(this->getLastWriteTime(), file.getLastWriteTime());
+        case TIME_STAMP::LAST_WRITE_TIME:
+            timeCompare = compareProperty(this->getLastWriteTime(),
+                                          file.getLastWriteTime());
             break;
         }
 
@@ -57,33 +61,37 @@ FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties
     }
 
     return makeChoice(results);
-
 }
 
 FileProperties::COMPARISON_RESULT FileProperties::makeChoice(ComparisonResults& results) const
 {
-    results.remove(COMPARISON_RESULT::EQUAL);
+    using RESULT = COMPARISON_RESULT;
+
+    results.remove(RESULT::EQUAL);
 
     if (results.empty())
-        return COMPARISON_RESULT::EQUAL;
+        return RESULT::EQUAL;
 
-    BOOL hasPreferable = std::find(results.begin(), results.end(), COMPARISON_RESULT::PREFERABLE)!= results.end();
-    BOOL hasNonPreferable = std::find(results.begin(), results.end(), COMPARISON_RESULT::NON_PREFERABLE) != results.end();
+    auto it = std::find(results.begin(), results.end(), RESULT::PREFERABLE);
+    BOOL hasPreferable = it != results.end();
+
+    it = std::find(results.begin(), results.end(), RESULT::NON_PREFERABLE);
+    BOOL hasNonPreferable = it != results.end();
 
     if (hasPreferable)
     {
         if (hasNonPreferable)
-            return COMPARISON_RESULT::UNDEFINED;
+            return RESULT::UNDEFINED;
         else
-            return COMPARISON_RESULT::PREFERABLE;
+            return RESULT::PREFERABLE;
     }
     else
-        return COMPARISON_RESULT::NON_PREFERABLE;
+        return RESULT::NON_PREFERABLE;
 }
 
 FileProperties FileProperties::operator=(const FileProperties& file)
 {
-    _tcscpy(m_properties.m_szFullName, file.m_properties.m_szFullName);
+    wcscpy_s(m_properties.m_szFullName, file.m_properties.m_szFullName);
     
     m_properties.m_size = file.m_properties.m_size;
 
@@ -98,11 +106,11 @@ FileProperties FileProperties::operator=(const FileProperties& file)
 
 BOOL FileProperties::operator<(const FileProperties& file) const
 {
-    bool isFolder1 = this->isFolder();
-    bool isFolder2 = file.isFolder();
+    BOOL isThisFolder = this->isFolder();
+    BOOL isFileFolder = file.isFolder();
 
-    if (isFolder1 != isFolder2)
-        return isFolder1 ? FALSE : TRUE;
+    if (isThisFolder != isFileFolder)
+        return isThisFolder ? FALSE : TRUE;
     else
         return (this->getFileName() < file.getFileName());
 }
@@ -124,8 +132,9 @@ BOOL FileProperties::operator==(const FileProperties& file) const
 
 CString FileProperties::getFileName() const
 {
-    int slashPosition = getFullPath().ReverseFind('\\');
-    return getFullPath().Right(getFullPath().GetLength() - slashPosition - 1);
+    CString fullPath = getFullPath();
+    int slashPos = fullPath.ReverseFind('\\');
+    return fullPath.Right(fullPath.GetLength() - slashPos - 1);
 }
 
 CString FileProperties::getFullPath() const
@@ -135,24 +144,31 @@ CString FileProperties::getFullPath() const
 
 CString FileProperties::getParentFolder() const
 {
-    return getFullPath().Left(getFullPath().ReverseFind('\\'));
+    CString fullPath = getFullPath();
+    int slashPos = fullPath.ReverseFind('\\');
+    return fullPath.Left(slashPos);
 }
 
-// won't work with foo/bar and foo
-CString FileProperties::getRelativePath(const CString& rootFolder, BOOL withName) const
+// won't work with foo/bar and foo ???
+CString FileProperties::getRelativePath(const CString& rootFolder,
+                                        BOOL withName) const
 {
-    int rootPosition = getFullPath().Find(rootFolder);
+    CString fullPath = getFullPath();
+
+    int rootPosition = fullPath.Find(rootFolder);
+    // TODO: throw exception
     if (rootPosition != 0)
         return CString();
 
-    CString relativePathWithName = getFullPath().Right(getFullPath().GetLength() - rootFolder.GetLength() - 1);
+    int relativePathPos = fullPath.GetLength() - rootFolder.GetLength() - 1;
+    CString relativePathWithName = fullPath.Right(relativePathPos);
 
     if (withName)
         return relativePathWithName;
 
-    int slashPosition = relativePathWithName.ReverseFind('\\');
-    if (slashPosition != -1)
-        return relativePathWithName.Left(slashPosition);
+    int slashPos = relativePathWithName.ReverseFind('\\');
+    if (slashPos != -1)
+        return relativePathWithName.Left(slashPos);
     else
         return CString();
 }

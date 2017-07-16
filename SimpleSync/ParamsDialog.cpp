@@ -15,9 +15,9 @@ CCompParametersDialog::CCompParametersDialog(const SyncManager* syncManager,
     auto defaultParameters = syncManager->getComparisonParameters();
     m_parameters = defaultParameters;
 
-    m_compareSize = defaultParameters.compareSize;
-    m_compareTime = defaultParameters.compareTime;
-    m_timeParameterRadio = (int)defaultParameters.timeToCompare;
+    m_compareSize = defaultParameters.m_compareSize;
+    m_compareTime = defaultParameters.m_compareTime;
+    m_timeParameterRadio = (int)defaultParameters.m_timeToCompare;
 }
 
 CCompParametersDialog::~CCompParametersDialog()
@@ -44,13 +44,13 @@ void CCompParametersDialog::OnTimeRadioBoxClicked(UINT id)
     switch (id)
     {
     case IDC_CREATION_TIME_RADIO:
-        m_parameters.timeToCompare = FileProperties::TIMES::CREATION_TIME;
+        m_parameters.m_timeToCompare = FileProperties::TIME_STAMP::CREATION_TIME;
         break;
     case IDC_WRITE_TIME_RADIO:
-        m_parameters.timeToCompare = FileProperties::TIMES::LAST_WRITE_TIME;
+        m_parameters.m_timeToCompare = FileProperties::TIME_STAMP::LAST_WRITE_TIME;
         break;
     case IDC_ACCESS_TIME_RADIO:
-        m_parameters.timeToCompare = FileProperties::TIMES::LAST_ACCESS_TIME;
+        m_parameters.m_timeToCompare = FileProperties::TIME_STAMP::LAST_ACCESS_TIME;
         break;
     }
 }
@@ -71,14 +71,14 @@ END_MESSAGE_MAP()
 void CCompParametersDialog::OnSizeCheckBoxClicked()
 {
     UpdateData(TRUE);
-    m_parameters.compareSize = m_compareSize;
+    m_parameters.m_compareSize = m_compareSize;
 }
 
 
 void CCompParametersDialog::OnTimeCheckBoxClicked()
 {
     UpdateData(TRUE);
-    m_parameters.compareTime = m_compareTime;
+    m_parameters.m_compareTime = m_compareTime;
 
     enableTimeRadioBoxes(m_compareTime);
 }

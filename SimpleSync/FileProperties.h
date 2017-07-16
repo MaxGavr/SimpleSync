@@ -4,33 +4,50 @@
 
 struct FileComparisonParameters;
 
+
+
+// Contains file properties, such as:
+// full path to file, size, time stamps and system attributes
 class FileProperties
 {
 public:
-
     enum class COMPARISON_RESULT {
-        EQUAL,
+        EQUAL, 
         PREFERABLE,
         NON_PREFERABLE,
-        UNDEFINED
+        UNDEFINED // preference cannot be determined
     };
 
-    enum class TIMES {
+    enum class TIME_STAMP {
         CREATION_TIME,
         LAST_WRITE_TIME,
         LAST_ACCESS_TIME
     };
+
     using ComparisonResults = std::list <COMPARISON_RESULT>;
 
+    // TODO: rewrite comparison mechanism to support arbitrary amount
+    //       of parameters (maybe using map of comparator functors)
+    // TODO: check for correctness CFileStatus struct's members
+    // TODO: exceptions
+    // TODO: probably add temporary flag
     FileProperties(const CFileStatus& properties);
-    FileProperties(const CString& fileName = CString(""), BOOL isFolder = FALSE);
+    FileProperties(const CString& fileName = _T(""), BOOL isFolder = FALSE);
     ~FileProperties();
 
+    // Can be used to compare various properties, such as times and size
+    // Greater value (>) is PREFERABLE
     template<class T>
     static COMPARISON_RESULT compareProperty(const T& first, const T& second);
-    COMPARISON_RESULT compareTo(const FileProperties& file, const FileComparisonParameters& params) const;
+
+    COMPARISON_RESULT compareTo(const FileProperties& file,
+                                const FileComparisonParameters& params) const;
 
     FileProperties operator= (const FileProperties& file);
+
+    // Required by SyncManager::FileSet to sort files by name
+    // in lexicographical order
+    // in addition, folders precede files;
     BOOL operator< (const FileProperties& file) const;
     BOOL operator== (const FileProperties& file) const;
 
@@ -46,7 +63,7 @@ public:
     CTime getLastWriteTime() const;
 
     BOOL isFolder() const;
-    BOOL isParentFolder(const FileProperties& folder) const;
+    BOOL isParentFolder(const FileProperties& parentFolder) const;
 
     BOOL isArchived() const;
     BOOL isSystem() const;
@@ -62,27 +79,29 @@ private:
 
 struct FileComparisonParameters
 {
-    BOOL compareSize = FALSE;
-    BOOL compareTime = FALSE;
-    FileProperties::TIMES timeToCompare = FileProperties::TIMES::LAST_WRITE_TIME;
+    BOOL m_compareSize = FALSE;
+    BOOL m_compareTime = FALSE;
+    FileProperties::TIME_STAMP m_timeToCompare =
+        FileProperties::TIME_STAMP::LAST_WRITE_TIME;
 };
 
 
 
-template<>
-inline FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const BOOL& first, const BOOL& second)
-{
-    if (first || !second)
-        return COMPARISON_RESULT::PREFERABLE;
-    else
-        return first == second ? COMPARISON_RESULT::EQUAL : COMPARISON_RESULT::NON_PREFERABLE;
-}
-
 template<class T>
-FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const T& first, const T& second)
+FileProperties::COMPARISON_RESULT FileProperties::compareProperty(const T& prop1,
+                                                                  const T& prop2)
 {
-    if (first > second)
-        return COMPARISON_RESULT::PREFERABLE;
+    COMPARISON_RESULT result;
+
+    if (prop1 > prop2)
+        result = COMPARISON_RESULT::PREFERABLE;
     else
-        return first == second ? COMPARISON_RESULT::EQUAL : COMPARISON_RESULT::NON_PREFERABLE;
+    {
+        if (prop1 == prop2)
+            result = COMPARISON_RESULT::EQUAL;
+        else
+            result = COMPARISON_RESULT::NON_PREFERABLE;
+    }
+
+    return result;
 }

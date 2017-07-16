@@ -13,7 +13,7 @@
 
 
 
-CMainDlg::CMainDlg(SyncManager* syncManager, CWnd* pParent /*=NULL*/)
+CMainDlg::CMainDlg(SyncManager* syncManager, CWnd* pParent)
 	: CDialogEx(IDD_SIMPLESYNC_DIALOG, pParent),
       m_syncManager(syncManager),
       m_sourcePath(_T("")),
@@ -21,7 +21,7 @@ CMainDlg::CMainDlg(SyncManager* syncManager, CWnd* pParent /*=NULL*/)
       m_previewList(syncManager),
       m_directionRadioBox((int)syncManager->getSyncDirection())
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_SIMPLE_SYNC_ICON);
 }
 
 void CMainDlg::DoDataExchange(CDataExchange* pDX)
@@ -89,9 +89,7 @@ void CMainDlg::OnPaint()
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
-	{
 		CDialogEx::OnPaint();
-	}
 }
 
 HCURSOR CMainDlg::OnQueryDragIcon()
@@ -147,9 +145,7 @@ void CMainDlg::OnOptionsButtonClicked()
     CSyncOptionsDialog optionsDialog(m_syncManager);
 
     if (optionsDialog.DoModal() == IDOK)
-    {
         m_syncManager->setOptions(optionsDialog.getOptions());
-    }
 }
 
 

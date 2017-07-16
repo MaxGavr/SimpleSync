@@ -236,6 +236,7 @@
     <Image Include="..\..\..\Users\user\Desktop\icon_equal.png" />
     <Image Include="..\..\..\Users\user\Desktop\icon_greater.png" />
     <Image Include="..\..\..\Users\user\Desktop\icon_less.png" />
+    <Image Include="..\..\..\Users\user\Desktop\icon_main.ico" />
     <Image Include="..\icons\icon_equal.png" />
     <Image Include="..\icons\icon_equal_small.png" />
     <Image Include="..\icons\icon_folder_small.png" />

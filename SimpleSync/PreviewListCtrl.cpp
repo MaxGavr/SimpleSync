@@ -444,7 +444,7 @@ COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operati
     SyncOperation::TYPE type = operation->getType();
 
     if (type == SyncOperation::TYPE::REMOVE)
-        return m_colors.DELETION_COLOR;
+        return m_colors.REMOVE_TEXT_COLOR;
 
     if (type == SyncOperation::TYPE::COPY ||
         type == SyncOperation::TYPE::CREATE ||
@@ -454,20 +454,20 @@ COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operati
         FileProperties file = operation->getFile();
 
         if (m_syncManager->isFileInSourceFolder(file))
-            color = m_colors.SOURCE_TO_DESTINATION_COLOR;
+            color = m_colors.SOURCE_TO_DESTINATION_TEXT_COLOR;
         else
-            color = m_colors.DESTINATION_TO_SOURCE_COLOR;
+            color = m_colors.DESTINATION_TO_SOURCE_TEXT_COLOR;
 
         if (type == SyncOperation::TYPE::REPLACE)
         {
             auto op = dynamic_cast<const ReplaceOperation*>(operation);
-            color = op->isAmbiguous() ? m_colors.AMBIGUOUS_COLOR : color;
+            color = op->isAmbiguous() ? m_colors.AMBIGUOUS_TEXT_COLOR : color;
         }
 
         return color;
     }
     
-    return m_colors.DEFAULT_COLOR;
+    return m_colors.DEFAULT_TEXT_COLOR;
 }
 
 COLORREF CPreviewListCtrl::chooseOperationBkColor(const SyncOperation* operation) const

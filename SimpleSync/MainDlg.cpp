@@ -43,6 +43,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
     ON_BN_CLICKED(IDC_SYNC_BUTTON, &CMainDlg::OnSyncButtonClicked)
     ON_BN_CLICKED(IDC_OPTIONS_BUTTON, &CMainDlg::OnOptionsButtonClicked)
     ON_BN_CLICKED(IDC_PARAMETERS_BUTTON, &CMainDlg::OnParametersButtonClicked)
+    ON_BN_CLICKED(IDC_HELP_BUTTON, &CMainDlg::OnHelpButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -56,6 +57,7 @@ BOOL CMainDlg::OnInitDialog()
     m_directionRightImage.Load(IDB_RIGHT_ARROW);
     m_directionBothImage.Load(IDB_LEFT_RIGHT_ARROW);
     m_directionLeftImage.Load(IDB_LEFT_ARROW);
+    m_helpImage.Load(IDB_HELP);
 
     auto directionRight = (CButton*)GetDlgItem(IDC_DIRECTION_TO_RIGHT_BUTTON);
     directionRight->SetBitmap(m_directionRightImage);
@@ -65,6 +67,9 @@ BOOL CMainDlg::OnInitDialog()
 
     auto directionLeft = (CButton*)GetDlgItem(IDC_DIRECTION_TO_LEFT_BUTTON);
     directionLeft->SetBitmap(m_directionLeftImage);
+
+    auto help = (CButton*)GetDlgItem(IDC_HELP_BUTTON);
+    help->SetBitmap(m_helpImage);
 
     m_previewList.setupColumns();
 
@@ -155,4 +160,10 @@ void CMainDlg::OnParametersButtonClicked()
 
     if (parametersDialog.DoModal() == IDOK)
         m_syncManager->setComparisonParameters(parametersDialog.getParameters());
+}
+
+
+void CMainDlg::OnHelpButtonClicked()
+{
+    LPCWSTR msg = _T("������� ���� �� �����                     ��������                     "���� ������ �������    LPWSTR title = _T("����    MessageBox(msg, title, MB_ICONINFORMATION | MB_OK);
 }

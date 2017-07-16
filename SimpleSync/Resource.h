@@ -23,8 +23,8 @@
 #define IDB_FOLDER_SMALL                173
 #define IDB_QUESTION_SMALL              174
 #define IDB_REMOVE_SMALL                175
-#define IDI_ICON1                       176
 #define IDI_SIMPLE_SYNC_ICON            176
+#define IDB_HELP                        177
 #define IDC_PREVIEW_LIST                1000
 #define IDC_DESTINATION_FOLDER_BROWSE   1001
 #define IDC_SOURCE_PATH_BROWSE          1002
@@ -103,14 +103,16 @@
 #define IDC_ACCESS_TIME_BITMAP          1087
 #define IDC_SYNC_PROGRESS               1088
 #define IDC_SYNC_STATIC                 1089
+#define IDC_MFCBUTTON1                  1094
+#define IDC_HELP_BUTTON                 1094
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        177
+#define _APS_NEXT_RESOURCE_VALUE        178
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1093
+#define _APS_NEXT_CONTROL_VALUE         1095
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

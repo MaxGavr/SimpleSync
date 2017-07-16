@@ -36,6 +36,8 @@ private:
     CPngImage m_directionBothImage;
     CPngImage m_directionLeftImage;
 
+    CPngImage m_helpImage;
+
 public:
     afx_msg void OnSourceFolderChange();
     afx_msg void OnDestinationFolderChange();
@@ -44,6 +46,7 @@ public:
     afx_msg void OnSyncButtonClicked();
 
     afx_msg void OnDirectionButtonClicked(UINT nID);
+    afx_msg void OnHelpButtonClicked();
 
     afx_msg void OnOptionsButtonClicked();
     afx_msg void OnParametersButtonClicked();

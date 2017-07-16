@@ -191,5 +191,8 @@
     <Image Include="..\..\..\Users\user\Desktop\icon_main.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\icons\icon_help.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

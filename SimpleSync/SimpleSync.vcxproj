@@ -241,6 +241,7 @@
     <Image Include="..\icons\icon_equal_small.png" />
     <Image Include="..\icons\icon_folder_small.png" />
     <Image Include="..\icons\icon_greater.png" />
+    <Image Include="..\icons\icon_help.png" />
     <Image Include="..\icons\icon_left_arrow.png" />
     <Image Include="..\icons\icon_left_arrow_small.png" />
     <Image Include="..\icons\icon_left_right_arrow.png" />

@@ -10,9 +10,12 @@ public:
     RemoveOperation(const FileProperties& fileToDelete);
     ~RemoveOperation();
 
-    BOOL execute() override;
-
     BOOL affectsFile(const FileProperties& file) const override;
     BOOL dependsOn(const SyncOperation* operation) const override;
+
+private:
+    // Both files and folders can be removed
+    // Only empty folders will be removed successfully
+    BOOL execute() override;
 };
 

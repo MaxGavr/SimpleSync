@@ -2,15 +2,17 @@
 #include "EmptyOperation.h"
 
 
+
 EmptyOperation::EmptyOperation(const FileProperties& file, const FileProperties& equalFile)
     : SyncOperation(SyncOperation::TYPE::EMPTY, file), m_equalFile(equalFile)
 {
 }
 
-
 EmptyOperation::~EmptyOperation()
 {
 }
+
+
 
 BOOL EmptyOperation::execute()
 {
@@ -27,8 +29,10 @@ BOOL EmptyOperation::affectsFile(const FileProperties& file) const
 
     if (thisFile.isFolder())
     {
-        return file.isParentFolder(thisFile) ||
-               file.isParentFolder(equalFile);
+        BOOL thisIsParentFolder = file.isParentFolder(thisFile);
+        BOOL equalIsParentFolder = file.isParentFolder(equalFile);
+
+        return thisIsParentFolder || equalIsParentFolder;
     }
 
     return FALSE;
@@ -36,8 +40,10 @@ BOOL EmptyOperation::affectsFile(const FileProperties& file) const
 
 BOOL EmptyOperation::dependsOn(const SyncOperation* operation) const
 {
-    return operation->affectsFile(getFile()) ||
-           operation->affectsFile(getEqualFile());
+    BOOL affectsFile = operation->affectsFile(getFile());
+    BOOL affectsEqualFile = operation->affectsFile(getEqualFile());
+
+    return affectsFile || affectsEqualFile;
 }
 
 FileProperties EmptyOperation::getEqualFile() const

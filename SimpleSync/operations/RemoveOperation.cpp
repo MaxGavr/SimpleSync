@@ -8,33 +8,38 @@ RemoveOperation::RemoveOperation(const FileProperties& fileToDelete)
 {
 }
 
-
 RemoveOperation::~RemoveOperation()
 {
 }
 
+
+
 BOOL RemoveOperation::execute()
 {
-    if (getFile().isFolder())
-        return RemoveDirectory(getFile().getFullPath());
+    CString fullFilePath = getFile().getFullPath();
+    BOOL fileIsFolder = getFile().isFolder();
+
+    if (fileIsFolder)
+        return RemoveDirectory(fullFilePath);
     else
-        return DeleteFile(getFile().getFullPath());
+        return DeleteFile(fullFilePath);
 }
 
 BOOL RemoveOperation::affectsFile(const FileProperties& file) const
 {
-    auto thisFile = getFile();
+    FileProperties fileToRemove = getFile();
 
-    if (thisFile == file)
+    if (fileToRemove == file)
         return TRUE;
 
-    if (thisFile.isFolder())
-        return file.isParentFolder(thisFile);
+    if (fileToRemove.isFolder())
+        return file.isParentFolder(fileToRemove);
     else
         return FALSE;
 }
 
 BOOL RemoveOperation::dependsOn(const SyncOperation* operation) const
 {
-    return operation->affectsFile(getFile());
+    FileProperties fileToRemove = getFile();
+    return operation->affectsFile(fileToRemove);
 }

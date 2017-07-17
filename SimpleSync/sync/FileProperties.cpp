@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "sync/FileProperties.h"
+#include "FileProperties.h"
 #include <algorithm>
 
 
@@ -19,6 +19,7 @@ FileProperties::FileProperties(const CString& fileName, BOOL isFolder)
 FileProperties::~FileProperties()
 {
 }
+
 
 
 FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties& file,
@@ -115,7 +116,6 @@ BOOL FileProperties::operator<(const FileProperties& file) const
         return (this->getFileName() < file.getFileName());
 }
 
-// TODO: test
 BOOL FileProperties::operator==(const FileProperties& file) const
 {
     int comp = _tcscmp(m_properties.m_szFullName,
@@ -129,6 +129,7 @@ BOOL FileProperties::operator==(const FileProperties& file) const
 
     return name && size && times && attribs;
 }
+
 
 
 CString FileProperties::getFileName() const
@@ -150,7 +151,6 @@ CString FileProperties::getParentFolder() const
     return fullPath.Left(slashPos);
 }
 
-// won't work with foo/bar and foo ???
 CString FileProperties::getRelativePath(const CString& rootFolder,
                                         BOOL withName) const
 {

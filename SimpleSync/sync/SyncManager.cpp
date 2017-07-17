@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "SyncManager.h"
 
-#include "operations/CopyOperation.h"
-#include "operations/RemoveOperation.h"
-#include "operations/EmptyOperation.h"
-#include "operations/ReplaceOperation.h"
-#include "operations/CreateOperation.h"
+#include "operations\CopyOperation.h"
+#include "operations\RemoveOperation.h"
+#include "operations\EmptyOperation.h"
+#include "operations\ReplaceOperation.h"
+#include "operations\CreateOperation.h"
 
 
 
@@ -110,8 +110,10 @@ BOOL SyncManager::scan(ScanCallback* callback)
 {
     clearOperationQueue();
 
-    if (!folderExists(getSourceFolder()) ||
-        !folderExists(getDestinationFolder()))
+    BOOL sourceExists = folderExists(getSourceFolder());
+    BOOL destinationExists = folderExists(getDestinationFolder());
+
+    if (!sourceExists || !destinationExists)
         return FALSE;
 
     if (getSyncDirection() == SYNC_DIRECTION::RIGHT_TO_LEFT)
@@ -176,6 +178,7 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
     {
         hasFiles = fileFinder.FindNextFile();
         
+        // Ignore "." and ".."
         if (!fileFinder.IsDots())
         {
             CFileStatus fileProperties;
@@ -196,21 +199,22 @@ void SyncManager::scanFolders(const CString& source,
                               const CString& destination,
                               ScanCallback* callback)
 {
+    // TODO: pass relative, not absolute path
     (*callback)(source);
 
     FileSet sourceFiles = getFilesFromFolder(source);
     FileSet destinationFiles = getFilesFromFolder(destination);
 
-    for (auto fileIterator = sourceFiles.cbegin(); fileIterator != sourceFiles.cend(); )
+    for (auto fileIt = sourceFiles.cbegin(); fileIt != sourceFiles.cend(); )
     {
-        const FileProperties& file = *fileIterator;
+        const FileProperties& file = *fileIt;
 
         if (!isFileInFileSet(file, destinationFiles))
             manageCopyOperation(file, destination);
         else
         {
-            auto sameFileIterator = destinationFiles.find(file);
-            const FileProperties& sameFile = *sameFileIterator;
+            auto sameFileIt = destinationFiles.find(file);
+            const FileProperties& sameFile = *sameFileIt;
             
             if (file.isFolder())
             {
@@ -220,15 +224,16 @@ void SyncManager::scanFolders(const CString& source,
             else
                 manageReplaceOperation(file, sameFile);
 
-            destinationFiles.erase(sameFileIterator);
+            destinationFiles.erase(sameFileIt);
         }
 
-        fileIterator = sourceFiles.erase(fileIterator);
+        fileIt = sourceFiles.erase(fileIt);
     }
 
-    for (auto fileIterator = destinationFiles.cbegin(); fileIterator != destinationFiles.cend();)
+
+    for (auto fileIt = destinationFiles.cbegin(); fileIt != destinationFiles.cend();)
     {
-        const FileProperties& file = *fileIterator;
+        const FileProperties& file = *fileIt;
 
         if (!isFileInFileSet(file, sourceFiles))
         {
@@ -238,19 +243,21 @@ void SyncManager::scanFolders(const CString& source,
                 manageRemoveOperation(file);
         }
 
-        fileIterator = destinationFiles.erase(fileIterator);
+        fileIt = destinationFiles.erase(fileIt);
     }
 }
 
-void SyncManager::clearOperationQueue()
-{
-    m_syncOperations.clear();
-}
+
 
 void SyncManager::enqueueOperation(SyncOperation* operation)
 {
     if (operation)
         m_syncOperations.push_back(SyncOperation::ptr(operation));
+}
+
+void SyncManager::clearOperationQueue()
+{
+    m_syncOperations.clear();
 }
 
 void SyncManager::manageCopyOperation(const FileProperties& fileToCopy,
@@ -267,6 +274,7 @@ void SyncManager::manageCopyOperation(const FileProperties& fileToCopy,
 
         FileSet files = getFilesFromFolder(fileToCopy.getFullPath());
 
+        // Recursively copy files and subfolders
         for (const auto& file : files)
             manageCopyOperation(file, folderToCreate);
     }
@@ -286,6 +294,7 @@ void SyncManager::manageReplaceOperation(const FileProperties& originalFile,
                                                   getComparisonParameters());
     SyncOperation* op = NULL;
 
+    // Find out ambiguity and direction
     switch (compareResult)
     {
     case RESULT::PREFERABLE:
@@ -313,6 +322,7 @@ void SyncManager::manageRemoveOperation(const FileProperties& fileToRemove)
     {
         FileSet files = getFilesFromFolder(fileToRemove.getFullPath());
 
+        // Recursively remove files and subfolders
         for (const auto& file : files)
             manageRemoveOperation(file);
     }

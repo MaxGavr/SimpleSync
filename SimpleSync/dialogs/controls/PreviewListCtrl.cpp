@@ -4,18 +4,23 @@
 #include "dialogs/FilePropertiesDialog.h"
 #include "dialogs/CompareDialog.h"
 
+#include "sync/SyncManager.h"
+
+
+
 
 IMPLEMENT_DYNAMIC(CPreviewListCtrl, CMFCListCtrl)
 
 CPreviewListCtrl::CPreviewListCtrl(SyncManager* syncManager)
     : m_syncManager(syncManager)
 {
-    m_rightArrowImageSmall.Load(IDB_RIGHT_ARROW_SMALL); // ICONS::RIGHT_ARROW
-    m_equalImageSmall.Load(IDB_EQUAL_SMALL); // ICONS::EQUAL
-    m_leftArrowImageSmall.Load(IDB_LEFT_ARROW_SMALL); // ICONS::LEFT_ARROW
-    m_folderImageSmall.Load(IDB_FOLDER_SMALL); // ICONS::FOLDER
-    m_removeImageSmall.Load(IDB_REMOVE_SMALL); // ICONS::REMOVE
-    m_questionImageSmall.Load(IDB_QUESTION_SMALL); // ICONS::QUESTION
+    // Loading order must match ICON enum
+    m_rightArrowImageSmall.Load(IDB_RIGHT_ARROW_SMALL); // ICON::RIGHT_ARROW
+    m_equalImageSmall.Load(IDB_EQUAL_SMALL); // ICON::EQUAL
+    m_leftArrowImageSmall.Load(IDB_LEFT_ARROW_SMALL); // ICON::LEFT_ARROW
+    m_folderImageSmall.Load(IDB_FOLDER_SMALL); // ICON::FOLDER
+    m_removeImageSmall.Load(IDB_REMOVE_SMALL); // ICON::REMOVE
+    m_questionImageSmall.Load(IDB_QUESTION_SMALL); // ICON::QUESTION
 
     m_imageList.Create(PREVIEW_LIST_IMAGE_SIZE, PREVIEW_LIST_IMAGE_SIZE,
                        ILC_COLOR32, 0, PREVIEW_LIST_IMAGE_COUNT);
@@ -32,25 +37,43 @@ CPreviewListCtrl::~CPreviewListCtrl()
 {
 }
 
-void CPreviewListCtrl::setupColumns()
+
+
+void CPreviewListCtrl::setupPreviewList()
 {
-    SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT |
+    SetExtendedStyle(GetExtendedStyle() |
+                     LVS_EX_FULLROWSELECT |
                      LVS_EX_SUBITEMIMAGES);
-    
     SetImageList(&m_imageList, LVSIL_SMALL);
 
-    InsertColumn(LIST_COLUMNS::INDEX, _T("�"),
-                 LVCFMT_RIGHT,
-                 PREVIEW_LIST_IMAGE_SIZE);
-    InsertColumn(LIST_COLUMNS::SOURCE_FILE, _T("�������� ����������"),
+    InsertColumn(LIST_COLUMN::INDEX, _T("№"),
+                 LVCFMT_RIGHT);
+    InsertColumn(LIST_COLUMN::SOURCE_FILE, _T("Исходная директория"),
                  LVCFMT_LEFT);
-    InsertColumn(LIST_COLUMNS::ACTION, _T(""),
+    InsertColumn(LIST_COLUMN::ACTION, _T(""),
                  LVCFMT_CENTER | LVCFMT_FIXED_WIDTH,
                  PREVIEW_LIST_IMAGE_SIZE);
-    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, _T("�������� ����������"),
+    InsertColumn(LIST_COLUMN::DESTINATION_FILE, _T("Конечная директория"),
                  LVCFMT_LEFT);
 
     adjustColumnsWidth();
+}
+
+void CPreviewListCtrl::adjustColumnsWidth()
+{
+    SetRedraw(FALSE);
+
+    LPRECT rect = new RECT();
+    GetClientRect(rect);
+    LONG listWidth = rect->right - rect->left;
+
+    LONG fraction = (listWidth - PREVIEW_LIST_IMAGE_SIZE) / 9;
+
+    SetColumnWidth(LIST_COLUMN::INDEX, fraction * 1);
+    SetColumnWidth(LIST_COLUMN::SOURCE_FILE, fraction * 4);
+    SetColumnWidth(LIST_COLUMN::DESTINATION_FILE, fraction * 4);
+
+    SetRedraw(TRUE);
 }
 
 void CPreviewListCtrl::showPreview()
@@ -61,7 +84,7 @@ void CPreviewListCtrl::showPreview()
     sortOperationsByFolders(operations);
     
     for (auto& operation : m_sortedOperations)
-        printSyncAction(operation.get());
+        printSyncOperation(operation.get());
 
     adjustColumnsWidth();
 }
@@ -72,139 +95,212 @@ void CPreviewListCtrl::clearPreview()
     m_sortedOperations.clear();
 }
 
-void CPreviewListCtrl::printSyncAction(SyncOperation* operation, int index)
-{
-    printOperationIndex(operation, index);
 
-    switch (operation->getType())
+
+void CPreviewListCtrl::printSyncOperation(SyncOperation* op,
+                                          int index)
+{
+    printOperationIndex(op, index);
+
+    switch (op->getType())
     {
     case SyncOperation::TYPE::COPY:
-        printCopyOperation(dynamic_cast<CopyOperation *>(operation), index);
+        printCopyOperation(dynamic_cast<CopyOperation *>(op), index);
         break;
     case SyncOperation::TYPE::REPLACE:
-        printReplaceOperation(dynamic_cast<ReplaceOperation *>(operation), index);
+        printReplaceOperation(dynamic_cast<ReplaceOperation *>(op), index);
         break;
     case SyncOperation::TYPE::REMOVE:
-        printRemoveOperation(dynamic_cast<RemoveOperation *>(operation), index);
+        printRemoveOperation(dynamic_cast<RemoveOperation *>(op), index);
         break;
     case SyncOperation::TYPE::CREATE:
-        printCreateOperation(dynamic_cast<CreateFolderOperation *>(operation), index);
+        printCreateOperation(dynamic_cast<CreateFolderOperation *>(op), index);
         break;
     case SyncOperation::TYPE::EMPTY:
-        printEmptyOperation(dynamic_cast<EmptyOperation *>(operation), index);
+        printEmptyOperation(dynamic_cast<EmptyOperation *>(op), index);
         break;
     }
 }
 
-void CPreviewListCtrl::printFile(const FileProperties& file, int index, LIST_COLUMNS column)
+void CPreviewListCtrl::printFile(const FileProperties& file,
+                                 int index,
+                                 LIST_COLUMN column)
 {
-    CString str;
+    CString printedString;
     if (file.isFolder())
-        str = m_syncManager->getFileRelativePath(file, TRUE);
+        printedString = m_syncManager->getFileRelativePath(file, TRUE);
     else
-        str = file.getFileName();
+        printedString = file.getFileName();
 
-    SetItemText(index, column, str);
+    SetItemText(index, column, printedString);
 }
 
-void CPreviewListCtrl::printCopyOperation(CopyOperation* operation, int index)
+void CPreviewListCtrl::printOperationIndex(const SyncOperation* operation,
+                                           int& index)
 {
+    int listItemCount = GetItemCount();
+
+    BOOL itemExists = (index >= 0) && (index < listItemCount);
+
+    if (!itemExists)
+        index = listItemCount;
+
+    LVITEM listItem;
+    listItem.mask = LVIF_TEXT | LVIF_IMAGE;
+    listItem.iItem = index;
+    listItem.iSubItem = LIST_COLUMN::INDEX;
+
+    CString indexStr;
+    indexStr.Format(_T("%d"), index + 1);
+    listItem.pszText = indexStr.GetBuffer();
+
+    
+    if (operation->getFile().isFolder())
+        listItem.iImage = ICON::FOLDER;
+    else
+        listItem.iImage = -1;
+
+    if (itemExists)
+        SetItem(&listItem);
+    else
+        InsertItem(&listItem);
+}
+
+void CPreviewListCtrl::printOperationIcon(ICON icon, int index)
+{
+    LVITEM listItem;
+    listItem.mask = LVIF_IMAGE;
+    listItem.iItem = index;
+    listItem.iSubItem = LIST_COLUMN::ACTION;
+    listItem.iImage = icon;
+
+    SetItem(&listItem);
+}
+
+
+
+void CPreviewListCtrl::printCopyOperation(CopyOperation* operation,
+                                          int index)
+{
+    ICON icon;
+
     FileProperties file = operation->getFile();
-    ICONS icon;
+    LIST_COLUMN fileColumn;
 
     if (m_syncManager->isFileInSourceFolder(file))
     {
-        printFile(file, index, LIST_COLUMNS::SOURCE_FILE);
-        icon = ICONS::RIGHT_ARROW;
+        fileColumn = LIST_COLUMN::SOURCE_FILE;
+        icon = ICON::RIGHT_ARROW;
     }
     else
     {
-        printFile(file, index, LIST_COLUMNS::DESTINATION_FILE);
-        icon = ICONS::LEFT_ARROW;
+        fileColumn = LIST_COLUMN::DESTINATION_FILE;
+        icon = ICON::LEFT_ARROW;
     }
 
+    printFile(file, index, fileColumn);
     printOperationIcon(icon, index);
 }
 
-void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation, int index)
+void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation,
+                                            int index)
 {
     FileProperties file = operation->getFile();
+    LIST_COLUMN fileColumn;
 
     if (m_syncManager->isFileInSourceFolder(file))
-        printFile(file, index, LIST_COLUMNS::SOURCE_FILE);
+        fileColumn = LIST_COLUMN::SOURCE_FILE;
     else
-        printFile(file, index, LIST_COLUMNS::DESTINATION_FILE);
+        fileColumn = LIST_COLUMN::DESTINATION_FILE;
 
-    printOperationIcon(ICONS::REMOVE, index);
+    printFile(file, index, fileColumn);
+    printOperationIcon(ICON::REMOVE, index);
 }
 
-void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation, int index)
+void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation,
+                                             int index)
 {
-    ICONS icon;
+    ICON icon;
 
     FileProperties originalFile = operation->getFile();
     FileProperties fileToReplace = operation->getFileToReplace();
+    LIST_COLUMN originalFileColumn;
+    LIST_COLUMN replacedFileColumn;
 
     if (m_syncManager->isFileInSourceFolder(originalFile))
     {
-        printFile(originalFile, index, LIST_COLUMNS::SOURCE_FILE);
-        printFile(fileToReplace, index, LIST_COLUMNS::DESTINATION_FILE);
-        icon = ICONS::RIGHT_ARROW;
+        originalFileColumn = LIST_COLUMN::SOURCE_FILE;
+        replacedFileColumn = LIST_COLUMN::DESTINATION_FILE;
+        icon = ICON::RIGHT_ARROW;
     }
     else
     {
-        printFile(fileToReplace, index, LIST_COLUMNS::SOURCE_FILE);
-        printFile(originalFile, index, LIST_COLUMNS::DESTINATION_FILE);
-        icon = ICONS::LEFT_ARROW;
+        originalFileColumn = LIST_COLUMN::DESTINATION_FILE;
+        replacedFileColumn = LIST_COLUMN::SOURCE_FILE;
+        icon = ICON::LEFT_ARROW;
     }
 
     if (operation->isAmbiguous())
-        icon = ICONS::QUESTION;
+        icon = ICON::QUESTION;
 
+    printFile(originalFile, index, originalFileColumn);
+    printFile(fileToReplace, index, replacedFileColumn);
     printOperationIcon(icon, index);
 }
 
-void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation, int index)
+void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation,
+                                           int index)
 {
     FileProperties file = operation->getFile();
     FileProperties equalFile = operation->getEqualFile();
+    LIST_COLUMN fileColumn;
+    LIST_COLUMN equalFileColumn;
     
     if (m_syncManager->isFileInSourceFolder(file))
     {
-        printFile(file, index, LIST_COLUMNS::SOURCE_FILE);
-        printFile(equalFile, index, LIST_COLUMNS::DESTINATION_FILE);
+        fileColumn = LIST_COLUMN::SOURCE_FILE;
+        equalFileColumn = LIST_COLUMN::DESTINATION_FILE;
     }
     else
     {
-        printFile(equalFile, index, LIST_COLUMNS::SOURCE_FILE);
-        printFile(file, index, LIST_COLUMNS::DESTINATION_FILE);
+        fileColumn = LIST_COLUMN::DESTINATION_FILE;
+        equalFileColumn = LIST_COLUMN::SOURCE_FILE;
     }
     
-    printOperationIcon(ICONS::EQUAL, index);
+    printFile(file, index, fileColumn);
+    printFile(equalFile, index, equalFileColumn);
+    printOperationIcon(ICON::EQUAL, index);
 }
 
-void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, int index)
+void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation,
+                                            int index)
 {
-    ICONS icon;
+    ICON icon;
 
     FileProperties originalFolder = operation->getFile();
-    FileProperties folderToCreate = operation->getFolder();
+    FileProperties folderToCreate = operation->getFolderToCreate();
+    LIST_COLUMN originalFolderColumn;
+    LIST_COLUMN folderToCreateColumn;
 
     if (m_syncManager->isFileInSourceFolder(originalFolder))
     {
-        printFile(originalFolder, index, LIST_COLUMNS::SOURCE_FILE);
-        printFile(folderToCreate, index, LIST_COLUMNS::DESTINATION_FILE);
-        icon = ICONS::RIGHT_ARROW;
+        originalFolderColumn = LIST_COLUMN::SOURCE_FILE;
+        folderToCreateColumn = LIST_COLUMN::DESTINATION_FILE;
+        icon = ICON::RIGHT_ARROW;
     }
     else
     {
-        printFile(folderToCreate, index, LIST_COLUMNS::SOURCE_FILE);
-        printFile(originalFolder, index, LIST_COLUMNS::DESTINATION_FILE);
-        icon = ICONS::LEFT_ARROW;
+        originalFolderColumn= LIST_COLUMN::DESTINATION_FILE;
+        folderToCreateColumn = LIST_COLUMN::SOURCE_FILE;
+        icon = ICON::LEFT_ARROW;
     }
 
+    printFile(originalFolder, index, originalFolderColumn);
+    printFile(folderToCreate, index, folderToCreateColumn);
     printOperationIcon(icon, index);
 }
+
+
 
 int CPreviewListCtrl::forbidOperation(int index)
 {
@@ -214,7 +310,7 @@ int CPreviewListCtrl::forbidOperation(int index)
         return -1;
 
     operation->forbid(TRUE);
-    printSyncAction(operation, index);
+    printSyncOperation(operation, index);
 
     for (size_t i = index + 1; i < m_sortedOperations.size(); ++i)
     {
@@ -236,7 +332,9 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
         return (bool)!op->getFile().isFolder();
     };
 
-    auto it = std::stable_partition(operations.begin(), operations.end(), notInvolveFolder);
+    auto it = std::stable_partition(operations.begin(),
+                                    operations.end(),
+                                    notInvolveFolder);
     m_sortedOperations.assign(it, operations.end());
     operations.erase(it, operations.end());
 
@@ -257,31 +355,17 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
     }
 }
 
-void CPreviewListCtrl::adjustColumnsWidth()
-{
-    SetRedraw(FALSE);
 
-    LPRECT rect = new RECT();
-    GetClientRect(rect);
-    LONG listWidth = rect->right - rect->left;
-
-    LONG part = (listWidth - PREVIEW_LIST_IMAGE_SIZE) / 9;
-
-    SetColumnWidth(LIST_COLUMNS::INDEX, part * 1);
-    SetColumnWidth(LIST_COLUMNS::SOURCE_FILE, part * 4);
-    SetColumnWidth(LIST_COLUMNS::DESTINATION_FILE, part * 4);
-    
-    SetRedraw(TRUE);
-}
 
 BEGIN_MESSAGE_MAP(CPreviewListCtrl, CMFCListCtrl)
     ON_NOTIFY_REFLECT(NM_DBLCLK, &CPreviewListCtrl::OnDoubleClick)
     ON_NOTIFY_REFLECT(NM_RCLICK, &CPreviewListCtrl::OnRightClick)
-    ON_NOTIFY(HDN_ENDTRACKA, 0, &CPreviewListCtrl::OnColumnDragEnd)
-    ON_NOTIFY(HDN_ENDTRACKW, 0, &CPreviewListCtrl::OnColumnDragEnd)
+    ON_NOTIFY(HDN_ENDTRACKA, 0, &CPreviewListCtrl::OnColumnResizeDragEnd)
+    ON_NOTIFY(HDN_ENDTRACKW, 0, &CPreviewListCtrl::OnColumnResizeDragEnd)
     ON_MESSAGE(WM_ADJUST_COLUMNS, OnAdjustColumns)
     ON_WM_SIZE()
 END_MESSAGE_MAP()
+
 
 
 void CPreviewListCtrl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
@@ -295,9 +379,10 @@ void CPreviewListCtrl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
     if (SubItemHitTest(&hitTestInfo) == -1)
         return;
     
-    const SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem].get();
-        
-    if (!showFilePropertiesDialog(clickedOperation))
+    auto clickedOperation = m_sortedOperations[hitTestInfo.iItem].get();
+    
+    BOOL filePropertiesShown = showFilePropertiesDialog(clickedOperation);
+    if (!filePropertiesShown)
         showFilesComparisonDialog(clickedOperation);
 }
 
@@ -350,6 +435,8 @@ BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* twoFilesOp
     return TRUE;
 }
 
+
+
 void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
     LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
@@ -361,7 +448,9 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
     if (SubItemHitTest(&hitTestInfo) == -1)
         return;
 
-    SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem].get();
+
+    int operationIndex = hitTestInfo.iItem;
+    auto clickedOperation = m_sortedOperations[operationIndex].get();
         
     if (clickedOperation->getType() == SyncOperation::TYPE::REPLACE)
     {
@@ -370,7 +459,7 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
         if (op->isAmbiguous())
         {
             op->removeAmbiguity();
-            printSyncAction(clickedOperation, hitTestInfo.iItem);
+            printSyncOperation(clickedOperation, operationIndex);
             return;
         }
     }
@@ -378,10 +467,10 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
     if (clickedOperation->isForbidden())
     {
         clickedOperation->forbid(FALSE);
-        printSyncAction(clickedOperation, hitTestInfo.iItem);
+        printSyncOperation(clickedOperation, operationIndex);
     }
     else
-        forbidOperation(hitTestInfo.iItem);
+        forbidOperation(operationIndex);
 }
 
 LRESULT CPreviewListCtrl::OnAdjustColumns(WPARAM wParam, LPARAM lParam)
@@ -390,84 +479,64 @@ LRESULT CPreviewListCtrl::OnAdjustColumns(WPARAM wParam, LPARAM lParam)
     return 1;
 }
 
+void CPreviewListCtrl::OnColumnResizeDragEnd(NMHDR *pNMHDR, LRESULT *pResult)
+{
+    adjustColumnsWidth();
+    *pResult = 1;
+}
+
+void CPreviewListCtrl::OnSize(UINT nType, int cx, int cy)
+{
+    CMFCListCtrl::OnSize(nType, cx, cy);
+
+    PostMessage(WM_ADJUST_COLUMNS);
+}
+
 COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
 {
-    LIST_COLUMNS col = (LIST_COLUMNS)nColumn;
+    LIST_COLUMN col = (LIST_COLUMN)nColumn;
     
-    BOOL properColumn = (col == LIST_COLUMNS::SOURCE_FILE ||
-                         col == LIST_COLUMNS::DESTINATION_FILE);
+    BOOL properColumn = (col == LIST_COLUMN::SOURCE_FILE ||
+                         col == LIST_COLUMN::DESTINATION_FILE);
     BOOL operationExists = nRow < m_sortedOperations.size();
     
     if (properColumn && operationExists)
-        return chooseOperationTextColor(m_sortedOperations[nRow].get());
+    {
+        auto operation = m_sortedOperations[nRow].get();
+        return chooseOperationTextColor(operation);
+    }
 
     return CMFCListCtrl::OnGetCellTextColor(nRow, nColumn);
 }
 
 COLORREF CPreviewListCtrl::OnGetCellBkColor(int nRow, int nColumn)
 {
-    LIST_COLUMNS col = (LIST_COLUMNS)nColumn;
+    LIST_COLUMN col = (LIST_COLUMN)nColumn;
 
-    BOOL properColumn = (col == LIST_COLUMNS::SOURCE_FILE ||
-                         col == LIST_COLUMNS::DESTINATION_FILE);
+    BOOL properColumn = (col == LIST_COLUMN::SOURCE_FILE ||
+                         col == LIST_COLUMN::DESTINATION_FILE);
     BOOL operationExists = nRow < m_sortedOperations.size();
 
     if (properColumn && operationExists)
-        return chooseOperationBkColor(m_sortedOperations[nRow].get());
+    {
+        auto operation = m_sortedOperations[nRow].get();
+        return chooseOperationBkColor(operation);
+    }
 
     return CMFCListCtrl::OnGetCellBkColor(nRow, nColumn);
 }
 
-void CPreviewListCtrl::printOperationIndex(const SyncOperation* operation, int& index)
-{
-    int listItemCount = GetItemCount();
 
-    BOOL itemExists = (index >= 0) && (index < listItemCount);
-
-    if (!itemExists)
-        index = listItemCount;
-
-    LVITEM listItem;
-    listItem.mask = LVIF_TEXT | LVIF_IMAGE;
-    listItem.iItem = index;
-    listItem.iSubItem = LIST_COLUMNS::INDEX;
-    
-    CString indexStr;
-    indexStr.Format(_T("%d"), index + 1);
-    listItem.pszText = indexStr.GetBuffer();
-    
-    if (operation->getFile().isFolder())
-        listItem.iImage = ICONS::FOLDER;
-    else
-        listItem.iImage = -1;
-    
-    if (itemExists)
-        SetItem(&listItem);
-    else
-        InsertItem(&listItem);
-}
-
-void CPreviewListCtrl::printOperationIcon(ICONS icon, int index)
-{
-    LVITEM listItem;
-    listItem.mask = LVIF_IMAGE;
-    listItem.iItem = index;
-    listItem.iSubItem = LIST_COLUMNS::ACTION;
-    listItem.iImage = icon;
-
-    SetItem(&listItem);
-}
 
 COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operation) const
 {
-    SyncOperation::TYPE type = operation->getType();
+    using TYPE = SyncOperation::TYPE;
+    TYPE type = operation->getType();
 
-    if (type == SyncOperation::TYPE::REMOVE)
+    if (type == TYPE::REMOVE)
         return m_colors.REMOVE_TEXT_COLOR;
 
-    if (type == SyncOperation::TYPE::COPY ||
-        type == SyncOperation::TYPE::CREATE ||
-        type == SyncOperation::TYPE::REPLACE)
+    if (type == TYPE::COPY || type == TYPE::CREATE || type == TYPE::REPLACE)
     {
         COLORREF color;
         FileProperties file = operation->getFile();
@@ -477,7 +546,7 @@ COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operati
         else
             color = m_colors.DESTINATION_TO_SOURCE_TEXT_COLOR;
 
-        if (type == SyncOperation::TYPE::REPLACE)
+        if (type == TYPE::REPLACE)
         {
             auto op = dynamic_cast<const ReplaceOperation*>(operation);
             color = op->isAmbiguous() ? m_colors.AMBIGUOUS_TEXT_COLOR : color;
@@ -492,30 +561,20 @@ COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operati
 COLORREF CPreviewListCtrl::chooseOperationBkColor(const SyncOperation* operation) const
 {
     COLORREF color = m_colors.DEFAULT_BACK_COLOR;
+    
+    FileProperties file = operation->getFile();
+    BOOL isForbidden = operation->isForbidden();
 
-    if (operation->isForbidden())
+    if (isForbidden)
         color = m_colors.FORBIDDEN_BACK_COLOR;
 
-    if (operation->getFile().isFolder())
+    if (file.isFolder())
     {
-        if (operation->isForbidden())
+        if (isForbidden)
             color = m_colors.FORBIDDEN_FOLDER_BACK_COLOR;
         else
             color = m_colors.FOLDER_BACK_COLOR;
     }
 
     return color;
-}
-
-void CPreviewListCtrl::OnColumnDragEnd(NMHDR *pNMHDR, LRESULT *pResult)
-{
-    adjustColumnsWidth();
-    *pResult = 1;
-}
-
-void CPreviewListCtrl::OnSize(UINT nType, int cx, int cy)
-{
-    CMFCListCtrl::OnSize(nType, cx, cy);
-
-    PostMessage(WM_ADJUST_COLUMNS);
 }

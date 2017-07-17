@@ -9,10 +9,11 @@ SyncOperation::SyncOperation(TYPE type, const FileProperties& file)
     m_isForbidden = FALSE;
 }
 
-
 SyncOperation::~SyncOperation()
 {
 }
+
+
 
 void SyncOperation::forbid(BOOL isForbidden)
 {

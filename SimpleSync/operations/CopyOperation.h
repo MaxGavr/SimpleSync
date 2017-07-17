@@ -7,10 +7,9 @@
 class CopyOperation : public SyncOperation
 {
 public:
-    CopyOperation(const FileProperties& fileToCopy, CString destinationFolder);
+    CopyOperation(const FileProperties& fileToCopy,
+                  CString destinationFolder);
     ~CopyOperation();
-
-    BOOL execute() override;
 
     BOOL affectsFile(const FileProperties& file) const override;
     BOOL dependsOn(const SyncOperation* operation) const override;
@@ -18,6 +17,8 @@ public:
     CString getDestinationFolder() const;
 
 private:
+    BOOL execute() override;
+
     CString m_destinationFolder;
 };
 

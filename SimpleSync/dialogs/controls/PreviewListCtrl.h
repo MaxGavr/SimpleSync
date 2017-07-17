@@ -67,7 +67,7 @@ private:
     void printEmptyOperation(EmptyOperation* operation, int index);
     void printCreateOperation(CreateFolderOperation* operation, int index);
 
-    void forbidOperation(int index);
+    int forbidOperation(int index);
 
     void sortOperationsByFolders(SyncManager::OperationQueue& operations);
     void adjustColumnsWidth();

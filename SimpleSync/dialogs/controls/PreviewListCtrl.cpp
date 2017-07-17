@@ -206,23 +206,28 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, in
     printOperationIcon(icon, index);
 }
 
-void CPreviewListCtrl::forbidOperation(int index)
+int CPreviewListCtrl::forbidOperation(int index)
 {
     SyncOperation* operation = m_sortedOperations[index];
 
     if (operation->getType() == SyncOperation::TYPE::EMPTY)
-        return;
+        return -1;
 
     operation->forbid(TRUE);
+    printSyncAction(operation, index);
 
     for (size_t i = index + 1; i < m_sortedOperations.size(); ++i)
     {
-        if (m_sortedOperations[i]->dependsOn(operation))
-            forbidOperation(i);
+        auto nextOperation = m_sortedOperations[i];
+        if (nextOperation->dependsOn(operation))
+        {
+            int nextPositionToCheck = forbidOperation(i);
+            if (nextPositionToCheck != -1)
+                i = nextPositionToCheck - 1;
+        }
         else
-            break;
+            return i;
     }
-    printSyncAction(operation, index);
 }
 
 void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& operations)

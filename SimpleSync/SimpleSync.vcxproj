@@ -183,9 +183,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CompareDialog.h" />
-    <ClInclude Include="CopyOperation.h" />
-    <ClInclude Include="CreateOperation.h" />
     <ClInclude Include="dialogs\CompareDialog.h" />
     <ClInclude Include="dialogs\controls\PreviewListCtrl.h" />
     <ClInclude Include="dialogs\FilePropertiesDialog.h" />
@@ -194,28 +191,15 @@
     <ClInclude Include="dialogs\ParamsDialog.h" />
     <ClInclude Include="dialogs\ProgressDialog.h" />
     <ClInclude Include="dialogs\ScanProgressDialog.h" />
-    <ClInclude Include="EmptyOperation.h" />
-    <ClInclude Include="FileProperties.h" />
-    <ClInclude Include="FilePropertiesDialog.h" />
-    <ClInclude Include="MainDlg.h" />
     <ClInclude Include="operations\CopyOperation.h" />
     <ClInclude Include="operations\CreateOperation.h" />
     <ClInclude Include="operations\EmptyOperation.h" />
     <ClInclude Include="operations\RemoveOperation.h" />
     <ClInclude Include="operations\ReplaceOperation.h" />
     <ClInclude Include="operations\SyncOperation.h" />
-    <ClInclude Include="OptionsDialog.h" />
-    <ClInclude Include="ParamsDialog.h" />
-    <ClInclude Include="PreviewListCtrl.h" />
-    <ClInclude Include="ProgressDialog.h" />
-    <ClInclude Include="RemoveOperation.h" />
-    <ClInclude Include="ReplaceOperation.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ScanProgressDialog.h" />
     <ClInclude Include="SimpleSync.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="SyncManager.h" />
-    <ClInclude Include="SyncOperation.h" />
     <ClInclude Include="sync\FileProperties.h" />
     <ClInclude Include="sync\SyncManager.h" />
     <ClInclude Include="targetver.h" />
@@ -252,9 +236,6 @@
     <None Include="res\SimpleSync.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Users\user\Desktop\icon_equal.png" />
-    <Image Include="..\..\..\Users\user\Desktop\icon_greater.png" />
-    <Image Include="..\..\..\Users\user\Desktop\icon_less.png" />
     <Image Include="res\icons\icon_app.ico" />
     <Image Include="res\icons\icon_equal.png" />
     <Image Include="res\icons\icon_equal_small.png" />

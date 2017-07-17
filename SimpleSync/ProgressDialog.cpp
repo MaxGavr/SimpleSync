@@ -50,16 +50,16 @@ void CSyncProgressDialog::showOperationProgress(const SyncOperation* operation)
     switch (type)
     {
     case SyncOperation::TYPE::COPY:
-        title = _T("Копирование %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s");
         break;
     case SyncOperation::TYPE::REPLACE:
-        title = _T("Замена %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅ %s");
         break;
     case SyncOperation::TYPE::REMOVE:
-        title = _T("Удаление %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s");
         break;
     case SyncOperation::TYPE::CREATE:
-        title = _T("Создание папки %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ %s");
         break;
     default:
         title = _T("...");
@@ -98,7 +98,7 @@ BOOL CSyncProgressDialog::OnInitDialog()
 
 LRESULT CSyncProgressDialog::OnSyncCompleted(WPARAM wParam, LPARAM lParam)
 {
-    m_currentOperationTitle = CString("Синхронизация завершена");
+    m_currentOperationTitle = CString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
     UpdateData(FALSE);
 
     auto okButton = (CButton *)GetDlgItem(IDOK);
@@ -118,8 +118,15 @@ LRESULT CSyncProgressDialog::OnShowSyncProgress(WPARAM wParam, LPARAM lParam)
     return 1;
 }
 
+void CSyncProgressDialog::OnCancelCommand()
+{
+    if ((GetKeyState(VK_ESCAPE) & 0x8000) == 0)
+        CDialogEx::OnCancel();
+}
+
 
 BEGIN_MESSAGE_MAP(CSyncProgressDialog, CDialogEx)
     ON_MESSAGE(WM_SHOW_SYNC_PROGRESS, OnShowSyncProgress)
     ON_MESSAGE(WM_SYNC_COMPLETED, OnSyncCompleted)
+    ON_COMMAND(IDCANCEL, &CSyncProgressDialog::OnCancelCommand)
 END_MESSAGE_MAP()

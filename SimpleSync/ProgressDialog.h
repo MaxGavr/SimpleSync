@@ -42,4 +42,5 @@ public:
     virtual BOOL OnInitDialog();
     afx_msg LRESULT OnShowSyncProgress(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnSyncCompleted(WPARAM wParam, LPARAM lParam);
+    afx_msg void OnCancelCommand();
 };

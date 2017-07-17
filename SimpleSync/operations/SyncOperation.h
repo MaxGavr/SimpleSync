@@ -2,10 +2,14 @@
 
 #include "stdafx.h"
 #include "../sync/FileProperties.h"
+#include <memory>
 
 class SyncOperation
 {
 public:
+    using ptr = std::shared_ptr <SyncOperation>;
+    using const_ptr = std::shared_ptr <const SyncOperation>;
+
     enum class TYPE {
         COPY,
         REPLACE,

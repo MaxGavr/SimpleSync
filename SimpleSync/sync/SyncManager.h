@@ -5,8 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include "FileProperties.h"
-
-class SyncOperation;
+#include "operations\SyncOperation.h"
 
 
 
@@ -24,8 +23,8 @@ class SyncManager
 {
 public:
     using FileSet = std::set <FileProperties>;
-    using OperationQueue = std::deque <SyncOperation *>;
-    using SyncCallback = std::function <void (const SyncOperation*)>;
+    using OperationQueue = std::deque <SyncOperation::ptr>;
+    using SyncCallback = std::function <void (SyncOperation::ptr&)>;
     using ScanCallback = std::function <void (const CString&)>;
 
     enum class SYNC_DIRECTION {

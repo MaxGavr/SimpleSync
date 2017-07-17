@@ -132,6 +132,8 @@ void SyncManager::sync(SyncCallback* callback)
             operation->execute();
         }
     }
+
+    clearOperationQueue();
 }
 
 SyncManager::OperationQueue SyncManager::getOperationQueue()
@@ -242,15 +244,13 @@ void SyncManager::scanFolders(const CString& source,
 
 void SyncManager::clearOperationQueue()
 {
-    for (auto it = m_syncOperations.begin(); it != m_syncOperations.end(); ++it)
-        delete (*it);
     m_syncOperations.clear();
 }
 
 void SyncManager::enqueueOperation(SyncOperation* operation)
 {
     if (operation)
-        m_syncOperations.push_back(operation);
+        m_syncOperations.push_back(SyncOperation::ptr(operation));
 }
 
 void SyncManager::manageCopyOperation(const FileProperties& fileToCopy,

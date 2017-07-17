@@ -61,7 +61,7 @@ void CPreviewListCtrl::showPreview()
     sortOperationsByFolders(operations);
     
     for (auto& operation : m_sortedOperations)
-        printSyncAction(operation);
+        printSyncAction(operation.get());
 
     adjustColumnsWidth();
 }
@@ -208,7 +208,7 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation, in
 
 void CPreviewListCtrl::forbidOperation(int index)
 {
-    SyncOperation* operation = m_sortedOperations[index];
+    SyncOperation* operation = m_sortedOperations[index].get();
 
     if (operation->getType() == SyncOperation::TYPE::EMPTY)
         return;
@@ -227,7 +227,7 @@ void CPreviewListCtrl::forbidOperation(int index)
 
 void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& operations)
 {
-    auto notInvolveFolder = [](const SyncOperation* op) -> bool {
+    auto notInvolveFolder = [](SyncOperation::ptr& op) -> bool {
         return (bool)!op->getFile().isFolder();
     };
 
@@ -236,10 +236,10 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
     operations.erase(it, operations.end());
 
     // TODO: optimize
-    for (const auto operation : operations)
+    for (const auto& operation : operations)
     {
-        auto dependsOn = [&operation](const SyncOperation* op) -> bool {
-            return operation->dependsOn(op);
+        auto dependsOn = [&operation](SyncOperation::ptr op) -> bool {
+            return operation->dependsOn(op.get());
         };
 
         auto iter = std::find_if(m_sortedOperations.begin(),
@@ -290,7 +290,7 @@ void CPreviewListCtrl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
     if (SubItemHitTest(&hitTestInfo) == -1)
         return;
     
-    const SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem];
+    const SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem].get();
         
     if (!showFilePropertiesDialog(clickedOperation))
         showFilesComparisonDialog(clickedOperation);
@@ -356,7 +356,7 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
     if (SubItemHitTest(&hitTestInfo) == -1)
         return;
 
-    SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem];
+    SyncOperation* clickedOperation = m_sortedOperations[hitTestInfo.iItem].get();
         
     if (clickedOperation->getType() == SyncOperation::TYPE::REPLACE)
     {
@@ -394,7 +394,7 @@ COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
     BOOL operationExists = nRow < m_sortedOperations.size();
     
     if (properColumn && operationExists)
-        return chooseOperationTextColor(m_sortedOperations[nRow]);
+        return chooseOperationTextColor(m_sortedOperations[nRow].get());
 
     return CMFCListCtrl::OnGetCellTextColor(nRow, nColumn);
 }
@@ -408,7 +408,7 @@ COLORREF CPreviewListCtrl::OnGetCellBkColor(int nRow, int nColumn)
     BOOL operationExists = nRow < m_sortedOperations.size();
 
     if (properColumn && operationExists)
-        return chooseOperationBkColor(m_sortedOperations[nRow]);
+        return chooseOperationBkColor(m_sortedOperations[nRow].get());
 
     return CMFCListCtrl::OnGetCellBkColor(nRow, nColumn);
 }

@@ -24,8 +24,8 @@ UINT CSyncProgressDialog::runSync(LPVOID pParam)
 {
     auto dialog = (CSyncProgressDialog*)pParam;
 
-    SyncManager::SyncCallback callback = [dialog](const SyncOperation* op) {
-        dialog->showOperationProgress(op);
+    SyncManager::SyncCallback callback = [dialog](SyncOperation::ptr& op) {
+        dialog->showOperationProgress(op.get());
     };
 
     dialog->m_syncManager->sync(&callback);
@@ -81,7 +81,7 @@ BOOL CSyncProgressDialog::OnInitDialog()
 
     SyncManager::OperationQueue operations = m_syncManager->getOperationQueue();
 
-    auto notForbidden = [](const SyncOperation* op) {
+    auto notForbidden = [](SyncOperation::ptr& op) {
         return !op->isForbidden();
     };
 

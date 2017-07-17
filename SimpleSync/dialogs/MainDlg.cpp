@@ -138,8 +138,8 @@ void CMainDlg::OnSyncButtonClicked()
         return;
     }
 
-    auto isAmbiguous = [](const SyncOperation* op) -> BOOL {
-        auto rOp = dynamic_cast<const ReplaceOperation*>(op);
+    auto isAmbiguous = [](SyncOperation::ptr& op) -> BOOL {
+        auto rOp = std::dynamic_pointer_cast<ReplaceOperation>(op);
         if (rOp)
             return rOp->isAmbiguous();
         return FALSE;

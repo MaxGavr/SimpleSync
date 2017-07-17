@@ -51,16 +51,16 @@ void CSyncProgressDialog::showOperationProgress(const SyncOperation* operation)
     switch (type)
     {
     case SyncOperation::TYPE::COPY:
-        title = _T("Копирование %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s");
         break;
     case SyncOperation::TYPE::REPLACE:
-        title = _T("Замена %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅ %s");
         break;
     case SyncOperation::TYPE::REMOVE:
-        title = _T("Удаление %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s");
         break;
     case SyncOperation::TYPE::CREATE:
-        title = _T("Создание папки %s");
+        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ %s");
         break;
     default:
         title = _T("...");
@@ -79,7 +79,7 @@ BOOL CSyncProgressDialog::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
 
-    SyncManager::OperationQueue operations = m_syncManager->getOperations();
+    SyncManager::OperationQueue operations = m_syncManager->getOperationQueue();
 
     auto notForbidden = [](const SyncOperation* op) {
         return !op->isForbidden();
@@ -99,7 +99,7 @@ BOOL CSyncProgressDialog::OnInitDialog()
 
 LRESULT CSyncProgressDialog::OnSyncCompleted(WPARAM wParam, LPARAM lParam)
 {
-    m_currentOperationTitle = CString("Синхронизация завершена");
+    m_currentOperationTitle = CString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
     UpdateData(FALSE);
 
     auto okButton = (CButton *)GetDlgItem(IDOK);

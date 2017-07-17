@@ -46,7 +46,7 @@ void CScanProgressDialog::showScanProgress(const CString& folder)
 {
     CString* title = new CString(_T(""));
     
-    title->Format(_T("Сканируется %s"), folder);
+    title->Format(_T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s"), folder);
 
     PostMessage(WM_SHOW_SCAN_PROGRESS, (WPARAM)title);
 }
@@ -74,22 +74,22 @@ LRESULT CScanProgressDialog::OnShowScanProgress(WPARAM wParam, LPARAM lParam)
 
 LRESULT CScanProgressDialog::OnScanCompleted(WPARAM wParam, LPARAM lParam)
 {
-    m_currentFolderTitle = CString("Cканирование завершено");
+    m_currentFolderTitle = CString("CпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
     UpdateData(FALSE);
 
     if (!m_scanResult)
     {
-        MessageBox(_T("Невозможно провести сканирование!\n"
-                      "Убедитесь, что обе директории выбраны."),
-                   _T("Ошибка"), MB_ICONERROR | MB_OK);
+        MessageBox(_T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n"
+                      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ."),
+                   _T("пїЅпїЅпїЅпїЅпїЅпїЅ"), MB_ICONERROR | MB_OK);
     }
     else
     {
-        int operationsCount = m_syncManager->getOperations().size();
+        int operationsCount = m_syncManager->getOperationQueue().size();
         if (operationsCount == 0)
         {
-            MessageBox(_T("Сканирование не выявило никаких возможных операций.\n"),
-                       _T("Синхронизация"), MB_ICONINFORMATION | MB_OK);
+            MessageBox(_T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.\n"),
+                       _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"), MB_ICONINFORMATION | MB_OK);
         }
     }
 

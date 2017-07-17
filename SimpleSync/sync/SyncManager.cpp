@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "sync/SyncManager.h"
-#include "sync/FileProperties.h"
+#include "SyncManager.h"
+
 #include "operations/CopyOperation.h"
 #include "operations/RemoveOperation.h"
 #include "operations/EmptyOperation.h"
@@ -80,12 +80,20 @@ FileComparisonParameters SyncManager::getComparisonParameters() const
 
 BOOL SyncManager::isFileInSourceFolder(const FileProperties& file) const
 {
-    return (file.getParentFolder().Find(getSourceFolder()) == 0);
+    CString parentFolder = file.getParentFolder();
+    return parentFolder.Find(getSourceFolder()) == 0;
 }
 
 BOOL SyncManager::isFileInDestinationFolder(const FileProperties& file) const
 {
-    return (file.getParentFolder().Find(getDestinationFolder()) == 0);
+    CString parentFolder = file.getParentFolder();
+    return parentFolder.Find(getDestinationFolder()) == 0;
+}
+
+BOOL SyncManager::isFileInFileSet(const FileProperties& file,
+                                const FileSet &files) const
+{
+    return files.find(file) != files.end();
 }
 
 CString SyncManager::getFileRelativePath(const FileProperties& file,
@@ -96,11 +104,7 @@ CString SyncManager::getFileRelativePath(const FileProperties& file,
     return source.IsEmpty() ? dest : source;
 }
 
-BOOL SyncManager::isFileInFiles(const FileProperties& file,
-                                const FileSet &files) const
-{
-    return files.find(file) != files.end();
-}
+
 
 BOOL SyncManager::scan(ScanCallback* callback)
 {
@@ -120,9 +124,9 @@ BOOL SyncManager::scan(ScanCallback* callback)
 
 void SyncManager::sync(SyncCallback* callback)
 {
-    for (auto& operation: m_syncActions)
+    for (auto& operation: m_syncOperations)
     {
-        if (!operation->isForbidden())
+        if (operation && !operation->isForbidden())
         {
             (*callback)(operation);
             operation->execute();
@@ -130,10 +134,12 @@ void SyncManager::sync(SyncCallback* callback)
     }
 }
 
-SyncManager::OperationQueue SyncManager::getOperations()
+SyncManager::OperationQueue SyncManager::getOperationQueue()
 {
-    return m_syncActions;
+    return m_syncOperations;
 }
+
+
 
 BOOL SyncManager::folderExists(const CString& folder) const
 {
@@ -146,14 +152,15 @@ BOOL SyncManager::folderExists(const CString& folder) const
 BOOL SyncManager::fileMeetsRequirements(const FileProperties& file) const
 {
     const auto& options = getOptions();
+    BOOL result = TRUE;
 
     if (!options.syncHiddenFiles && file.isHidden())
-        return FALSE;
+        result = FALSE;
 
     if (!options.recursive && file.isFolder())
-        return FALSE;
+        result = FALSE;
 
-    return TRUE;
+    return result;
 }
 
 SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) const
@@ -196,20 +203,20 @@ void SyncManager::scanFolders(const CString& source,
     {
         const FileProperties& file = *fileIterator;
 
-        if (!isFileInFiles(file, destinationFiles))
+        if (!isFileInFileSet(file, destinationFiles))
             manageCopyOperation(file, destination);
         else
         {
-            // TODO: come up with suitable name for iterator
             auto sameFileIterator = destinationFiles.find(file);
+            const FileProperties& sameFile = *sameFileIterator;
             
             if (file.isFolder())
             {
-                enqueueOperation(new EmptyOperation(file, *sameFileIterator));
-                scanFolders(file.getFullPath(), sameFileIterator->getFullPath(), callback);
+                enqueueOperation(new EmptyOperation(file, sameFile));
+                scanFolders(file.getFullPath(), sameFile.getFullPath(), callback);
             }
             else
-                manageReplaceOperation(file, *sameFileIterator);
+                manageReplaceOperation(file, sameFile);
 
             destinationFiles.erase(sameFileIterator);
         }
@@ -221,7 +228,7 @@ void SyncManager::scanFolders(const CString& source,
     {
         const FileProperties& file = *fileIterator;
 
-        if (!isFileInFiles(file, sourceFiles))
+        if (!isFileInFileSet(file, sourceFiles))
         {
             if (getSyncDirection() == SYNC_DIRECTION::BOTH)
                 manageCopyOperation(file, source);
@@ -235,15 +242,15 @@ void SyncManager::scanFolders(const CString& source,
 
 void SyncManager::clearOperationQueue()
 {
-    for (auto it = m_syncActions.begin(); it != m_syncActions.end(); ++it)
+    for (auto it = m_syncOperations.begin(); it != m_syncOperations.end(); ++it)
         delete (*it);
-    m_syncActions.clear();
+    m_syncOperations.clear();
 }
 
 void SyncManager::enqueueOperation(SyncOperation* operation)
 {
     if (operation)
-        m_syncActions.push_back(operation);
+        m_syncOperations.push_back(operation);
 }
 
 void SyncManager::manageCopyOperation(const FileProperties& fileToCopy,
@@ -275,8 +282,9 @@ void SyncManager::manageReplaceOperation(const FileProperties& originalFile,
 {
     using RESULT = FileProperties::COMPARISON_RESULT;
 
-    RESULT compareResult = originalFile.compareTo(fileToReplace, getComparisonParameters());
-    SyncOperation* op;
+    RESULT compareResult = originalFile.compareTo(fileToReplace,
+                                                  getComparisonParameters());
+    SyncOperation* op = NULL;
 
     switch (compareResult)
     {

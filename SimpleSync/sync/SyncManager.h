@@ -4,8 +4,7 @@
 #include <deque>
 #include <algorithm>
 #include <functional>
-#include "sync/FileProperties.h"
-
+#include "FileProperties.h"
 
 class SyncOperation;
 
@@ -40,7 +39,6 @@ public:
 
     void setSourceFolder(const CString& source);
     void setDestinationFolder(const CString& destination);
-
     CString getSourceFolder() const;
     CString getDestinationFolder() const;
 
@@ -55,20 +53,20 @@ public:
 
     BOOL isFileInSourceFolder(const FileProperties& file) const;
     BOOL isFileInDestinationFolder(const FileProperties& file) const;
+    BOOL isFileInFileSet(const FileProperties& file, const FileSet& files) const;
 
     CString getFileRelativePath(const FileProperties& file, BOOL withName) const;
 
-    BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
-
+public:
     BOOL scan(ScanCallback* callback);
     void sync(SyncCallback* callback);
-    OperationQueue getOperations();
+    OperationQueue getOperationQueue();
 
 private:
     BOOL folderExists(const CString& folder) const;
     BOOL fileMeetsRequirements(const FileProperties& file) const;
-    FileSet getFilesFromFolder(const CString& folder) const;
     
+    FileSet getFilesFromFolder(const CString& folder) const;
     void scanFolders(const CString& source, const CString& destination,
                      ScanCallback* callback);
     
@@ -89,6 +87,6 @@ private:
     SyncManagerOptions m_options;
     FileComparisonParameters m_compareParameters;
 
-    OperationQueue m_syncActions;
+    OperationQueue m_syncOperations;
 };
 

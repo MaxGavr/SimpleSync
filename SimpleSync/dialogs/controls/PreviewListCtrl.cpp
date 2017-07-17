@@ -39,15 +39,15 @@ void CPreviewListCtrl::setupColumns()
     
     SetImageList(&m_imageList, LVSIL_SMALL);
 
-    InsertColumn(LIST_COLUMNS::INDEX, _T("№"),
+    InsertColumn(LIST_COLUMNS::INDEX, _T("пїЅ"),
                  LVCFMT_RIGHT,
                  PREVIEW_LIST_IMAGE_SIZE);
-    InsertColumn(LIST_COLUMNS::SOURCE_FILE, _T("Исходная директория"),
+    InsertColumn(LIST_COLUMNS::SOURCE_FILE, _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"),
                  LVCFMT_LEFT);
     InsertColumn(LIST_COLUMNS::ACTION, _T(""),
                  LVCFMT_CENTER | LVCFMT_FIXED_WIDTH,
                  PREVIEW_LIST_IMAGE_SIZE);
-    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, _T("Конечная директория"),
+    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"),
                  LVCFMT_LEFT);
 
     adjustColumnsWidth();
@@ -57,7 +57,7 @@ void CPreviewListCtrl::showPreview()
 {
     clearPreview();
     
-    SyncManager::OperationQueue operations = m_syncManager->getOperations();
+    SyncManager::OperationQueue operations = m_syncManager->getOperationQueue();
     sortOperationsByFolders(operations);
     
     for (auto& operation : m_sortedOperations)

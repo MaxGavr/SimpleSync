@@ -128,13 +128,13 @@ void CMainDlg::OnPreviewButtonClicked()
 
 void CMainDlg::OnSyncButtonClicked()
 {
-    SyncManager::OperationQueue operations = m_syncManager->getOperations();
+    SyncManager::OperationQueue operations = m_syncManager->getOperationQueue();
     int operationsCount = operations.size();
 
     if (operationsCount == 0)
     {
-        MessageBox(_T("Нечего синхронизировать!"),
-                   _T("Синхронизация"), MB_ICONINFORMATION | MB_OK);
+        MessageBox(_T("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!"),
+                   _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"), MB_ICONINFORMATION | MB_OK);
         return;
     }
 
@@ -148,11 +148,11 @@ void CMainDlg::OnSyncButtonClicked()
 
     if (hasAmbiguous)
     {
-        LPCTSTR msg = _T("Некоторые операции (помечены \"?\") "
-                         "требуют Вашего решения, в противном случае "
-                         "они не будут выполнены. "
-                         "Желаете продолжить?");
-        LPCTSTR title = _T("Неоднозначные операции");
+        LPCTSTR msg = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ \"?\") "
+                         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "
+                         "пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. "
+                         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ?");
+        LPCTSTR title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
         int response = MessageBox(msg, title, MB_ICONEXCLAMATION | MB_YESNO);
         if (response == IDNO)
             return;
@@ -188,9 +188,9 @@ void CMainDlg::OnParametersButtonClicked()
 
 void CMainDlg::OnHelpButtonClicked()
 {
-    LPCWSTR msg = _T("Двойной клик по элементу списка позволяет просмотреть\
-                     свойства файла/ов.\n"
-                     "Клик правой кнопкой мыши - отменить операцию.");
-    LPWSTR title = _T("Помощь");
+    LPCWSTR msg = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ\
+                     пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ/пїЅпїЅ.\n"
+                     "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.");
+    LPWSTR title = _T("пїЅпїЅпїЅпїЅпїЅпїЅ");
     MessageBox(msg, title, MB_ICONINFORMATION | MB_OK);
 }

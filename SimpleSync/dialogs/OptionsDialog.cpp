@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../SimpleSync.h"
+#include "SimpleSync.h"
 #include "OptionsDialog.h"
 #include "afxdialogex.h"
 
@@ -23,6 +23,8 @@ CSyncOptionsDialog::CSyncOptionsDialog(const SyncManager* syncManager,
 CSyncOptionsDialog::~CSyncOptionsDialog()
 {
 }
+
+
 
 SyncManagerOptions CSyncOptionsDialog::getOptions() const
 {

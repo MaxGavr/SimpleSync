@@ -1,9 +1,7 @@
 #pragma once
 
 #include "afxwin.h"
-#include "../sync/FileProperties.h"
-
-class SyncManager;
+#include "sync\SyncManager.h"
 
 
 
@@ -12,7 +10,8 @@ class CCompParametersDialog : public CDialogEx
 	DECLARE_DYNAMIC(CCompParametersDialog)
 
 public:
-	CCompParametersDialog(const SyncManager* syncManager, CWnd* pParent = NULL);
+	CCompParametersDialog(const SyncManager* syncManager,
+                          CWnd* pParent = NULL);
 	virtual ~CCompParametersDialog();
 
     FileComparisonParameters getParameters() const;

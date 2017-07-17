@@ -16,6 +16,7 @@ public:
 	CScanProgressDialog(SyncManager* syncManager, CWnd* pParent = NULL);
 	virtual ~CScanProgressDialog();
 
+    // Run in separate worker thread
     static UINT runScan(LPVOID pParam);
 
 #ifdef AFX_DESIGN_TIME
@@ -28,6 +29,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
+    // Called in callback that is passed to SyncManager::scan()
     void showScanProgress(const CString& folder);
 
     SyncManager* m_syncManager;

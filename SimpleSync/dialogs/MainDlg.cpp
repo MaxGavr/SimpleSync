@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "MainDlg.h"
-#include "sync/SyncManager.h"
 #include "OptionsDialog.h"
 #include "ParamsDialog.h"
 #include "ProgressDialog.h"
@@ -14,7 +13,7 @@
 
 
 
-CMainDlg::CMainDlg(SyncManager* syncManager, CWnd* pParent)
+CMainDialog::CMainDialog(SyncManager* syncManager, CWnd* pParent)
 	: CDialogEx(IDD_SIMPLESYNC_DIALOG, pParent),
       m_syncManager(syncManager),
       m_sourcePath(_T("")),
@@ -25,7 +24,9 @@ CMainDlg::CMainDlg(SyncManager* syncManager, CWnd* pParent)
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_SIMPLE_SYNC_ICON);
 }
 
-void CMainDlg::DoDataExchange(CDataExchange* pDX)
+
+
+void CMainDialog::DoDataExchange(CDataExchange* pDX)
 {
     CDialogEx::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_PREVIEW_LIST, m_previewList);
@@ -34,21 +35,27 @@ void CMainDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Radio(pDX, IDC_DIRECTION_TO_RIGHT_BUTTON, m_directionRadioBox);
 }
 
-BEGIN_MESSAGE_MAP(CMainDlg, CDialogEx)
+
+
+BEGIN_MESSAGE_MAP(CMainDialog, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-    ON_EN_CHANGE(IDC_SOURCE_PATH_BROWSE, &CMainDlg::OnSourceFolderChange)
-    ON_EN_CHANGE(IDC_DESTINATION_FOLDER_BROWSE, &CMainDlg::OnDestinationFolderChange)
-    ON_CONTROL_RANGE(BN_CLICKED, IDC_DIRECTION_TO_RIGHT_BUTTON, IDC_DIRECTION_TO_LEFT_BUTTON, &CMainDlg::OnDirectionButtonClicked)
-    ON_BN_CLICKED(IDC_PREVIEW_BUTTON, &CMainDlg::OnPreviewButtonClicked)
-    ON_BN_CLICKED(IDC_SYNC_BUTTON, &CMainDlg::OnSyncButtonClicked)
-    ON_BN_CLICKED(IDC_OPTIONS_BUTTON, &CMainDlg::OnOptionsButtonClicked)
-    ON_BN_CLICKED(IDC_PARAMETERS_BUTTON, &CMainDlg::OnParametersButtonClicked)
-    ON_BN_CLICKED(IDC_HELP_BUTTON, &CMainDlg::OnHelpButtonClicked)
+    ON_EN_CHANGE(IDC_SOURCE_PATH_BROWSE, &CMainDialog::OnSourceFolderChange)
+    ON_EN_CHANGE(IDC_DESTINATION_FOLDER_BROWSE, &CMainDialog::OnDestinationFolderChange)
+    ON_CONTROL_RANGE(BN_CLICKED,
+                     IDC_DIRECTION_TO_RIGHT_BUTTON,
+                     IDC_DIRECTION_TO_LEFT_BUTTON,
+                     &CMainDialog::OnDirectionButtonClicked)
+    ON_BN_CLICKED(IDC_PREVIEW_BUTTON, &CMainDialog::OnPreviewButtonClicked)
+    ON_BN_CLICKED(IDC_SYNC_BUTTON, &CMainDialog::OnSyncButtonClicked)
+    ON_BN_CLICKED(IDC_OPTIONS_BUTTON, &CMainDialog::OnOptionsButtonClicked)
+    ON_BN_CLICKED(IDC_PARAMETERS_BUTTON, &CMainDialog::OnParametersButtonClicked)
+    ON_BN_CLICKED(IDC_HELP_BUTTON, &CMainDialog::OnHelpButtonClicked)
 END_MESSAGE_MAP()
 
 
-BOOL CMainDlg::OnInitDialog()
+
+BOOL CMainDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -77,7 +84,7 @@ BOOL CMainDlg::OnInitDialog()
 	return TRUE;
 }
 
-void CMainDlg::OnPaint()
+void CMainDialog::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -98,27 +105,28 @@ void CMainDlg::OnPaint()
 		CDialogEx::OnPaint();
 }
 
-HCURSOR CMainDlg::OnQueryDragIcon()
+HCURSOR CMainDialog::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
-void CMainDlg::OnSourceFolderChange()
+
+void CMainDialog::OnSourceFolderChange()
 {
     UpdateData(TRUE);
     m_syncManager->setSourceFolder(m_sourcePath);
     m_previewList.clearPreview();
 }
 
-void CMainDlg::OnDestinationFolderChange()
+void CMainDialog::OnDestinationFolderChange()
 {
     UpdateData(TRUE);
     m_syncManager->setDestinationFolder(m_destinationPath);
     m_previewList.clearPreview();
 }
 
-void CMainDlg::OnPreviewButtonClicked()
+void CMainDialog::OnPreviewButtonClicked()
 {
     CScanProgressDialog dialog(m_syncManager);
     dialog.DoModal();
@@ -126,7 +134,7 @@ void CMainDlg::OnPreviewButtonClicked()
     m_previewList.showPreview();
 }
 
-void CMainDlg::OnSyncButtonClicked()
+void CMainDialog::OnSyncButtonClicked()
 {
     SyncManager::OperationQueue operations = m_syncManager->getOperationQueue();
     int operationsCount = operations.size();
@@ -134,7 +142,7 @@ void CMainDlg::OnSyncButtonClicked()
     if (operationsCount == 0)
     {
         MessageBox(_T("Нечего синхронизировать!"),
-                   _T("Синхронизация"), MB_ICONINFORMATION | MB_OK);
+                   _T("Отмена"), MB_ICONINFORMATION | MB_OK);
         return;
     }
 
@@ -149,9 +157,9 @@ void CMainDlg::OnSyncButtonClicked()
     if (hasAmbiguous)
     {
         LPCTSTR msg = _T("Некоторые операции (помечены \"?\") "
-                         "требуют Вашего решения, в противном случае "
+                         "требуют Вашего решения, в противном случае  "
                          "они не будут выполнены. "
-                         "Желаете продолжить?");
+                         "Желаете начать синхронизацию?");
         LPCTSTR title = _T("Неоднозначные операции");
         int response = MessageBox(msg, title, MB_ICONEXCLAMATION | MB_YESNO);
         if (response == IDNO)
@@ -162,13 +170,13 @@ void CMainDlg::OnSyncButtonClicked()
     dialog.DoModal();
 }
 
-void CMainDlg::OnDirectionButtonClicked(UINT nID)
+void CMainDialog::OnDirectionButtonClicked(UINT nID)
 {
     UpdateData(TRUE);
     m_syncManager->setSyncDirection((SyncManager::SYNC_DIRECTION)m_directionRadioBox);
 }
 
-void CMainDlg::OnOptionsButtonClicked()
+void CMainDialog::OnOptionsButtonClicked()
 {
     CSyncOptionsDialog optionsDialog(m_syncManager);
 
@@ -176,8 +184,7 @@ void CMainDlg::OnOptionsButtonClicked()
         m_syncManager->setOptions(optionsDialog.getOptions());
 }
 
-
-void CMainDlg::OnParametersButtonClicked()
+void CMainDialog::OnParametersButtonClicked()
 {
     CCompParametersDialog parametersDialog(m_syncManager);
 
@@ -186,11 +193,11 @@ void CMainDlg::OnParametersButtonClicked()
 }
 
 
-void CMainDlg::OnHelpButtonClicked()
+void CMainDialog::OnHelpButtonClicked()
 {
-    LPCWSTR msg = _T("Двойной клик по элементу списка позволяет просмотреть\
-                     свойства файла/ов.\n"
-                     "Клик правой кнопкой мыши - отменить операцию.");
+    LPCWSTR msg = _T("Двойной клик на элементе списка позволяет "
+                     "просмотреть свойства файла/ов.\n"
+                     "Клик правой кнопкой - отмена операции.");
     LPWSTR title = _T("Помощь");
     MessageBox(msg, title, MB_ICONINFORMATION | MB_OK);
 }

@@ -46,14 +46,14 @@ void CPreviewListCtrl::setupPreviewList()
                      LVS_EX_SUBITEMIMAGES);
     SetImageList(&m_imageList, LVSIL_SMALL);
 
-    InsertColumn(LIST_COLUMN::INDEX, _T("в„–"),
+    InsertColumn(LIST_COLUMN::INDEX, _T("№"),
                  LVCFMT_RIGHT);
-    InsertColumn(LIST_COLUMN::SOURCE_FILE, _T("РСЃС…РѕРґРЅР°СЏ РґРёСЂРµРєС‚РѕСЂРёСЏ"),
+    InsertColumn(LIST_COLUMN::SOURCE_FILE, _T("Исходная директория"),
                  LVCFMT_LEFT);
     InsertColumn(LIST_COLUMN::ACTION, _T(""),
                  LVCFMT_CENTER | LVCFMT_FIXED_WIDTH,
                  PREVIEW_LIST_IMAGE_SIZE);
-    InsertColumn(LIST_COLUMN::DESTINATION_FILE, _T("РљРѕРЅРµС‡РЅР°СЏ РґРёСЂРµРєС‚РѕСЂРёСЏ"),
+    InsertColumn(LIST_COLUMN::DESTINATION_FILE, _T("Конечная директория"),
                  LVCFMT_LEFT);
 
     adjustColumnsWidth();

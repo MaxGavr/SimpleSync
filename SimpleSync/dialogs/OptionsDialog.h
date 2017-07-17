@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../sync/SyncManager.h"
+#include "sync/SyncManager.h"
 
 
 
@@ -14,6 +14,8 @@ public:
 
     SyncManagerOptions getOptions() const;
 
+    afx_msg void OnOptionClicked(UINT id);
+
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_OPTIONS_DIALOG };
 #endif
@@ -22,9 +24,6 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
 
 	DECLARE_MESSAGE_MAP()
-
-public:
-    afx_msg void OnOptionClicked(UINT id);
 
 private:
     BOOL m_recursiveOption;

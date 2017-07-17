@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include "../SimpleSync.h"
+#include "SimpleSync.h"
 #include "FilePropertiesDialog.h"
-#include "../sync/SyncManager.h"
 #include "afxdialogex.h"
 
 
@@ -21,6 +20,18 @@ CFilePropertiesDialog::~CFilePropertiesDialog()
 {
 }
 
+
+
+BOOL CFilePropertiesDialog::OnInitDialog()
+{
+    CDialogEx::OnInitDialog();
+
+    if (m_controls.initialize(m_file, m_syncManager))
+        UpdateData(FALSE);
+
+    return TRUE;
+}
+
 void CFilePropertiesDialog::DoDataExchange(CDataExchange* pDX)
 {
     CDialogEx::DoDataExchange(pDX);
@@ -38,21 +49,14 @@ void CFilePropertiesDialog::DoDataExchange(CDataExchange* pDX)
 }
 
 
+
 BEGIN_MESSAGE_MAP(CFilePropertiesDialog, CDialogEx)
 END_MESSAGE_MAP()
 
 
-BOOL CFilePropertiesDialog::OnInitDialog()
-{
-    CDialogEx::OnInitDialog();
 
-    if (m_controls.initialize(m_file, m_syncManager))
-        UpdateData(FALSE);
-
-    return TRUE;
-}
-
-BOOL FilePropertiesControls::initialize(const FileProperties& file, const SyncManager* syncManager)
+BOOL FilePropertiesControls::initialize(const FileProperties& file,
+                                        const SyncManager* syncManager)
 {
     if (!syncManager)
         return FALSE;

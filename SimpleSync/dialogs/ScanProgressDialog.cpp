@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "../SimpleSync.h"
+#include "SimpleSync.h"
 #include "ScanProgressDialog.h"
-#include "../sync/SyncManager.h"
+#include "sync/SyncManager.h"
 #include "afxdialogex.h"
 
 
@@ -18,6 +18,8 @@ CScanProgressDialog::CScanProgressDialog(SyncManager* syncManager,
 CScanProgressDialog::~CScanProgressDialog()
 {
 }
+
+
 
 UINT CScanProgressDialog::runScan(LPVOID pParam)
 {
@@ -46,10 +48,12 @@ void CScanProgressDialog::showScanProgress(const CString& folder)
 {
     CString* title = new CString(_T(""));
     
-    title->Format(_T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s"), folder);
+    title->Format(_T("Сканируется %s"), folder);
 
     PostMessage(WM_SHOW_SCAN_PROGRESS, (WPARAM)title);
 }
+
+
 
 BOOL CScanProgressDialog::OnInitDialog()
 {
@@ -74,22 +78,22 @@ LRESULT CScanProgressDialog::OnShowScanProgress(WPARAM wParam, LPARAM lParam)
 
 LRESULT CScanProgressDialog::OnScanCompleted(WPARAM wParam, LPARAM lParam)
 {
-    m_currentFolderTitle = CString("CпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
+    m_currentFolderTitle = CString("Сканирование завершено");
     UpdateData(FALSE);
 
     if (!m_scanResult)
     {
-        MessageBox(_T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n"
-                      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ."),
-                   _T("пїЅпїЅпїЅпїЅпїЅпїЅ"), MB_ICONERROR | MB_OK);
+        MessageBox(_T("Невозможно провести сканирование!\n"
+                      "Убедитесь, что обе директории выбраны."),
+                   _T("Ошибка"), MB_ICONERROR | MB_OK);
     }
     else
     {
         int operationsCount = m_syncManager->getOperationQueue().size();
         if (operationsCount == 0)
         {
-            MessageBox(_T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.\n"),
-                       _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"), MB_ICONINFORMATION | MB_OK);
+            MessageBox(_T("Сканирование не выявило возможных операций.\n"),
+                       _T("Результат"), MB_ICONINFORMATION | MB_OK);
         }
     }
 
@@ -101,9 +105,11 @@ LRESULT CScanProgressDialog::OnScanCompleted(WPARAM wParam, LPARAM lParam)
 
 void CScanProgressDialog::OnCancelCommand()
 {
+    // Prevent dialog from closing on ESC
     if ((GetKeyState(VK_ESCAPE) & 0x8000) == 0)
         CDialogEx::OnCancel();
 }
+
 
 
 BEGIN_MESSAGE_MAP(CScanProgressDialog, CDialogEx)
@@ -111,5 +117,3 @@ BEGIN_MESSAGE_MAP(CScanProgressDialog, CDialogEx)
     ON_MESSAGE(WM_SCAN_COMPLETED, OnScanCompleted)
     ON_COMMAND(IDCANCEL, &CScanProgressDialog::OnCancelCommand)
 END_MESSAGE_MAP()
-
-

@@ -3,10 +3,12 @@
 
 class SyncManager;
 
-class CMainDlg : public CDialogEx
+
+
+class CMainDialog : public CDialogEx
 {
 public:
-	CMainDlg(SyncManager* syncManager, CWnd* pParent = NULL);
+	CMainDialog(SyncManager* syncManager, CWnd* pParent = NULL);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_SIMPLESYNC_DIALOG };

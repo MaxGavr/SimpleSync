@@ -2,7 +2,6 @@
 #include "SimpleSync.h"
 #include "ProgressDialog.h"
 #include "sync/SyncManager.h"
-#include "operations/SyncOperation.h"
 #include "afxdialogex.h"
 
 
@@ -19,6 +18,8 @@ CSyncProgressDialog::CSyncProgressDialog(SyncManager* syncManager,
 CSyncProgressDialog::~CSyncProgressDialog()
 {
 }
+
+
 
 UINT CSyncProgressDialog::runSync(LPVOID pParam)
 {
@@ -51,16 +52,16 @@ void CSyncProgressDialog::showOperationProgress(const SyncOperation* operation)
     switch (type)
     {
     case SyncOperation::TYPE::COPY:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s");
+        title = _T("Копирование %s");
         break;
     case SyncOperation::TYPE::REPLACE:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅ %s");
+        title = _T("Замена %s");
         break;
     case SyncOperation::TYPE::REMOVE:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ %s");
+        title = _T("Удаление %s");
         break;
     case SyncOperation::TYPE::CREATE:
-        title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ %s");
+        title = _T("Создание %s");
         break;
     default:
         title = _T("...");
@@ -99,7 +100,7 @@ BOOL CSyncProgressDialog::OnInitDialog()
 
 LRESULT CSyncProgressDialog::OnSyncCompleted(WPARAM wParam, LPARAM lParam)
 {
-    m_currentOperationTitle = CString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
+    m_currentOperationTitle = CString("Синхронизация завершена");
     UpdateData(FALSE);
 
     auto okButton = (CButton *)GetDlgItem(IDOK);
@@ -121,6 +122,7 @@ LRESULT CSyncProgressDialog::OnShowSyncProgress(WPARAM wParam, LPARAM lParam)
 
 void CSyncProgressDialog::OnCancelCommand()
 {
+    // Prevent window from closing on ESC
     if ((GetKeyState(VK_ESCAPE) & 0x8000) == 0)
         CDialogEx::OnCancel();
 }

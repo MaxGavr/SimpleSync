@@ -43,7 +43,7 @@ BOOL CSyncApp::InitInstance()
 
     SyncManager syncManager;
 
-	CMainDlg dialog(&syncManager);
+	CMainDialog dialog(&syncManager);
 	m_pMainWnd = &dialog;
 	INT_PTR nResponse = dialog.DoModal();
 

@@ -26,6 +26,8 @@ CCompareFilesDialog::~CCompareFilesDialog()
 {
 }
 
+
+
 void CCompareFilesDialog::DoDataExchange(CDataExchange* pDX)
 {
     CDialogEx::DoDataExchange(pDX);
@@ -60,8 +62,10 @@ void CCompareFilesDialog::DoDataExchange(CDataExchange* pDX)
 }
 
 
+
 BEGIN_MESSAGE_MAP(CCompareFilesDialog, CDialogEx)
 END_MESSAGE_MAP()
+
 
 
 BOOL CCompareFilesDialog::OnInitDialog()

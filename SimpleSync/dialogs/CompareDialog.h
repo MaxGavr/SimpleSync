@@ -3,8 +3,6 @@
 #include "afxwin.h"
 #include "FilePropertiesDialog.h"
 
-class SyncManager;
-
 
 
 class CCompareFilesDialog : public CDialogEx
@@ -18,6 +16,8 @@ public:
                         CWnd* pParent = NULL);
 	virtual ~CCompareFilesDialog();
 
+    virtual BOOL OnInitDialog();
+
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_COMPARE_FILES_DIALOG };
 #endif
@@ -26,9 +26,6 @@ protected:
     virtual void DoDataExchange(CDataExchange* pDX);
 
 	DECLARE_MESSAGE_MAP()
-
-public:
-    virtual BOOL OnInitDialog();
 
 private:
     CPngImage& chooseImage(FileProperties::COMPARISON_RESULT comparisonResult);

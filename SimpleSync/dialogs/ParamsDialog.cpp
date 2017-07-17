@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include "../SimpleSync.h"
+#include "SimpleSync.h"
 #include "ParamsDialog.h"
-#include "../sync/SyncManager.h"
 #include "afxdialogex.h"
 
 
@@ -24,6 +23,8 @@ CCompParametersDialog::~CCompParametersDialog()
 {
 }
 
+
+
 FileComparisonParameters CCompParametersDialog::getParameters() const
 {
     return m_parameters;
@@ -41,31 +42,21 @@ void CCompParametersDialog::OnTimeRadioBoxClicked(UINT id)
 {
     UpdateData(TRUE);
 
+    using TIME = FileProperties::TIME_STAMP;
     switch (id)
     {
     case IDC_CREATION_TIME_RADIO:
-        m_parameters.m_timeToCompare = FileProperties::TIME_STAMP::CREATION_TIME;
+        m_parameters.m_timeToCompare = TIME::CREATION_TIME;
         break;
     case IDC_WRITE_TIME_RADIO:
-        m_parameters.m_timeToCompare = FileProperties::TIME_STAMP::LAST_WRITE_TIME;
+        m_parameters.m_timeToCompare = TIME::LAST_WRITE_TIME;
         break;
     case IDC_ACCESS_TIME_RADIO:
-        m_parameters.m_timeToCompare = FileProperties::TIME_STAMP::LAST_ACCESS_TIME;
+        m_parameters.m_timeToCompare = TIME::LAST_ACCESS_TIME;
         break;
     }
 }
 
-
-BEGIN_MESSAGE_MAP(CCompParametersDialog, CDialogEx)
-    ON_CONTROL_RANGE(BN_CLICKED,
-                     IDC_CREATION_TIME_RADIO,
-                     IDC_ACCESS_TIME_RADIO,
-                     &CCompParametersDialog::OnTimeRadioBoxClicked)
-    ON_BN_CLICKED(IDC_SIZE_PARAMETER_CHECK,
-                  &CCompParametersDialog::OnSizeCheckBoxClicked)
-    ON_BN_CLICKED(IDC_TIME_PARAMETER_CHECK,
-                  &CCompParametersDialog::OnTimeCheckBoxClicked)
-END_MESSAGE_MAP()
 
 
 void CCompParametersDialog::OnSizeCheckBoxClicked()
@@ -73,7 +64,6 @@ void CCompParametersDialog::OnSizeCheckBoxClicked()
     UpdateData(TRUE);
     m_parameters.m_compareSize = m_compareSize;
 }
-
 
 void CCompParametersDialog::OnTimeCheckBoxClicked()
 {
@@ -89,7 +79,6 @@ void CCompParametersDialog::enableTimeRadioBoxes(BOOL enable)
         GetDlgItem(i)->EnableWindow(enable);
 }
 
-
 BOOL CCompParametersDialog::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
@@ -98,3 +87,16 @@ BOOL CCompParametersDialog::OnInitDialog()
 
     return TRUE;
 }
+
+
+
+BEGIN_MESSAGE_MAP(CCompParametersDialog, CDialogEx)
+    ON_CONTROL_RANGE(BN_CLICKED,
+                     IDC_CREATION_TIME_RADIO,
+                     IDC_ACCESS_TIME_RADIO,
+                     &CCompParametersDialog::OnTimeRadioBoxClicked)
+    ON_BN_CLICKED(IDC_SIZE_PARAMETER_CHECK,
+                  &CCompParametersDialog::OnSizeCheckBoxClicked)
+    ON_BN_CLICKED(IDC_TIME_PARAMETER_CHECK,
+                  &CCompParametersDialog::OnTimeCheckBoxClicked)
+END_MESSAGE_MAP()

@@ -1,12 +1,13 @@
 #pragma once
 
-#include "sync/FileProperties.h"
+#include "sync/SyncManager.h"
 #include "afxwin.h"
 
-class SyncManager;
 
 
-
+// Incapsulates the minimum set of controls,
+// that are required to show all file properties
+// Tip: don't forget to connect variables with controls via DDX_* functions
 class FilePropertiesControls
 {
 public:
@@ -39,6 +40,8 @@ public:
                           CWnd* pParent = NULL);
 	virtual ~CFilePropertiesDialog();
 
+    virtual BOOL OnInitDialog();
+
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_FILE_PROPERTIES_DIALOG };
 #endif
@@ -53,7 +56,4 @@ private:
     const SyncManager* m_syncManager;
 
     FilePropertiesControls m_controls;
-
-public:
-    virtual BOOL OnInitDialog();
 };

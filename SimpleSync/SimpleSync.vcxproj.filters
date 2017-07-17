@@ -146,9 +146,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\SimpleSync.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\..\..\Users\user\Desktop\icon_equal.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -194,10 +191,10 @@
     <Image Include="..\icons\icon_remove_small.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\Users\user\Desktop\icon_main.ico">
+    <Image Include="..\icons\icon_help.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_help.png">
+    <Image Include="..\icons\icon_app.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

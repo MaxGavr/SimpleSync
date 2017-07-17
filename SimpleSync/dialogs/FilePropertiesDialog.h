@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FileProperties.h"
+#include "sync/FileProperties.h"
 #include "afxwin.h"
 
 class SyncManager;
@@ -12,7 +12,8 @@ class FilePropertiesControls
 public:
     BOOL initialize(const FileProperties& file, const SyncManager* syncManager);
 
-    const LPCTSTR m_timeFormat = _T("%d %b %Y ï¿½., %X")
+    const LPCTSTR m_timeFormat = _T("%d %b %Y ã., %X");
+
     CString m_filePath;
     CString m_fileSize;
 

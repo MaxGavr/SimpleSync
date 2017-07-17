@@ -78,60 +78,108 @@
     <ClInclude Include="ScanProgressDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="operations\CopyOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="operations\CreateOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="operations\EmptyOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="operations\RemoveOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="operations\ReplaceOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="operations\SyncOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\controls\PreviewListCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\CompareDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\FilePropertiesDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\MainDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\OptionsDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\ParamsDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\ProgressDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\ScanProgressDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sync\FileProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sync\SyncManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SimpleSync.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SyncManager.cpp">
+    <ClCompile Include="operations\CopyOperation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileProperties.cpp">
+    <ClCompile Include="operations\CreateOperation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PreviewListCtrl.cpp">
+    <ClCompile Include="operations\EmptyOperation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SyncOperation.cpp">
+    <ClCompile Include="operations\RemoveOperation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CopyOperation.cpp">
+    <ClCompile Include="operations\ReplaceOperation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RemoveOperation.cpp">
+    <ClCompile Include="operations\SyncOperation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EmptyOperation.cpp">
+    <ClCompile Include="dialogs\controls\PreviewListCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OptionsDialog.cpp">
+    <ClCompile Include="dialogs\CompareDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReplaceOperation.cpp">
+    <ClCompile Include="dialogs\FilePropertiesDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParamsDialog.cpp">
+    <ClCompile Include="dialogs\MainDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CreateOperation.cpp">
+    <ClCompile Include="dialogs\OptionsDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FilePropertiesDialog.cpp">
+    <ClCompile Include="dialogs\ParamsDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CompareDialog.cpp">
+    <ClCompile Include="dialogs\ProgressDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ProgressDialog.cpp">
+    <ClCompile Include="dialogs\ScanProgressDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScanProgressDialog.cpp">
+    <ClCompile Include="sync\FileProperties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sync\SyncManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -155,46 +203,46 @@
     <Image Include="..\..\..\Users\user\Desktop\icon_greater.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_equal.png">
+    <Image Include="res\icons\icon_app.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_less.png">
+    <Image Include="res\icons\icon_equal.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_greater.png">
+    <Image Include="res\icons\icon_equal_small.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_left_arrow.png">
+    <Image Include="res\icons\icon_folder_small.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_left_right_arrow.png">
+    <Image Include="res\icons\icon_greater.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_right_arrow.png">
+    <Image Include="res\icons\icon_help.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_equal_small.png">
+    <Image Include="res\icons\icon_left_arrow.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_left_arrow_small.png">
+    <Image Include="res\icons\icon_left_arrow_small.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_right_arrow_small.png">
+    <Image Include="res\icons\icon_left_right_arrow.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_folder_small.png">
+    <Image Include="res\icons\icon_less.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_question_small.png">
+    <Image Include="res\icons\icon_question_small.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_remove_small.png">
+    <Image Include="res\icons\icon_remove_small.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_help.png">
+    <Image Include="res\icons\icon_right_arrow.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\icons\icon_app.ico">
+    <Image Include="res\icons\icon_right_arrow_small.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

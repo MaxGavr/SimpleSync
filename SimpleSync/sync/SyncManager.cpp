@@ -1,5 +1,11 @@
 #include "stdafx.h"
-#include "SyncManager.h"
+#include "sync/SyncManager.h"
+#include "sync/FileProperties.h"
+#include "operations/CopyOperation.h"
+#include "operations/RemoveOperation.h"
+#include "operations/EmptyOperation.h"
+#include "operations/ReplaceOperation.h"
+#include "operations/CreateOperation.h"
 
 
 

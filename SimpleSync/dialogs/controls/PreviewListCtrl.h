@@ -1,6 +1,11 @@
 #pragma once
 
-#include "SyncManager.h"
+#include "../../sync/SyncManager.h"
+#include "../../operations/CopyOperation.h"
+#include "../../operations/ReplaceOperation.h"
+#include "../../operations/RemoveOperation.h"
+#include "../../operations/EmptyOperation.h"
+#include "../../operations/CreateOperation.h"
 
 #define WM_ADJUST_COLUMNS (WM_USER + 10)
 

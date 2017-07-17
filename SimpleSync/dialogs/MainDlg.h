@@ -1,5 +1,5 @@
 #pragma once
-#include "PreviewListCtrl.h"
+#include "controls/PreviewListCtrl.h"
 
 class SyncManager;
 

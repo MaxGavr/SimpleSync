@@ -1,7 +1,7 @@
 #pragma once
 
 #include "afxwin.h"
-#include "FileProperties.h"
+#include "../sync/FileProperties.h"
 
 class SyncManager;
 

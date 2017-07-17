@@ -1,7 +1,8 @@
 #pragma once
 
 #ifndef __AFXWIN_H__
-	#error "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ stdafx.h пїЅпїЅ пїЅпїЅпїЅ#endif
+	#error "включить stdafx.h до включения этого файла в PCH"
+#endif
 
 #include "resource.h"
 

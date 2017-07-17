@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "MainDlg.h"
-#include "SyncManager.h"
+#include "sync/SyncManager.h"
 #include "OptionsDialog.h"
 #include "ParamsDialog.h"
 #include "ProgressDialog.h"
@@ -133,7 +133,9 @@ void CMainDlg::OnSyncButtonClicked()
 
     if (operationsCount == 0)
     {
-        MessageBox(_T("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ                   _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"), MB_        return;
+        MessageBox(_T("Нечего синхронизировать!"),
+                   _T("Синхронизация"), MB_ICONINFORMATION | MB_OK);
+        return;
     }
 
     auto isAmbiguous = [](const SyncOperation* op) -> BOOL {
@@ -146,7 +148,12 @@ void CMainDlg::OnSyncButtonClicked()
 
     if (hasAmbiguous)
     {
-        LPCTSTR msg = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ                         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ                         "пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ                         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ        LPCTSTR title = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ        int response = MessageBox(msg, title, MB_ICONEXCLAMATION | MB_YESNO);
+        LPCTSTR msg = _T("Некоторые операции (помечены \"?\") "
+                         "требуют Вашего решения, в противном случае "
+                         "они не будут выполнены. "
+                         "Желаете продолжить?");
+        LPCTSTR title = _T("Неоднозначные операции");
+        int response = MessageBox(msg, title, MB_ICONEXCLAMATION | MB_YESNO);
         if (response == IDNO)
             return;
     }
@@ -181,5 +188,9 @@ void CMainDlg::OnParametersButtonClicked()
 
 void CMainDlg::OnHelpButtonClicked()
 {
-    LPCWSTR msg = _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ                     пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ                     "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ    LPWSTR title = _T("пїЅпїЅпїЅпїЅ    MessageBox(msg, title, MB_ICONINFORMATION | MB_OK);
+    LPCWSTR msg = _T("Двойной клик по элементу списка позволяет просмотреть\
+                     свойства файла/ов.\n"
+                     "Клик правой кнопкой мыши - отменить операцию.");
+    LPWSTR title = _T("Помощь");
+    MessageBox(msg, title, MB_ICONINFORMATION | MB_OK);
 }

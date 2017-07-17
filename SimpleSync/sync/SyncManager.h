@@ -4,13 +4,10 @@
 #include <deque>
 #include <algorithm>
 #include <functional>
+#include "sync/FileProperties.h"
 
-#include "FileProperties.h"
-#include "CopyOperation.h"
-#include "RemoveOperation.h"
-#include "EmptyOperation.h"
-#include "ReplaceOperation.h"
-#include "CreateOperation.h"
+
+class SyncOperation;
 
 
 

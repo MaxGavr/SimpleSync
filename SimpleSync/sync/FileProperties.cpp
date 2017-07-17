@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "FileProperties.h"
+#include "sync/FileProperties.h"
 #include <algorithm>
 
 

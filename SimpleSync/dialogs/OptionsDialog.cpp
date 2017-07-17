@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SimpleSync.h"
+#include "../SimpleSync.h"
 #include "OptionsDialog.h"
 #include "afxdialogex.h"
 

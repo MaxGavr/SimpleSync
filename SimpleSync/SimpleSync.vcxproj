@@ -113,6 +113,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,10 +186,24 @@
     <ClInclude Include="CompareDialog.h" />
     <ClInclude Include="CopyOperation.h" />
     <ClInclude Include="CreateOperation.h" />
+    <ClInclude Include="dialogs\CompareDialog.h" />
+    <ClInclude Include="dialogs\controls\PreviewListCtrl.h" />
+    <ClInclude Include="dialogs\FilePropertiesDialog.h" />
+    <ClInclude Include="dialogs\MainDlg.h" />
+    <ClInclude Include="dialogs\OptionsDialog.h" />
+    <ClInclude Include="dialogs\ParamsDialog.h" />
+    <ClInclude Include="dialogs\ProgressDialog.h" />
+    <ClInclude Include="dialogs\ScanProgressDialog.h" />
     <ClInclude Include="EmptyOperation.h" />
     <ClInclude Include="FileProperties.h" />
     <ClInclude Include="FilePropertiesDialog.h" />
     <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="operations\CopyOperation.h" />
+    <ClInclude Include="operations\CreateOperation.h" />
+    <ClInclude Include="operations\EmptyOperation.h" />
+    <ClInclude Include="operations\RemoveOperation.h" />
+    <ClInclude Include="operations\ReplaceOperation.h" />
+    <ClInclude Include="operations\SyncOperation.h" />
     <ClInclude Include="OptionsDialog.h" />
     <ClInclude Include="ParamsDialog.h" />
     <ClInclude Include="PreviewListCtrl.h" />
@@ -201,23 +216,25 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SyncManager.h" />
     <ClInclude Include="SyncOperation.h" />
+    <ClInclude Include="sync\FileProperties.h" />
+    <ClInclude Include="sync\SyncManager.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CompareDialog.cpp" />
-    <ClCompile Include="CopyOperation.cpp" />
-    <ClCompile Include="CreateOperation.cpp" />
-    <ClCompile Include="EmptyOperation.cpp" />
-    <ClCompile Include="FileProperties.cpp" />
-    <ClCompile Include="FilePropertiesDialog.cpp" />
-    <ClCompile Include="MainDlg.cpp" />
-    <ClCompile Include="OptionsDialog.cpp" />
-    <ClCompile Include="ParamsDialog.cpp" />
-    <ClCompile Include="PreviewListCtrl.cpp" />
-    <ClCompile Include="ProgressDialog.cpp" />
-    <ClCompile Include="RemoveOperation.cpp" />
-    <ClCompile Include="ReplaceOperation.cpp" />
-    <ClCompile Include="ScanProgressDialog.cpp" />
+    <ClCompile Include="dialogs\CompareDialog.cpp" />
+    <ClCompile Include="dialogs\controls\PreviewListCtrl.cpp" />
+    <ClCompile Include="dialogs\FilePropertiesDialog.cpp" />
+    <ClCompile Include="dialogs\MainDlg.cpp" />
+    <ClCompile Include="dialogs\OptionsDialog.cpp" />
+    <ClCompile Include="dialogs\ParamsDialog.cpp" />
+    <ClCompile Include="dialogs\ProgressDialog.cpp" />
+    <ClCompile Include="dialogs\ScanProgressDialog.cpp" />
+    <ClCompile Include="operations\CopyOperation.cpp" />
+    <ClCompile Include="operations\CreateOperation.cpp" />
+    <ClCompile Include="operations\EmptyOperation.cpp" />
+    <ClCompile Include="operations\RemoveOperation.cpp" />
+    <ClCompile Include="operations\ReplaceOperation.cpp" />
+    <ClCompile Include="operations\SyncOperation.cpp" />
     <ClCompile Include="SimpleSync.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -225,8 +242,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SyncManager.cpp" />
-    <ClCompile Include="SyncOperation.cpp" />
+    <ClCompile Include="sync\FileProperties.cpp" />
+    <ClCompile Include="sync\SyncManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SimpleSync.rc" />
@@ -238,20 +255,20 @@
     <Image Include="..\..\..\Users\user\Desktop\icon_equal.png" />
     <Image Include="..\..\..\Users\user\Desktop\icon_greater.png" />
     <Image Include="..\..\..\Users\user\Desktop\icon_less.png" />
-    <Image Include="..\icons\icon_equal.png" />
-    <Image Include="..\icons\icon_equal_small.png" />
-    <Image Include="..\icons\icon_folder_small.png" />
-    <Image Include="..\icons\icon_greater.png" />
-    <Image Include="..\icons\icon_help.png" />
-    <Image Include="..\icons\icon_left_arrow.png" />
-    <Image Include="..\icons\icon_left_arrow_small.png" />
-    <Image Include="..\icons\icon_left_right_arrow.png" />
-    <Image Include="..\icons\icon_less.png" />
-    <Image Include="..\icons\icon_question_small.png" />
-    <Image Include="..\icons\icon_remove_small.png" />
-    <Image Include="..\icons\icon_right_arrow.png" />
-    <Image Include="..\icons\icon_right_arrow_small.png" />
-    <Image Include="..\icons\icon_app.ico" />
+    <Image Include="res\icons\icon_app.ico" />
+    <Image Include="res\icons\icon_equal.png" />
+    <Image Include="res\icons\icon_equal_small.png" />
+    <Image Include="res\icons\icon_folder_small.png" />
+    <Image Include="res\icons\icon_greater.png" />
+    <Image Include="res\icons\icon_help.png" />
+    <Image Include="res\icons\icon_left_arrow.png" />
+    <Image Include="res\icons\icon_left_arrow_small.png" />
+    <Image Include="res\icons\icon_left_right_arrow.png" />
+    <Image Include="res\icons\icon_less.png" />
+    <Image Include="res\icons\icon_question_small.png" />
+    <Image Include="res\icons\icon_remove_small.png" />
+    <Image Include="res\icons\icon_right_arrow.png" />
+    <Image Include="res\icons\icon_right_arrow_small.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

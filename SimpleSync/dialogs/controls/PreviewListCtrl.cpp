@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
 #include "PreviewListCtrl.h"
-#include "FilePropertiesDialog.h"
-#include "CompareDialog.h"
+#include "dialogs/FilePropertiesDialog.h"
+#include "dialogs/CompareDialog.h"
 
 
 IMPLEMENT_DYNAMIC(CPreviewListCtrl, CMFCListCtrl)
@@ -39,13 +39,16 @@ void CPreviewListCtrl::setupColumns()
     
     SetImageList(&m_imageList, LVSIL_SMALL);
 
-    InsertColumn(LIST_COLUMNS::INDEX, _T("пїЅ")                 LVCFMT_RIGHT,
+    InsertColumn(LIST_COLUMNS::INDEX, _T("№"),
+                 LVCFMT_RIGHT,
                  PREVIEW_LIST_IMAGE_SIZE);
-    InsertColumn(LIST_COLUMNS::SOURCE_FILE, _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ                 LVCFMT_LEFT);
+    InsertColumn(LIST_COLUMNS::SOURCE_FILE, _T("Исходная директория"),
+                 LVCFMT_LEFT);
     InsertColumn(LIST_COLUMNS::ACTION, _T(""),
                  LVCFMT_CENTER | LVCFMT_FIXED_WIDTH,
                  PREVIEW_LIST_IMAGE_SIZE);
-    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ                 LVCFMT_LEFT);
+    InsertColumn(LIST_COLUMNS::DESTINATION_FILE, _T("Конечная директория"),
+                 LVCFMT_LEFT);
 
     adjustColumnsWidth();
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SyncManager.h"
+#include "../sync/SyncManager.h"
 
 
 

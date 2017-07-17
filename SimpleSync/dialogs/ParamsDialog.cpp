@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "SimpleSync.h"
+#include "../SimpleSync.h"
 #include "ParamsDialog.h"
-#include "SyncManager.h"
+#include "../sync/SyncManager.h"
 #include "afxdialogex.h"
 
 

@@ -30,6 +30,7 @@ public:
     using FileSet = std::set <FileProperties>;
     using OperationQueue = std::deque <SyncOperation *>;
     using SyncCallback = std::function <void (const SyncOperation*)>;
+    using ScanCallback = std::function <void (const CString&)>;
 
     enum class SYNC_DIRECTION {
         LEFT_TO_RIGHT,
@@ -62,7 +63,7 @@ public:
 
     BOOL isFileInFiles(const FileProperties& file, const FileSet& files) const;
 
-    BOOL scan();
+    BOOL scan(ScanCallback* callback);
     void sync(SyncCallback* callback);
     OperationQueue getOperations();
 
@@ -71,7 +72,8 @@ private:
     BOOL fileMeetsRequirements(const FileProperties& file) const;
     FileSet getFilesFromFolder(const CString& folder) const;
     
-    void scanFolders(const CString& source, const CString& destination);
+    void scanFolders(const CString& source, const CString& destination,
+                     ScanCallback* callback);
     
     void clearOperationQueue();
 

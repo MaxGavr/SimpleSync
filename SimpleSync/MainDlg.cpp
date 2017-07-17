@@ -5,6 +5,7 @@
 #include "OptionsDialog.h"
 #include "ParamsDialog.h"
 #include "ProgressDialog.h"
+#include "ScanProgressDialog.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -119,17 +120,8 @@ void CMainDlg::OnDestinationFolderChange()
 
 void CMainDlg::OnPreviewButtonClicked()
 {
-    if (!m_syncManager->scan())
-    {
-        MessageBox(_T("���������� ��                      "���������, ��� �                   _T("������"), MB_ICONERRO        return;
-    }
-    
-    int operationsCount = m_syncManager->getOperations().size();
-
-    if (operationsCount == 0)
-    {
-        MessageBox(_T("������������ �� �����                   _T("�������������"), MB_        return;
-    }
+    CScanProgressDialog dialog(m_syncManager);
+    dialog.DoModal();
 
     m_previewList.showPreview();
 }

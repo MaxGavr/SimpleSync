@@ -96,7 +96,7 @@ BOOL SyncManager::isFileInFiles(const FileProperties& file,
     return files.find(file) != files.end();
 }
 
-BOOL SyncManager::scan()
+BOOL SyncManager::scan(ScanCallback* callback)
 {
     clearOperationQueue();
 
@@ -105,9 +105,9 @@ BOOL SyncManager::scan()
         return FALSE;
 
     if (getSyncDirection() == SYNC_DIRECTION::RIGHT_TO_LEFT)
-        scanFolders(getDestinationFolder(), getSourceFolder());
+        scanFolders(getDestinationFolder(), getSourceFolder(), callback);
     else
-        scanFolders(getSourceFolder(), getDestinationFolder());
+        scanFolders(getSourceFolder(), getDestinationFolder(), callback);
 
     return TRUE;
 }
@@ -178,8 +178,11 @@ SyncManager::FileSet SyncManager::getFilesFromFolder(const CString& folder) cons
 }
 
 void SyncManager::scanFolders(const CString& source,
-                              const CString& destination)
+                              const CString& destination,
+                              ScanCallback* callback)
 {
+    (*callback)(source);
+
     FileSet sourceFiles = getFilesFromFolder(source);
     FileSet destinationFiles = getFilesFromFolder(destination);
 
@@ -197,7 +200,7 @@ void SyncManager::scanFolders(const CString& source,
             if (file.isFolder())
             {
                 enqueueOperation(new EmptyOperation(file, *sameFileIterator));
-                scanFolders(file.getFullPath(), sameFileIterator->getFullPath());
+                scanFolders(file.getFullPath(), sameFileIterator->getFullPath(), callback);
             }
             else
                 manageReplaceOperation(file, *sameFileIterator);

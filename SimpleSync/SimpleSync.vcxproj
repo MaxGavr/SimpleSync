@@ -196,6 +196,7 @@
     <ClInclude Include="RemoveOperation.h" />
     <ClInclude Include="ReplaceOperation.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ScanProgressDialog.h" />
     <ClInclude Include="SimpleSync.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SyncManager.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="ProgressDialog.cpp" />
     <ClCompile Include="RemoveOperation.cpp" />
     <ClCompile Include="ReplaceOperation.cpp" />
+    <ClCompile Include="ScanProgressDialog.cpp" />
     <ClCompile Include="SimpleSync.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

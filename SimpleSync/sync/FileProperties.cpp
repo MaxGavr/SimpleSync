@@ -2,6 +2,7 @@
 #include "FileProperties.h"
 #include <algorithm>
 
+using COMPARISON = FileProperties::COMPARISON_RESULT;
 
 
 FileProperties::FileProperties(const CFileStatus& properties)
@@ -22,25 +23,25 @@ FileProperties::~FileProperties()
 
 
 
-FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties& file,
-                                                            const FileComparisonParameters& params) const
+COMPARISON FileProperties::compareTo(const FileProperties& file,
+                                     const FileComparisonParameters& params) const
 {
     BOOL equalNames = this->getFileName() == file.getFileName();
     if (!equalNames)
-        return COMPARISON_RESULT::UNDEFINED;
+        return COMPARISON::UNDEFINED;
 
     ComparisonResults results;
 
     if (params.m_compareSize)
     {
-        COMPARISON_RESULT sizeCompare = compareProperty(this->getSize(),
-                                                        file.getSize());
+        COMPARISON sizeCompare = compareProperty(this->getSize(),
+                                                 file.getSize());
         results.push_back(sizeCompare);
     }
 
     if (params.m_compareTime)
     {
-        COMPARISON_RESULT timeCompare;
+        COMPARISON timeCompare;
 
         switch (params.m_timeToCompare)
         {
@@ -64,30 +65,28 @@ FileProperties::COMPARISON_RESULT FileProperties::compareTo(const FileProperties
     return makeChoice(results);
 }
 
-FileProperties::COMPARISON_RESULT FileProperties::makeChoice(ComparisonResults& results) const
+COMPARISON FileProperties::makeChoice(ComparisonResults& results) const
 {
-    using RESULT = COMPARISON_RESULT;
-
-    results.remove(RESULT::EQUAL);
+    results.remove(COMPARISON::EQUAL);
 
     if (results.empty())
-        return RESULT::EQUAL;
+        return COMPARISON::EQUAL;
 
-    auto it = std::find(results.begin(), results.end(), RESULT::PREFERABLE);
+    auto it = std::find(results.begin(), results.end(), COMPARISON::PREFERABLE);
     BOOL hasPreferable = it != results.end();
 
-    it = std::find(results.begin(), results.end(), RESULT::NON_PREFERABLE);
+    it = std::find(results.begin(), results.end(), COMPARISON::NON_PREFERABLE);
     BOOL hasNonPreferable = it != results.end();
 
     if (hasPreferable)
     {
         if (hasNonPreferable)
-            return RESULT::UNDEFINED;
+            return COMPARISON::UNDEFINED;
         else
-            return RESULT::PREFERABLE;
+            return COMPARISON::PREFERABLE;
     }
     else
-        return RESULT::NON_PREFERABLE;
+        return COMPARISON::NON_PREFERABLE;
 }
 
 FileProperties FileProperties::operator=(const FileProperties& file)

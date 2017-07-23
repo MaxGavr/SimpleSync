@@ -3,7 +3,7 @@
 #include "MainDlg.h"
 #include "OptionsDialog.h"
 #include "ParamsDialog.h"
-#include "ProgressDialog.h"
+#include "SyncProgressDialog.h"
 #include "ScanProgressDialog.h"
 #include "afxdialogex.h"
 

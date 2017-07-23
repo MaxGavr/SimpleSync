@@ -190,7 +190,7 @@
     <ClInclude Include="dialogs\MainDlg.h" />
     <ClInclude Include="dialogs\OptionsDialog.h" />
     <ClInclude Include="dialogs\ParamsDialog.h" />
-    <ClInclude Include="dialogs\ProgressDialog.h" />
+    <ClInclude Include="dialogs\SyncProgressDialog.h" />
     <ClInclude Include="dialogs\ScanProgressDialog.h" />
     <ClInclude Include="operations\CopyOperation.h" />
     <ClInclude Include="operations\CreateOperation.h" />
@@ -212,7 +212,7 @@
     <ClCompile Include="dialogs\MainDlg.cpp" />
     <ClCompile Include="dialogs\OptionsDialog.cpp" />
     <ClCompile Include="dialogs\ParamsDialog.cpp" />
-    <ClCompile Include="dialogs\ProgressDialog.cpp" />
+    <ClCompile Include="dialogs\SyncProgressDialog.cpp" />
     <ClCompile Include="dialogs\ScanProgressDialog.cpp" />
     <ClCompile Include="operations\CopyOperation.cpp" />
     <ClCompile Include="operations\CreateOperation.cpp" />

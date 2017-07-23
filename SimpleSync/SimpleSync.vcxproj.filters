@@ -66,9 +66,6 @@
     <ClInclude Include="dialogs\ParamsDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dialogs\ProgressDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dialogs\ScanProgressDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -76,6 +73,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sync\SyncManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogs\SyncProgressDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -122,9 +122,6 @@
     <ClCompile Include="dialogs\ParamsDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dialogs\ProgressDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dialogs\ScanProgressDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -132,6 +129,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sync\SyncManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\SyncProgressDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

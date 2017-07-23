@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SimpleSync.h"
-#include "ProgressDialog.h"
+#include "SyncProgressDialog.h"
 #include "sync/SyncManager.h"
 #include "afxdialogex.h"
 

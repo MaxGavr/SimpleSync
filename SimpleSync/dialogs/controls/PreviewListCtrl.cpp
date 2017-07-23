@@ -7,14 +7,13 @@
 #include "sync/SyncManager.h"
 
 
+using TYPE = SyncOperation::TYPE;
 
+IMPLEMENT_DYNAMIC(CPreviewListControl, CMFCListCtrl)
 
-IMPLEMENT_DYNAMIC(CPreviewListCtrl, CMFCListCtrl)
-
-CPreviewListCtrl::CPreviewListCtrl(SyncManager* syncManager)
+CPreviewListControl::CPreviewListControl(SyncManager* syncManager)
     : m_syncManager(syncManager)
 {
-    // Loading order must match ICON enum
     m_rightArrowImageSmall.Load(IDB_RIGHT_ARROW_SMALL); // ICON::RIGHT_ARROW
     m_equalImageSmall.Load(IDB_EQUAL_SMALL); // ICON::EQUAL
     m_leftArrowImageSmall.Load(IDB_LEFT_ARROW_SMALL); // ICON::LEFT_ARROW
@@ -25,6 +24,8 @@ CPreviewListCtrl::CPreviewListCtrl(SyncManager* syncManager)
     m_imageList.Create(PREVIEW_LIST_IMAGE_SIZE, PREVIEW_LIST_IMAGE_SIZE,
                        ILC_COLOR32, 0, PREVIEW_LIST_IMAGE_COUNT);
     COLORREF defaultMask = RGB(0, 0, 0);
+    
+    // Order of adding must match ICON enum
     m_imageList.Add(&m_rightArrowImageSmall, defaultMask);
     m_imageList.Add(&m_equalImageSmall, defaultMask);
     m_imageList.Add(&m_leftArrowImageSmall, defaultMask);
@@ -33,13 +34,13 @@ CPreviewListCtrl::CPreviewListCtrl(SyncManager* syncManager)
     m_imageList.Add(&m_questionImageSmall, defaultMask);
 }
 
-CPreviewListCtrl::~CPreviewListCtrl()
+CPreviewListControl::~CPreviewListControl()
 {
 }
 
 
 
-void CPreviewListCtrl::setupPreviewList()
+void CPreviewListControl::setupPreviewList()
 {
     SetExtendedStyle(GetExtendedStyle() |
                      LVS_EX_FULLROWSELECT |
@@ -59,7 +60,7 @@ void CPreviewListCtrl::setupPreviewList()
     adjustColumnsWidth();
 }
 
-void CPreviewListCtrl::adjustColumnsWidth()
+void CPreviewListControl::adjustColumnsWidth()
 {
     SetRedraw(FALSE);
 
@@ -76,20 +77,22 @@ void CPreviewListCtrl::adjustColumnsWidth()
     SetRedraw(TRUE);
 }
 
-void CPreviewListCtrl::showPreview()
+void CPreviewListControl::showPreview()
 {
     clearPreview();
     
     SyncManager::OperationQueue operations = m_syncManager->getOperationQueue();
     sortOperationsByFolders(operations);
     
+    SetRedraw(FALSE);
     for (auto& operation : m_sortedOperations)
         printSyncOperation(operation.get());
+    SetRedraw(TRUE);
 
     adjustColumnsWidth();
 }
 
-void CPreviewListCtrl::clearPreview()
+void CPreviewListControl::clearPreview()
 {
     DeleteAllItems();
     m_sortedOperations.clear();
@@ -97,32 +100,32 @@ void CPreviewListCtrl::clearPreview()
 
 
 
-void CPreviewListCtrl::printSyncOperation(SyncOperation* op,
+void CPreviewListControl::printSyncOperation(SyncOperation* op,
                                           int index)
 {
     printOperationIndex(op, index);
 
     switch (op->getType())
     {
-    case SyncOperation::TYPE::COPY:
+    case TYPE::COPY:
         printCopyOperation(dynamic_cast<CopyOperation *>(op), index);
         break;
-    case SyncOperation::TYPE::REPLACE:
+    case TYPE::REPLACE:
         printReplaceOperation(dynamic_cast<ReplaceOperation *>(op), index);
         break;
-    case SyncOperation::TYPE::REMOVE:
+    case TYPE::REMOVE:
         printRemoveOperation(dynamic_cast<RemoveOperation *>(op), index);
         break;
-    case SyncOperation::TYPE::CREATE:
+    case TYPE::CREATE:
         printCreateOperation(dynamic_cast<CreateFolderOperation *>(op), index);
         break;
-    case SyncOperation::TYPE::EMPTY:
+    case TYPE::EMPTY:
         printEmptyOperation(dynamic_cast<EmptyOperation *>(op), index);
         break;
     }
 }
 
-void CPreviewListCtrl::printFile(const FileProperties& file,
+void CPreviewListControl::printFile(const FileProperties& file,
                                  int index,
                                  LIST_COLUMN column)
 {
@@ -135,7 +138,7 @@ void CPreviewListCtrl::printFile(const FileProperties& file,
     SetItemText(index, column, printedString);
 }
 
-void CPreviewListCtrl::printOperationIndex(const SyncOperation* operation,
+void CPreviewListControl::printOperationIndex(const SyncOperation* operation,
                                            int& index)
 {
     int listItemCount = GetItemCount();
@@ -166,7 +169,7 @@ void CPreviewListCtrl::printOperationIndex(const SyncOperation* operation,
         InsertItem(&listItem);
 }
 
-void CPreviewListCtrl::printOperationIcon(ICON icon, int index)
+void CPreviewListControl::printOperationIcon(ICON icon, int index)
 {
     LVITEM listItem;
     listItem.mask = LVIF_IMAGE;
@@ -179,7 +182,7 @@ void CPreviewListCtrl::printOperationIcon(ICON icon, int index)
 
 
 
-void CPreviewListCtrl::printCopyOperation(CopyOperation* operation,
+void CPreviewListControl::printCopyOperation(CopyOperation* operation,
                                           int index)
 {
     ICON icon;
@@ -202,7 +205,7 @@ void CPreviewListCtrl::printCopyOperation(CopyOperation* operation,
     printOperationIcon(icon, index);
 }
 
-void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation,
+void CPreviewListControl::printRemoveOperation(RemoveOperation* operation,
                                             int index)
 {
     FileProperties file = operation->getFile();
@@ -217,7 +220,7 @@ void CPreviewListCtrl::printRemoveOperation(RemoveOperation* operation,
     printOperationIcon(ICON::REMOVE, index);
 }
 
-void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation,
+void CPreviewListControl::printReplaceOperation(ReplaceOperation* operation,
                                              int index)
 {
     ICON icon;
@@ -248,7 +251,7 @@ void CPreviewListCtrl::printReplaceOperation(ReplaceOperation* operation,
     printOperationIcon(icon, index);
 }
 
-void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation,
+void CPreviewListControl::printEmptyOperation(EmptyOperation* operation,
                                            int index)
 {
     FileProperties file = operation->getFile();
@@ -272,7 +275,7 @@ void CPreviewListCtrl::printEmptyOperation(EmptyOperation* operation,
     printOperationIcon(ICON::EQUAL, index);
 }
 
-void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation,
+void CPreviewListControl::printCreateOperation(CreateFolderOperation* operation,
                                             int index)
 {
     ICON icon;
@@ -302,11 +305,11 @@ void CPreviewListCtrl::printCreateOperation(CreateFolderOperation* operation,
 
 
 
-int CPreviewListCtrl::forbidOperation(int index)
+int CPreviewListControl::forbidOperation(int index)
 {
     SyncOperation* operation = m_sortedOperations[index].get();
 
-    if (operation->getType() == SyncOperation::TYPE::EMPTY)
+    if (operation->getType() == TYPE::EMPTY)
         return -1;
 
     operation->forbid(TRUE);
@@ -315,6 +318,8 @@ int CPreviewListCtrl::forbidOperation(int index)
     for (size_t i = index + 1; i < m_sortedOperations.size(); ++i)
     {
         auto nextOperation = m_sortedOperations[i];
+
+        // Recursively forbid every depending operation onwards
         if (nextOperation->dependsOn(operation))
         {
             int nextPositionToCheck = forbidOperation(i);
@@ -326,19 +331,22 @@ int CPreviewListCtrl::forbidOperation(int index)
     }
 }
 
-void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& operations)
+void CPreviewListControl::sortOperationsByFolders(SyncManager::OperationQueue& operations)
 {
     auto notInvolveFolder = [](SyncOperation::ptr& op) -> bool {
         return (bool)!op->getFile().isFolder();
     };
 
+    // At first, pick out every operation that deals with folders
+    // keeping their position relative to each other
     auto it = std::stable_partition(operations.begin(),
                                     operations.end(),
                                     notInvolveFolder);
     m_sortedOperations.assign(it, operations.end());
     operations.erase(it, operations.end());
 
-    // TODO: optimize
+    // Secondly, place operations on files next to operations
+    // on their parent folders
     for (const auto& operation : operations)
     {
         auto dependsOn = [&operation](SyncOperation::ptr op) -> bool {
@@ -357,18 +365,18 @@ void CPreviewListCtrl::sortOperationsByFolders(SyncManager::OperationQueue& oper
 
 
 
-BEGIN_MESSAGE_MAP(CPreviewListCtrl, CMFCListCtrl)
-    ON_NOTIFY_REFLECT(NM_DBLCLK, &CPreviewListCtrl::OnDoubleClick)
-    ON_NOTIFY_REFLECT(NM_RCLICK, &CPreviewListCtrl::OnRightClick)
-    ON_NOTIFY(HDN_ENDTRACKA, 0, &CPreviewListCtrl::OnColumnResizeDragEnd)
-    ON_NOTIFY(HDN_ENDTRACKW, 0, &CPreviewListCtrl::OnColumnResizeDragEnd)
+BEGIN_MESSAGE_MAP(CPreviewListControl, CMFCListCtrl)
+    ON_NOTIFY_REFLECT(NM_DBLCLK, &CPreviewListControl::OnDoubleClick)
+    ON_NOTIFY_REFLECT(NM_RCLICK, &CPreviewListControl::OnRightClick)
+    ON_NOTIFY(HDN_ENDTRACKA, 0, &CPreviewListControl::OnColumnResizeDragEnd)
+    ON_NOTIFY(HDN_ENDTRACKW, 0, &CPreviewListControl::OnColumnResizeDragEnd)
     ON_MESSAGE(WM_ADJUST_COLUMNS, OnAdjustColumns)
     ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
 
-void CPreviewListCtrl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
+void CPreviewListControl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
     LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
     *pResult = 0;
@@ -386,15 +394,15 @@ void CPreviewListCtrl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
         showFilesComparisonDialog(clickedOperation);
 }
 
-BOOL CPreviewListCtrl::showFilePropertiesDialog(const SyncOperation* singleFileOperation)
+BOOL CPreviewListControl::showFilePropertiesDialog(const SyncOperation* singleFileOperation)
 {
     FileProperties file = singleFileOperation->getFile();
-    SyncOperation::TYPE type = singleFileOperation->getType();
+    TYPE type = singleFileOperation->getType();
     
     if (file.isFolder())
         return FALSE;
 
-    if (type == SyncOperation::TYPE::COPY || type == SyncOperation::TYPE::REMOVE)
+    if (type == TYPE::COPY || type == TYPE::REMOVE)
     {
         CFilePropertiesDialog dialog(file, m_syncManager);
         dialog.DoModal();
@@ -405,25 +413,25 @@ BOOL CPreviewListCtrl::showFilePropertiesDialog(const SyncOperation* singleFileO
         return FALSE;
 }
 
-BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* twoFilesOperation)
+BOOL CPreviewListControl::showFilesComparisonDialog(const SyncOperation* twoFilesOperation)
 {
     FileProperties firstFile = twoFilesOperation->getFile();
-    SyncOperation::TYPE type = twoFilesOperation->getType();
+    TYPE type = twoFilesOperation->getType();
 
     if (firstFile.isFolder())
         return FALSE;
 
     FileProperties secondFile;
     
-    if (type == SyncOperation::TYPE::REPLACE || type == SyncOperation::TYPE::EMPTY)
+    if (type == TYPE::REPLACE || type == TYPE::EMPTY)
     {
-        if (type == SyncOperation::TYPE::REPLACE)
+        if (type == TYPE::REPLACE)
         {
             auto op = dynamic_cast<const ReplaceOperation*>(twoFilesOperation);
             secondFile = op->getFileToReplace();
         }
 
-        if (type == SyncOperation::TYPE::EMPTY)
+        if (type == TYPE::EMPTY)
         {
             auto op = dynamic_cast<const EmptyOperation*>(twoFilesOperation);
             secondFile = op->getEqualFile();
@@ -437,7 +445,7 @@ BOOL CPreviewListCtrl::showFilesComparisonDialog(const SyncOperation* twoFilesOp
 
 
 
-void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
+void CPreviewListControl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
     LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
     *pResult = 0;
@@ -452,7 +460,7 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
     int operationIndex = hitTestInfo.iItem;
     auto clickedOperation = m_sortedOperations[operationIndex].get();
         
-    if (clickedOperation->getType() == SyncOperation::TYPE::REPLACE)
+    if (clickedOperation->getType() == TYPE::REPLACE)
     {
         auto op = dynamic_cast<ReplaceOperation*>(clickedOperation);
     
@@ -473,26 +481,26 @@ void CPreviewListCtrl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
         forbidOperation(operationIndex);
 }
 
-LRESULT CPreviewListCtrl::OnAdjustColumns(WPARAM wParam, LPARAM lParam)
+LRESULT CPreviewListControl::OnAdjustColumns(WPARAM wParam, LPARAM lParam)
 {
     adjustColumnsWidth();
     return 1;
 }
 
-void CPreviewListCtrl::OnColumnResizeDragEnd(NMHDR *pNMHDR, LRESULT *pResult)
+void CPreviewListControl::OnColumnResizeDragEnd(NMHDR *pNMHDR, LRESULT *pResult)
 {
     adjustColumnsWidth();
     *pResult = 1;
 }
 
-void CPreviewListCtrl::OnSize(UINT nType, int cx, int cy)
+void CPreviewListControl::OnSize(UINT nType, int cx, int cy)
 {
     CMFCListCtrl::OnSize(nType, cx, cy);
 
     PostMessage(WM_ADJUST_COLUMNS);
 }
 
-COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
+COLORREF CPreviewListControl::OnGetCellTextColor(int nRow, int nColumn)
 {
     LIST_COLUMN col = (LIST_COLUMN)nColumn;
     
@@ -509,7 +517,7 @@ COLORREF CPreviewListCtrl::OnGetCellTextColor(int nRow, int nColumn)
     return CMFCListCtrl::OnGetCellTextColor(nRow, nColumn);
 }
 
-COLORREF CPreviewListCtrl::OnGetCellBkColor(int nRow, int nColumn)
+COLORREF CPreviewListControl::OnGetCellBkColor(int nRow, int nColumn)
 {
     LIST_COLUMN col = (LIST_COLUMN)nColumn;
 
@@ -528,9 +536,8 @@ COLORREF CPreviewListCtrl::OnGetCellBkColor(int nRow, int nColumn)
 
 
 
-COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operation) const
+COLORREF CPreviewListControl::chooseOperationTextColor(const SyncOperation* operation) const
 {
-    using TYPE = SyncOperation::TYPE;
     TYPE type = operation->getType();
 
     if (type == TYPE::REMOVE)
@@ -558,7 +565,7 @@ COLORREF CPreviewListCtrl::chooseOperationTextColor(const SyncOperation* operati
     return m_colors.DEFAULT_TEXT_COLOR;
 }
 
-COLORREF CPreviewListCtrl::chooseOperationBkColor(const SyncOperation* operation) const
+COLORREF CPreviewListControl::chooseOperationBkColor(const SyncOperation* operation) const
 {
     COLORREF color = m_colors.DEFAULT_BACK_COLOR;
     

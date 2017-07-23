@@ -32,7 +32,7 @@ private:
     CString m_destinationPath;
 
     int m_directionRadioBox;
-    CPreviewListCtrl m_previewList;
+    CPreviewListControl m_previewList;
 
     CPngImage m_directionRightImage;
     CPngImage m_directionBothImage;

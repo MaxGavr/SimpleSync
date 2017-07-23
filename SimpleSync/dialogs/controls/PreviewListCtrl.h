@@ -22,9 +22,9 @@ struct PreviewListColors
 
 
 // MFC list control designed to show scan results from SyncManager
-class CPreviewListCtrl : public CMFCListCtrl
+class CPreviewListControl : public CMFCListCtrl
 {
-	DECLARE_DYNAMIC(CPreviewListCtrl)
+	DECLARE_DYNAMIC(CPreviewListControl)
 
 public:
     enum LIST_COLUMN {
@@ -43,8 +43,8 @@ public:
         QUESTION = 5
     };
 
-	CPreviewListCtrl(SyncManager* syncManager);
-	virtual ~CPreviewListCtrl();
+	CPreviewListControl(SyncManager* syncManager);
+	virtual ~CPreviewListControl();
 
     // Must be called before showPreview()
     void setupPreviewList();
@@ -75,6 +75,8 @@ private:
     int forbidOperation(int index);
 
     // Must be called before using m_sortedOperations
+    // Sorts operations, so that operations on files and subfolders
+    // are below their parent folder
     void sortOperationsByFolders(SyncManager::OperationQueue& operations);
 
     SyncManager* m_syncManager;

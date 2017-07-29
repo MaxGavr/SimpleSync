@@ -116,6 +116,9 @@ BOOL SyncManager::scan(ScanCallback* callback)
     if (!sourceExists || !destinationExists)
         return FALSE;
 
+    if (getSourceFolder() == getDestinationFolder())
+        return FALSE;
+
     if (getSyncDirection() == SYNC_DIRECTION::RIGHT_TO_LEFT)
         scanFolders(getDestinationFolder(), getSourceFolder(), callback);
     else

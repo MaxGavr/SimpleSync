@@ -84,7 +84,7 @@ LRESULT CScanProgressDialog::OnScanCompleted(WPARAM wParam, LPARAM lParam)
     if (!m_scanResult)
     {
         MessageBox(_T("Невозможно провести сканирование!\n"
-                      "Убедитесь, что обе директории выбраны."),
+                      "Убедитесь, что обе директории выбраны и не совпадают."),
                    _T("Ошибка"), MB_ICONERROR | MB_OK);
     }
     else

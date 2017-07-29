@@ -21,8 +21,8 @@ BOOL EmptyOperation::execute()
 
 BOOL EmptyOperation::affectsFile(const FileProperties& file) const
 {
-    auto thisFile = getFile();
-    auto equalFile = getEqualFile();
+    FileProperties thisFile = getFile();
+    FileProperties equalFile = getEqualFile();
 
     if (thisFile == file || equalFile == file)
         return TRUE;

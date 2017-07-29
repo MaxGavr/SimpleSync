@@ -129,7 +129,7 @@ BOOL SyncManager::scan(ScanCallback* callback)
 
 void SyncManager::sync(SyncCallback* callback)
 {
-    for (auto& operation: m_syncOperations)
+    for (SyncOperation::ptr& operation: m_syncOperations)
     {
         if (operation && !operation->isForbidden())
         {
@@ -158,7 +158,7 @@ BOOL SyncManager::folderExists(const CString& folder) const
 
 BOOL SyncManager::fileMeetsRequirements(const FileProperties& file) const
 {
-    const auto& options = getOptions();
+    SyncManagerOptions options = getOptions();
     BOOL result = TRUE;
 
     if (!options.syncHiddenFiles && file.isHidden())

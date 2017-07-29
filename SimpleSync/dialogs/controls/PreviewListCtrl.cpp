@@ -85,7 +85,7 @@ void CPreviewListControl::showPreview()
     sortOperationsByFolders(operations);
     
     SetRedraw(FALSE);
-    for (auto& operation : m_sortedOperations)
+    for (SyncOperation::ptr& operation : m_sortedOperations)
         printSyncOperation(operation.get());
     SetRedraw(TRUE);
 
@@ -317,7 +317,7 @@ int CPreviewListControl::forbidOperation(int index)
 
     for (size_t i = index + 1; i < m_sortedOperations.size(); ++i)
     {
-        auto nextOperation = m_sortedOperations[i];
+        SyncOperation::ptr nextOperation = m_sortedOperations[i];
 
         // Recursively forbid every depending operation onwards
         if (nextOperation->dependsOn(operation))
@@ -347,7 +347,7 @@ void CPreviewListControl::sortOperationsByFolders(SyncManager::OperationQueue& o
 
     // Secondly, place operations on files next to operations
     // on their parent folders
-    for (const auto& operation : operations)
+    for (const SyncOperation::ptr& operation : operations)
     {
         auto dependsOn = [&operation](SyncOperation::ptr op) -> bool {
             return operation->dependsOn(op.get());
@@ -386,8 +386,10 @@ void CPreviewListControl::OnDoubleClick(NMHDR *pNMHDR, LRESULT *pResult)
 
     if (SubItemHitTest(&hitTestInfo) == -1)
         return;
+
+    int index = hitTestInfo.iItem;
     
-    auto clickedOperation = m_sortedOperations[hitTestInfo.iItem].get();
+    SyncOperation* clickedOperation = m_sortedOperations[index].get();
     
     BOOL filePropertiesShown = showFilePropertiesDialog(clickedOperation);
     if (!filePropertiesShown)
@@ -457,8 +459,8 @@ void CPreviewListControl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
         return;
 
 
-    int operationIndex = hitTestInfo.iItem;
-    auto clickedOperation = m_sortedOperations[operationIndex].get();
+    int index = hitTestInfo.iItem;
+    SyncOperation* clickedOperation = m_sortedOperations[index].get();
         
     if (clickedOperation->getType() == TYPE::REPLACE)
     {
@@ -467,7 +469,7 @@ void CPreviewListControl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
         if (op->isAmbiguous())
         {
             op->removeAmbiguity();
-            printSyncOperation(clickedOperation, operationIndex);
+            printSyncOperation(clickedOperation, index);
             return;
         }
     }
@@ -475,10 +477,10 @@ void CPreviewListControl::OnRightClick(NMHDR *pNMHDR, LRESULT *pResult)
     if (clickedOperation->isForbidden())
     {
         clickedOperation->forbid(FALSE);
-        printSyncOperation(clickedOperation, operationIndex);
+        printSyncOperation(clickedOperation, index);
     }
     else
-        forbidOperation(operationIndex);
+        forbidOperation(index);
 }
 
 LRESULT CPreviewListControl::OnAdjustColumns(WPARAM wParam, LPARAM lParam)
@@ -510,7 +512,7 @@ COLORREF CPreviewListControl::OnGetCellTextColor(int nRow, int nColumn)
     
     if (properColumn && operationExists)
     {
-        auto operation = m_sortedOperations[nRow].get();
+        SyncOperation* operation = m_sortedOperations[nRow].get();
         return chooseOperationTextColor(operation);
     }
 
@@ -527,7 +529,7 @@ COLORREF CPreviewListControl::OnGetCellBkColor(int nRow, int nColumn)
 
     if (properColumn && operationExists)
     {
-        auto operation = m_sortedOperations[nRow].get();
+        SyncOperation* operation = m_sortedOperations[nRow].get();
         return chooseOperationBkColor(operation);
     }
 
